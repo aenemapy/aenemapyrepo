@@ -1,3 +1,6 @@
+[B]2018.01.05[/B]
+
+- Improved results and transfer functions
 [B]2018.01.04[/B]
 
 - Initial Release
