@@ -1,0 +1,11 @@
+[B]Version 4.0.06 (Sep 20, 2017)[/B]
+- Code Base Changes:
+    - Updated jsunpack
+    - Removed JS2PY
+- Resolvers Added:
+    - None
+- Resolvers Fixed/Updated:
+    - Streamango
+    - Streamcherry
+    - Speedvid
+    - Indavideo
