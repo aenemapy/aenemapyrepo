@@ -1,0 +1,8 @@
+[B]2018.01.08[/B] - Added Rename - Match in Browse Lists and some additional cleanups
+[B]2018.01.05.3[/B] - Added Download Features and tweaked lists
+[B]2018.01.05[/B]
+
+- Improved results and transfer functions
+[B]2018.01.04[/B]
+
+- Initial Release
