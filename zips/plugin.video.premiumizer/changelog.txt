@@ -1,3 +1,4 @@
+[B]2018.01.14[/B] - Improved code and title matching. Added TV Shows metadata in cloud sections(need to be enabled in the settings)
 [B]2018.01.12[/B] - Improved title matching and playback. Overall cleanup
 [B]2018.01.12[/B] - Fixed Playback Issues and some code cleanup. Better Title matching in Cloud Section
 [B]2018.01.11[/B] - Added Meta to Movies in Cloud Section if title starts with the format "TITLE (YEAR)" i.e: Dunkirk (2017)
