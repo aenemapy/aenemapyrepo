@@ -24,7 +24,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.premiumizer" version="2018.01.14.4" name="Premiumizer" provider-name="aenemapy">
+<addon id="plugin.video.premiumizer" version="2018.01.22" name="Premiumizer" provider-name="aenemapy">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.beautifulsoup4" />
