@@ -100,4 +100,24 @@
         <source>unknown</source>
 	</extension>
 </addon>
+
+<addon id="script.tvskipintro" version="2018.02.20" name="TV Skip Intro" provider-name="aenema">
+	<requires>
+		<import addon="xbmc.python" version="2.10.0" />
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="main.py">
+		<provides>executable</provides>
+	</extension>
+	<extension point="xbmc.service" library="service.py" start="startup" />
+	<extension point="xbmc.addon.metadata">
+        <description>Prompt a Skip Intro dialog Netflix style. Skips intro for your favourite shows. The addon creates a database of your shows and stores a custom set skip value</description>
+
+		<summary lang="en">Skip TV Shows Intro</summary>
+		<platform>all</platform>
+		<forum>-</forum>
+		<website>-</website>
+		<source>-</source>
+		<news>-</news>
+	</extension>
+</addon>
 </addons>
