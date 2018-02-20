@@ -101,7 +101,7 @@
 	</extension>
 </addon>
 
-<addon id="script.tvskipintro" version="2018.02.20" name="TV Skip Intro" provider-name="aenema">
+<addon id="script.tvskipintro" version="2018.02.20.2" name="TV Skip Intro" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="2.10.0" />
 	</requires>
