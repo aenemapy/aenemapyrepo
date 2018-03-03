@@ -66,7 +66,7 @@
     </extension>
 </addon>
 
-<addon id="script.ezmaintenanceplus" name="EZ Maintenance+" version="2018.03.03" provider-name="aenema">
+<addon id="script.ezmaintenanceplus" name="EZ Maintenance+" version="2018.03.03.2" provider-name="aenema">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
     <import addon="script.module.requests" version="1.0.0" />
