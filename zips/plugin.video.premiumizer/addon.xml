@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.premiumizer" version="2018.02.25" name="Premiumizer" provider-name="aenemapy">
+<addon id="plugin.video.premiumizer" version="2018.03.06" name="Premiumizer" provider-name="aenemapy">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.beautifulsoup4" />
