@@ -1,3 +1,4 @@
+[B]2018.03.25[/B] - Added Library Sync
 [B]2018.03.06[/B] - Recursive Metadata in Cloud Folders and improved overall
 [B]2018.01.22[/B] - User Request. Added Filesize to files
 [B]2018.01.14[/B] - Improved code and title matching. Added TV Shows metadata in cloud sections(need to be enabled in the settings)

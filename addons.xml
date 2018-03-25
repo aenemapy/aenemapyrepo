@@ -24,7 +24,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.premiumizer" version="2018.03.06" name="Premiumizer" provider-name="aenemapy">
+<addon id="plugin.video.premiumizer" version="2018.03.25" name="Premiumizer" provider-name="aenemapy">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.beautifulsoup4" />
@@ -35,6 +35,7 @@
 	<extension point="xbmc.python.pluginsource" library="main.py">
 		<provides>video</provides>
 	</extension>
+	<extension point="xbmc.service" library="service.py" start="startup" />
 	<extension point="xbmc.addon.metadata">
         <description>Premiumize Cloud Addon with a twist!
 		This addon is inteded for use with content that you currently own! The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the content provider.
