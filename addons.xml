@@ -24,7 +24,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.premiumizer" version="2018.03.28" name="Premiumizer" provider-name="aenemapy">
+<addon id="plugin.video.premiumizer" version="2018.04.13" name="Premiumizer" provider-name="aenemapy">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.beautifulsoup4" />
@@ -44,7 +44,7 @@
 		<summary lang="en">premiumizer Cloud Addon</summary>
 		<platform>all</platform>
 		<forum>-</forum>
-		<website>-</website>
+		<website>http://premiumize.me</website>
 		<source>-</source>
 		<assets>
 			<icon>icon.png</icon>

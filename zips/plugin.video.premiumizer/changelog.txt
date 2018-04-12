@@ -1,3 +1,4 @@
+[B]2018.04.13[/B] - Code improvements. Improved library sync all around
 [B]2018.03.26[/B] - Scraper Recursive Folders
 [B]2018.03.25[/B] - Added Library Sync
 [B]2018.03.06[/B] - Recursive Metadata in Cloud Folders and improved overall
