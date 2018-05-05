@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.image.premiumizer" version="2018.05.05" name="Premiumizer Images" provider-name="aenema">
+	<requires>
+		<import addon="xbmc.python" version="2.19.0" />
+		<import addon="script.module.requests" />		
+
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="main.py">
+		<provides>image</provides>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+        <description>Image Addon based on Premiumize.me cloud service</description>
+	
+		<summary lang="en">premiumizer Cloud Addon</summary>
+		<platform>all</platform>
+		<forum>-</forum>
+		<website>http://premiumize.me</website>
+		<source>-</source>
+		<assets>
+			<icon>icon.png</icon>
+			<fanart>fanart.jpg</fanart>
+		</assets>
+		<news>-</news>
+	</extension>
+</addon>
