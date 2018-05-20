@@ -113,6 +113,26 @@
   </extension>
 </addon>
 
+<addon id="script.hideosd" version="2018.05.20" name="Hide Video OSD" provider-name="aenema">
+	<requires>
+		<import addon="xbmc.python" version="2.10.0" />
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="main.py">
+		<provides>executable</provides>
+	</extension>
+	<extension point="xbmc.service" library="service.py" start="startup" />
+	<extension point="xbmc.addon.metadata">
+        <description>A Simple script to autohide video osd for inactivity. Timeout can be set in the addon settings</description>
+
+		<summary lang="en">Autohide Video OSD</summary>
+		<platform>all</platform>
+		<forum>-</forum>
+		<website>-</website>
+		<source>-</source>
+		<news>-</news>
+	</extension>
+</addon>
+
 <addon id="script.module.metalibrary" name="Meta Library" version="2018.01.03" provider-name="aenemapy">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0" />
