@@ -49,7 +49,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.premiumizer" version="2018.05.23" name="Premiumizer" provider-name="aenema">
+<addon id="plugin.video.premiumizer" version="2018.06.05" name="Premiumizer" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.beautifulsoup4" />
