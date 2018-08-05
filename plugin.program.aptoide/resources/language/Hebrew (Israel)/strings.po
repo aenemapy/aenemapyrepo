@@ -1,0 +1,266 @@
+# Addon Name: aptoide
+# Addon id: plugin.video.aptoide
+# Addon Provider: aptoide
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Gilad Freidkin, 2017
+msgid ""
+msgstr ""
+"Project-Id-Version: aptoide\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2017-05-30 09:11+0000\n"
+"Last-Translator: Viper2k4\n"
+"Language-Team: Hebrew (Israel) (http://www.transifex.com/tv-addons/aptoide/language/he_IL/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: he_IL\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#32001"
+msgid "Movies"
+msgstr "סרטים"
+
+msgctxt "#32002"
+msgid "TV Shows"
+msgstr "סדרות"
+
+msgctxt "#32003"
+msgid "My Movies"
+msgstr "הסרטים שלי"
+
+msgctxt "#32004"
+msgid "My TV Shows"
+msgstr "הסדרות שלי"
+
+msgctxt "#32005"
+msgid "New Movies"
+msgstr "סרטים חדשים"
+
+msgctxt "#32006"
+msgid "New Episodes"
+msgstr "פרקים חדשים"
+
+msgctxt "#32007"
+msgid "Channels"
+msgstr "ערוצים"
+
+msgctxt "#32008"
+msgid "Tools"
+msgstr "כלים"
+
+msgctxt "#32009"
+msgid "Downloads"
+msgstr "הורדות"
+
+msgctxt "#32010"
+msgid "Search"
+msgstr "חיפוש"
+
+msgctxt "#32011"
+msgid "Genres"
+msgstr "ז'אנרים"
+
+msgctxt "#32012"
+msgid "Year"
+msgstr "שנה"
+
+msgctxt "#32013"
+msgid "People"
+msgstr "אנשים"
+
+msgctxt "#32014"
+msgid "Languages"
+msgstr "שפות"
+
+msgctxt "#32016"
+msgid "Networks"
+msgstr "רשתות"
+
+msgctxt "#32017"
+msgid "People Watching"
+msgstr "אנשים צופים"
+
+msgctxt "#32018"
+msgid "Most Popular"
+msgstr "הכי פופולרי"
+
+msgctxt "#32021"
+msgid "Oscar Winners"
+msgstr "זוכי אוסקר"
+
+msgctxt "#32022"
+msgid "In Theaters"
+msgstr "עכשיו בקולנוע"
+
+msgctxt "#32023"
+msgid "Highly Rated"
+msgstr "מדורגים גבוה"
+
+msgctxt "#32025"
+msgid "Returning TV Shows"
+msgstr "סדרות חוזרות"
+
+msgctxt "#32026"
+msgid "New TV Shows"
+msgstr "סדרות חדשות"
+
+msgctxt "#32030"
+msgid "People (TV)"
+msgstr "אנשים (טלוויזיה)"
+
+msgctxt "#32031"
+msgid "Discover"
+msgstr "גלה"
+
+msgctxt "#32032"
+msgid "Collection"
+msgstr "קולקציה"
+
+msgctxt "#32033"
+msgid "Watchlist"
+msgstr "רשימת צפייה"
+
+msgctxt "#32036"
+msgid "History"
+msgstr "הסטוריה"
+
+msgctxt "#32056"
+msgid "Are you sure?"
+msgstr "האם אתה בטוח?"
+
+msgctxt "#32057"
+msgid "Process Complete"
+msgstr "הפעולה הושלמה"
+
+msgctxt "#32063"
+msgid "Play using..."
+msgstr "נגן באמצעות..."
+
+msgctxt "#32064"
+msgid "Auto Play"
+msgstr "ניגון אוטומטי"
+
+msgctxt "#32072"
+msgid "Refresh"
+msgstr "רענן"
+
+msgctxt "#32303"
+msgid "User"
+msgstr "משתמש"
+
+msgctxt "#32304"
+msgid "Email"
+msgstr "אימייל"
+
+msgctxt "#32307"
+msgid "Password"
+msgstr "סיסמה"
+
+msgctxt "#32310"
+msgid "General"
+msgstr "כללי"
+
+msgctxt "#32311"
+msgid "Appearance"
+msgstr "מראה"
+
+msgctxt "#32314"
+msgid "Local"
+msgstr "מקומי"
+
+msgctxt "#32319"
+msgid "Menu"
+msgstr "תפריט"
+
+msgctxt "#32323"
+msgid "Most Popular"
+msgstr "הכי פופולרי"
+
+msgctxt "#32329"
+msgid "My Lists"
+msgstr "הרשימות שלי"
+
+msgctxt "#32331"
+msgid "Default action"
+msgstr "פעולת ברירת מחדל"
+
+msgctxt "#32351"
+msgid "Downloading features are disabled by default."
+msgstr "הורדת תכונות מבוטלת לפי ברירת מחדל."
+
+msgctxt "#32353"
+msgid "Subtitles"
+msgstr "כתוביות"
+
+msgctxt "#32354"
+msgid "Enable subtitles"
+msgstr "אפשר כתוביות"
+
+msgctxt "#32356"
+msgid "Primary Language"
+msgstr "שפה ראשונה"
+
+msgctxt "#32357"
+msgid "Secondary Language"
+msgstr "שפה שנייה"
+
+msgctxt "#32359"
+msgid "In that case use your own subtitles."
+msgstr "במקרה זה השתמש בכתוביות שלך"
+
+msgctxt "#32402"
+msgid "Playback outside aptoide is not allowed"
+msgstr "ניגון מחוץ לאקסודוס אסור"
+
+msgctxt "#32403"
+msgid "Download"
+msgstr "הורד"
+
+msgctxt "#32404"
+msgid "Time elapsed: %s seconds"
+msgstr "זמן שעבר: %s שניות"
+
+msgctxt "#32405"
+msgid "%s seconds"
+msgstr "%s שניות"
+
+msgctxt "#32407"
+msgid "Are you sure?"
+msgstr "האם אתה בטוח?"
+
+msgctxt "#32408"
+msgid "Process Complete"
+msgstr "פעולה הושלמה"
+
+msgctxt "#32501"
+msgid "Start from beginning"
+msgstr "התחל מההתחלה"
+
+msgctxt "#32502"
+msgid "Resume from %s"
+msgstr "המשך מ%s"
+
+msgctxt "#32503"
+msgid "Resume"
+msgstr "המשך"
+
+msgctxt "#32511"
+msgid "An account already exists."
+msgstr "משתמש קיים."
+

@@ -1,0 +1,708 @@
+# Addon Name: aptoide
+# Addon id: plugin.video.aptoide
+# Addon Provider: aptoide
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# theloca95, 2016-2017
+# lambda81, 2016
+# lambda81, 2016
+# Nicola Zilio, 2015
+# theloca95, 2015
+# Zurdyo Zundy, 2017
+msgid ""
+msgstr ""
+"Project-Id-Version: aptoide\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2017-05-30 09:11+0000\n"
+"Last-Translator: Viper2k4\n"
+"Language-Team: Italian (http://www.transifex.com/tv-addons/aptoide/language/it/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: it\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#32001"
+msgid "Movies"
+msgstr "Film"
+
+msgctxt "#32002"
+msgid "TV Shows"
+msgstr "Serie TV"
+
+msgctxt "#32003"
+msgid "My Movies"
+msgstr "I miei Film"
+
+msgctxt "#32004"
+msgid "My TV Shows"
+msgstr "Le mie Serie TV"
+
+msgctxt "#32005"
+msgid "New Movies"
+msgstr "Nuovi Film"
+
+msgctxt "#32006"
+msgid "New Episodes"
+msgstr "Nuovi Episodi"
+
+msgctxt "#32007"
+msgid "Channels"
+msgstr "Canali"
+
+msgctxt "#32008"
+msgid "Tools"
+msgstr "Strumenti"
+
+msgctxt "#32009"
+msgid "Downloads"
+msgstr "Download"
+
+msgctxt "#32010"
+msgid "Search"
+msgstr "Cerca"
+
+msgctxt "#32011"
+msgid "Genres"
+msgstr "Generi"
+
+msgctxt "#32012"
+msgid "Year"
+msgstr "Anno"
+
+msgctxt "#32013"
+msgid "People"
+msgstr "Persone"
+
+msgctxt "#32014"
+msgid "Languages"
+msgstr "Lingue"
+
+msgctxt "#32015"
+msgid "Certificates"
+msgstr "Certificati"
+
+msgctxt "#32016"
+msgid "Networks"
+msgstr "Network"
+
+msgctxt "#32017"
+msgid "People Watching"
+msgstr "Più Guardati"
+
+msgctxt "#32018"
+msgid "Most Popular"
+msgstr "Più Popolari"
+
+msgctxt "#32019"
+msgid "Most Voted"
+msgstr "Più Votati"
+
+msgctxt "#32020"
+msgid "Box Office"
+msgstr "Botteghino"
+
+msgctxt "#32021"
+msgid "Oscar Winners"
+msgstr "Vincitori di Oscar"
+
+msgctxt "#32022"
+msgid "In Theaters"
+msgstr "Al Cinema"
+
+msgctxt "#32023"
+msgid "Highly Rated"
+msgstr "Meglio Recensiti"
+
+msgctxt "#32024"
+msgid "Airing today"
+msgstr "In Onda Oggi"
+
+msgctxt "#32025"
+msgid "Returning TV Shows"
+msgstr "Serie TV in Proseguimento"
+
+msgctxt "#32026"
+msgid "New TV Shows"
+msgstr "Nuove Serie TV"
+
+msgctxt "#32027"
+msgid "TV Calendar"
+msgstr "Calendario TV"
+
+msgctxt "#32028"
+msgid "People Search"
+msgstr "Ricerca Persone"
+
+msgctxt "#32029"
+msgid "People (Movies)"
+msgstr "Persone (Film)"
+
+msgctxt "#32030"
+msgid "People (TV)"
+msgstr "Persone (TV)"
+
+msgctxt "#32031"
+msgid "Discover"
+msgstr "Scopri"
+
+msgctxt "#32032"
+msgid "Collection"
+msgstr "Collezione"
+
+msgctxt "#32033"
+msgid "Watchlist"
+msgstr "Watchlist"
+
+msgctxt "#32034"
+msgid "IMDb"
+msgstr "IMDb"
+
+msgctxt "#32035"
+msgid "Featured"
+msgstr "In Primo Piano"
+
+msgctxt "#32036"
+msgid "History"
+msgstr "Cronologia"
+
+msgctxt "#32037"
+msgid "Progress"
+msgstr "Avanzamento"
+
+msgctxt "#32038"
+msgid "Episodes"
+msgstr "Epsiodi"
+
+msgctxt "#32039"
+msgid "Movie Lists"
+msgstr "Liste Film"
+
+msgctxt "#32040"
+msgid "TV Show Lists"
+msgstr "Liste Serie TV"
+
+msgctxt "#32041"
+msgid "Episode Lists"
+msgstr "Liste Episodi"
+
+msgctxt "#32042"
+msgid "No Trakt or IMDb account found."
+msgstr "Non è stato trovato alcun account Trakt o IMDb."
+
+msgctxt "#32043"
+msgid "[B]SETTINGS[/B] : General"
+msgstr "[B]SETTINGS[/B] : Generale"
+
+msgctxt "#32044"
+msgid "[B]SETTINGS[/B] : Accounts"
+msgstr "[B]SETTINGS[/B] : Account"
+
+msgctxt "#32045"
+msgid "[B]SETTINGS[/B] : Playback"
+msgstr "[B]SETTINGS[/B] : Riproduzione"
+
+msgctxt "#32046"
+msgid "[B]SETTINGS[/B] : Subtitles"
+msgstr "[B]SETTINGS[/B] : Sottotitoli"
+
+msgctxt "#32047"
+msgid "[B]SETTINGS[/B] : Providers"
+msgstr "[B]SETTINGS[/B] : Provider"
+
+msgctxt "#32048"
+msgid "[B]aptoide[/B] : Downloads"
+msgstr "[B]aptoide[/B] : Download"
+
+msgctxt "#32049"
+msgid "[B]aptoide[/B] : Viewtypes"
+msgstr "[B]aptoide[/B] : Viewtype"
+
+msgctxt "#32050"
+msgid "[B]aptoide[/B] : Clear providers..."
+msgstr "[B]aptoide[/B] : Rimuovi provider..."
+
+msgctxt "#32051"
+msgid "[B]aptoide[/B] : Clear metadata..."
+msgstr "[B]aptoide[/B] : Rimuovi metadata..."
+
+msgctxt "#32052"
+msgid "[B]aptoide[/B] : Clear cache..."
+msgstr "[B]aptoide[/B] : Svuota cache..."
+
+msgctxt "#32053"
+msgid "[I]Next Page[/I]"
+msgstr "[I]Pagina Successiva[/I]"
+
+msgctxt "#32054"
+msgid "Seasons"
+msgstr "Stagioni"
+
+msgctxt "#32055"
+msgid "Season"
+msgstr "Stagione"
+
+msgctxt "#32056"
+msgid "Are you sure?"
+msgstr "Sei sicuro?"
+
+msgctxt "#32057"
+msgid "Process Complete"
+msgstr "Processo Completato"
+
+msgctxt "#32058"
+msgid "This will slow down things until they are re-cached!"
+msgstr "Questo rallenterà le cose finché non saranno rimesse nella cache!"
+
+msgctxt "#32059"
+msgid "CLICK HERE TO SAVE VIEW"
+msgstr "CLICCA QUI PER SALVARE LA VISTA"
+
+msgctxt "#32060"
+msgid ""
+"January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Gennaio|Febbraio|Marzo|Aprile|Maggio|Giugno|Luglio|Agosto|Settembre|Ottobre|Novembre|Dicembre"
+
+msgctxt "#32061"
+msgid "Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday"
+msgstr "Lunedì|Martedì|Mercoledì|Giovedì|Venerdì|Sabato|Domenica"
+
+msgctxt "#32062"
+msgid "[B]%s[/B] : %s"
+msgstr "[B]%s[/B] : %s"
+
+msgctxt "#32063"
+msgid "Play using..."
+msgstr "Riproduci con..."
+
+msgctxt "#32064"
+msgid "Auto Play"
+msgstr "Riproduzione Automatica"
+
+msgctxt "#32065"
+msgid "Queue item"
+msgstr "Metti in coda"
+
+msgctxt "#32066"
+msgid "Watched in aptoide"
+msgstr "Guardato in aptoide"
+
+msgctxt "#32067"
+msgid "Unwatched in aptoide"
+msgstr "Non ancora guardato in aptoide"
+
+msgctxt "#32068"
+msgid "Watched in Trakt"
+msgstr "Guardato in Trakt"
+
+msgctxt "#32069"
+msgid "Unwatched in Trakt"
+msgstr "Non ancora guardato in Trakt"
+
+msgctxt "#32070"
+msgid "Trakt Manager"
+msgstr "Trakt Manager"
+
+msgctxt "#32071"
+msgid "Browse Series"
+msgstr "Scorri Serie"
+
+msgctxt "#32072"
+msgid "Refresh"
+msgstr "Aggiorna"
+
+msgctxt "#32073"
+msgid "[B]HELP[/B] : www.tvaddons.ag"
+msgstr "[B]HELP[/B] : www.tvaddons.ag"
+
+msgctxt "#32074"
+msgid "[B]HELP[/B]"
+msgstr "[B]HELP[/B]"
+
+msgctxt "#32301"
+msgid "Enabled"
+msgstr "Abiliato"
+
+msgctxt "#32302"
+msgid "Disabled"
+msgstr "Disabilitato"
+
+msgctxt "#32303"
+msgid "User"
+msgstr "Utente"
+
+msgctxt "#32304"
+msgid "Email"
+msgstr "Email"
+
+msgctxt "#32305"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "#32306"
+msgid "Authorization..."
+msgstr "Autorizzazione..."
+
+msgctxt "#32307"
+msgid "Password"
+msgstr "Password"
+
+msgctxt "#32308"
+msgid "PIN"
+msgstr "PIN"
+
+msgctxt "#32309"
+msgid "API"
+msgstr "API"
+
+msgctxt "#32310"
+msgid "General"
+msgstr "Generale"
+
+msgctxt "#32311"
+msgid "Appearance"
+msgstr "Aspetto"
+
+msgctxt "#32312"
+msgid "Providers Timeout"
+msgstr "Timeout Provider"
+
+msgctxt "#32313"
+msgid "Indicators"
+msgstr "Indicatori"
+
+msgctxt "#32314"
+msgid "Local"
+msgstr "Locale"
+
+msgctxt "#32315"
+msgid "Trakt"
+msgstr "Trakt"
+
+msgctxt "#32316"
+msgid "Info Language"
+msgstr "Info Lingua"
+
+msgctxt "#32317"
+msgid "Flatten TV seasons"
+msgstr "Raggruppa Stagioni TV"
+
+msgctxt "#32318"
+msgid "Enable Fanart"
+msgstr "Abilita Fanart"
+
+msgctxt "#32319"
+msgid "Menu"
+msgstr "Menu"
+
+msgctxt "#32320"
+msgid "New Movies"
+msgstr "Nuovi Film"
+
+msgctxt "#32321"
+msgid "Featured"
+msgstr "In Primo Piano"
+
+msgctxt "#32322"
+msgid "People Watching"
+msgstr "Più Guardati"
+
+msgctxt "#32323"
+msgid "Most Popular"
+msgstr "Più Popolari"
+
+msgctxt "#32324"
+msgid "In Theaters"
+msgstr "Al Cinema"
+
+msgctxt "#32325"
+msgid "New Episodes"
+msgstr "Nuovi Episodi"
+
+msgctxt "#32326"
+msgid "Episodes"
+msgstr "Episodi"
+
+msgctxt "#32327"
+msgid "Trakt Progress"
+msgstr "Progresso Trakt"
+
+msgctxt "#32328"
+msgid "Trakt Episodes"
+msgstr "Episodi Trakt"
+
+msgctxt "#32329"
+msgid "My Lists"
+msgstr "Mie Liste"
+
+msgctxt "#32330"
+msgid "Playback"
+msgstr "Riproduzione"
+
+msgctxt "#32331"
+msgid "Default action"
+msgstr "Azione predefinita"
+
+msgctxt "#32332"
+msgid "Dialog"
+msgstr "Dialogo"
+
+msgctxt "#32333"
+msgid "Directory"
+msgstr "Cartella"
+
+msgctxt "#32334"
+msgid "Auto Play"
+msgstr "Riproduzione Automatica"
+
+msgctxt "#32335"
+msgid "Progress Dialog"
+msgstr "Avanzamento Dialogo"
+
+msgctxt "#32336"
+msgid "Foreground"
+msgstr "In primo piano"
+
+msgctxt "#32337"
+msgid "Background"
+msgstr "Sfondo"
+
+msgctxt "#32338"
+msgid "File Hosting Filters"
+msgstr "Filtri per l'Hosting dei File"
+
+msgctxt "#32339"
+msgid "Max Quality"
+msgstr "Qualità Massima"
+
+msgctxt "#32340"
+msgid "SD Hosters in Auto Play"
+msgstr "Host SD in Riproduzione Automatica"
+
+msgctxt "#32341"
+msgid "Hosters with captchas"
+msgstr "Host con captcha"
+
+msgctxt "#32342"
+msgid "Sort by Provider"
+msgstr "Ordina per Provider"
+
+msgctxt "#32343"
+msgid "When playback starts..."
+msgstr "Quando inizia la riproduzione..."
+
+msgctxt "#32344"
+msgid "Resume Playback"
+msgstr "Riprendi Riproduzione"
+
+msgctxt "#32345"
+msgid "Providers"
+msgstr "Provider"
+
+msgctxt "#32346"
+msgid "Accounts"
+msgstr "Account"
+
+msgctxt "#32347"
+msgid "Downloads"
+msgstr "Download"
+
+msgctxt "#32348"
+msgid "Enable downloads"
+msgstr "Abilita download"
+
+msgctxt "#32349"
+msgid "Movies"
+msgstr "Film"
+
+msgctxt "#32350"
+msgid "TV"
+msgstr "TV"
+
+msgctxt "#32351"
+msgid "Downloading features are disabled by default."
+msgstr "Le funzoni di download sono disabilitate di default."
+
+msgctxt "#32352"
+msgid "Set up your download folders in order to enable them."
+msgstr "Imposta le tue cartelle di download per abilitarli."
+
+msgctxt "#32353"
+msgid "Subtitles"
+msgstr "Sottotitoli"
+
+msgctxt "#32354"
+msgid "Enable subtitles"
+msgstr "Abilita sottotitoli"
+
+msgctxt "#32355"
+msgid "Convert subtitles to UTF-8"
+msgstr "Converti i sottotitoli in UTF-8"
+
+msgctxt "#32356"
+msgid "Primary Language"
+msgstr "Lingua Principale"
+
+msgctxt "#32357"
+msgid "Secondary Language"
+msgstr "Lingua Secondaria"
+
+msgctxt "#32358"
+msgid "Subtitles could be unavailable or out of sync."
+msgstr "I sottotitoli potrebbero non essere disponibili o fuori sync."
+
+msgctxt "#32359"
+msgid "In that case use your own subtitles."
+msgstr "In tale caso usate i vostri sottotitoli."
+
+msgctxt "#32360"
+msgid "Providers Language"
+msgstr "Lingua dei Provider"
+
+msgctxt "#32401"
+msgid "No stream available"
+msgstr "Nessuno stream disponibile"
+
+msgctxt "#32402"
+msgid "Playback outside aptoide is not allowed"
+msgstr "La riproduzione al di fuori di aptoide non è consentita"
+
+msgctxt "#32403"
+msgid "Download"
+msgstr "Scarica"
+
+msgctxt "#32404"
+msgid "Time elapsed: %s seconds"
+msgstr "Tempo trascorso: %s secondi"
+
+msgctxt "#32405"
+msgid "%s seconds"
+msgstr "%s secondi"
+
+msgctxt "#32406"
+msgid "Remaining providers: %s"
+msgstr "Provider rimanenti: %s"
+
+msgctxt "#32407"
+msgid "Are you sure?"
+msgstr "Sei sicuro?"
+
+msgctxt "#32408"
+msgid "Process Complete"
+msgstr "Processo Completato"
+
+msgctxt "#32501"
+msgid "Start from beginning"
+msgstr "Parti dall'inizio"
+
+msgctxt "#32502"
+msgid "Resume from %s"
+msgstr "Riprendi da %s"
+
+msgctxt "#32503"
+msgid "Resume"
+msgstr "Ripredi"
+
+msgctxt "#32511"
+msgid "An account already exists."
+msgstr "Un account è già esistente."
+
+msgctxt "#32512"
+msgid "Do you want to reset?"
+msgstr "Vuoi eseguire il reset?"
+
+msgctxt "#32513"
+msgid "1) Visit : [COLOR skyblue]%s[/COLOR]"
+msgstr "1) Visita : [COLOR skyblue]%s[/COLOR]"
+
+msgctxt "#32514"
+msgid "2) When prompted enter : [COLOR skyblue]%s[/COLOR]"
+msgstr "2) Quando richiesto, inserisci : [COLOR skyblue]%s[/COLOR]"
+
+msgctxt "#32515"
+msgid "Trakt Manager"
+msgstr "Manager Trakt"
+
+msgctxt "#32516"
+msgid "Add to [B]Collection[/B]"
+msgstr "Aggiungi a [B]Collezione[/B]"
+
+msgctxt "#32517"
+msgid "Remove from [B]Collection[/B]"
+msgstr "Rimuovi da [B]Collezione[/B]"
+
+msgctxt "#32518"
+msgid "Add to [B]Watchlist[/B]"
+msgstr "Aggiungi a [B]Watchlist[/B]"
+
+msgctxt "#32519"
+msgid "Remove from [B]Watchlist[/B]"
+msgstr "Rimuovi da [B]Watchlist[/B]"
+
+msgctxt "#32520"
+msgid "Add to [B]new List[/B]"
+msgstr "Aggiungi a [B]nuova Lista[/B]"
+
+msgctxt "#32521"
+msgid "Add to [B]%s[/B]"
+msgstr "Aggiungi a [B]%s[/B]"
+
+msgctxt "#32522"
+msgid "Remove from [B]%s[/B]"
+msgstr "Rimuovi da [B]%s[/B]"
+
+msgctxt "#32531"
+msgid "An account already exists."
+msgstr "Un account è già esistente."
+
+msgctxt "#32532"
+msgid "Do you want to reset?"
+msgstr "Vuoi eseguire il reset?"
+
+msgctxt "#32533"
+msgid "1) Visit : [COLOR skyblue]%s[/COLOR]"
+msgstr "1) Visita : [COLOR skyblue]%s[/COLOR]"
+
+msgctxt "#32534"
+msgid "2) When prompted enter : [COLOR skyblue]%s[/COLOR]"
+msgstr "2) Quando richiesto, inserisci : [COLOR skyblue]%s[/COLOR]"
+
+msgctxt "#32535"
+msgid "Play Random"
+msgstr "Riproduci in Ordine Casuale"
+
+msgctxt "#32536"
+msgid "Playing"
+msgstr "In Riproduzione"
+
+msgctxt "#32537"
+msgid "Nothing found to play"
+msgstr "Non è stato trovato nulla da riprodurre"
+
+msgctxt "#32538"
+msgid "DEBRID-SERVICE"
+msgstr "SERVIZIO-DEBRID"
+
+msgctxt "#32539"
+msgid "Configure Debrid Services in URLResolver Settings."
+msgstr "Configura Servizi Debrid nelle impostazioni URLResolver"
+
+msgctxt "#32540"
+msgid "URLResolver Settings"
+msgstr "Impostazioni URLResolver"
+

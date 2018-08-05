@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<category label="GENERALS">
+		<setting id="hide.enable" type="bool" label="Enable Auto Hide OSD" default="true" />	
+		<setting id="hide.timeout" type="slider" label="Timeout in seconds for autohide" default="5" range="1,20" option="int" />
+	</category>
+
+
+</settings>

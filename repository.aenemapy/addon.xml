@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="repository.aenemapy" name="Aenemapy Addons Repository" version="2018.01.04.2" provider-name="aenemapy">
+    <extension point="xbmc.addon.repository" name="Aenemapy Addons Repository">
+		<info compressed="false">https://raw.githubusercontent.com/aenemapy/aenemapyrepo/master/addons.xml</info>
+		<checksum>https://raw.githubusercontent.com/aenemapy/aenemapyrepo/master/addons.xml.md5</checksum>
+		<datadir zip="true">https://raw.githubusercontent.com/aenemapy/aenemapyrepo/master/zips/</datadir>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary>Aenemapy repo</summary>
+        <description>This is just a repo...</description>
+        <platform>all</platform>
+    </extension>
+</addon>
+

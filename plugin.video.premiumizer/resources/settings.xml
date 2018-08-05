@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<category label="32310">
+		<setting type="lsep" label="Premiumize Settings" />
+		<setting id="premiumize.customer_id" type="text" visible="true" label="Premiumize Customer ID" default="" />
+		<setting id="premiumize.pin" type="text" visible="true" label="Premiumize PIN" default="" />
+		<setting id="premiumize.tls" type="bool" label="Use HTTPS protocol" default="true" />
+		<setting id="cachecloud.startup" type="bool" label="Cache Cloud content at Startup" default="false" />
+		<setting id="cachecloud.remember" type="bool" label="Auto Select Cached Until Next Start" default="false"/>
+		
+		<setting type="lsep" label="Playback Settings" />			
+		<setting id="transcoded.play" type="bool" label="Play Transcoded Files if avaialable" default="false" />
+
+		<setting type="lsep" label="Post-Playback Settings" />			
+		<setting id="cloud.askdelete" type="bool" label="Delete Watched File" default="false" />
+		<setting id="cloud.autodelete" type="bool" label="Autodelete Watched File" default="false" visible="!eq(-1,false)"/>
+		<setting type="lsep" label="Meta Settings (experimental - slower)" />		
+		<setting id="movies.meta" type="bool" label="Use Movies Metadata in Cloud Folder" default="false" />		
+		<setting id="tvshows.meta" type="bool" label="Use Tvshows Metadata in Cloud Folder" default="false" />		
+
+		
+		<setting type="lsep" label="General Settings" />		
+		<setting id="api.language" type="select" label="32316" values="AUTO|Bulgarian|Chinese|Croatian|Czech|Danish|Dutch|English|Finnish|French|German|Greek|Hebrew|Hungarian|Italian|Japanese|Korean|Norwegian|Polish|Portuguese|Romanian|Russian|Serbian|Slovak|Slovenian|Spanish|Swedish|Thai|Turkish|Ukrainian" default="English" />
+		<setting id="fanart" type="bool" label="32318" default="true" />
+		<setting id="bookmarks" type="bool" label="32344" default="true" />
+		<setting id="indicators.alt" type="enum" label="32313" lvalues="32314|32315" default="0" />
+		<setting id="inprogress_db" type="bool" label="Enable In Progress Database" default="true" />		
+
+		<setting id="setting.timezone" type="labelenum" visible="!eq(-1,false)" label="TimeZone UTC" default="+0" values="+0|+1|+2|+3|+4|+5|+6|+7|+8|+9|+10|+11|+12|-1|-2|-3|-4|-5|-6|-7|-8|-9|-10|-11|-12" />
+		<setting type="lsep" label="Developer Settings" />
+		<setting id="premiumizer.debug" type="bool" label="Enable Debug Log" default="false" />
+
+	</category>
+	<category label="32346">
+		<setting id="remotedb.list" type="bool" label="Remote SQL Database" visible='false' default="false" />
+		<setting id="remotedb.url" type="text" label="Url" default="" visible="false"  />	
+		<setting type="lsep" label="Trakt" />
+		<setting id="trakt.authorization" type="action" label="32306" option="close" action="RunPlugin(plugin://plugin.video.premiumizer/?action=authTrakt)" />
+		<setting id="trakt.user" type="text" default="" label="User" visible="true" />		
+		<setting id="trakt.scrobbleTV" type="bool" label="Scrobble Episodes" default="true" />
+		<setting id="trakt.scrobbleMovies" type="bool" label="Scrobble Movies" default="true" />
+		<setting id="trakt.token" type="text" option="hidden" visible="false" label="" default="" />
+		<setting id="trakt.refresh" type="text" option="hidden" visible="false" label="" default="" />
+		<setting type="sep" />
+		<setting type="lsep" label="IMDb" />
+		<setting id="imdb.user" type="text" label="32303" default="" />		
+		<setting type="sep" />
+		<setting type="lsep" label="TVDB" />
+		<setting id="tvdb.AuthorizeApi" type="action" label="Refresh Token" enable="true" option="close" action="RunPlugin(plugin://plugin.video.premiumizer/?action=AuthorizeTvdb)" />
+		<setting id="tvdb.api" type="text" visible="true" label="API" default="DC475D7361F78DCD" />
+		<setting id="tvdb.token" type="text" option="hidden" visible="false" label="" default="" />
+		<setting id="tvdb.refresh" type="text" option="hidden" visible="false" label="" default="0" />
+		<setting type="sep" />
+		<setting type="lsep" label="TMDb" />
+		<setting id="tmdb.api" type="text" label="API" default="" />
+				
+		<setting type="sep" />
+		<setting type="lsep" label="FANART.TV" />
+		<setting id="fanart.tv.user" type="text" visible="true" label="User Api KEY" default="" />
+		<setting id="fanart.tv.project" type="text" visible="true" label="Project Api KEY" default="" />
+	</category>
+
+	<category id="general" label="Library">
+		<setting id="library.path" type="folder" label="Cloud Sync Library Path" default="special://userdata/addon_data/plugin.video.premiumizer/Library" />	
+	
+			
+		<setting id="library.update" type="bool" label="Sync Library at Startup" default="false" />	
+		<setting id="library.deleteold" type="bool" label="Delete Old Content and Folders before Updating" default="false" />	
+		<setting id="library.refresh" type="text" label="" default="0" visible="false" />	
+	</category>	
+
+	
+	<category id="general" label="Scraper Settings">
+		<setting id="scraper.matchtitle" type="bool" label="Show Only Matching Titles while Scraping" default="true" />
+		<setting id="scraper.filesonly" type="bool" label="Show Only Files Results" default="true" />
+		<setting id="scraper.autoplay" type="bool" label="AutoPlay if Single Matched Item" default="false" />
+	</category>	
+	
+ 	<category label="32347">
+		<setting id="downloads" type="bool" label="32348" default="false" />
+		<setting id="download.path" type="folder" label="Path" enable="!eq(-1,false)" default="" />
+
+	</category>
+
+	
+	<category id="general" label="Backup/Restore">
+		<setting id="remote_path" type="folder" label="Backup Location" visible="True" />
+		<setting id="remote_restore_path" type="file" label="Restore from Zip File" visible="true" />
+	</category>	
+
+</settings>

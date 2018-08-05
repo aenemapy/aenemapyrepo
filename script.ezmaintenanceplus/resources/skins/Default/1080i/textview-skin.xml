@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window type="window" id="1100">
+    <defaultcontrol always="false">2</defaultcontrol>
+    <zorder>2</zorder>
+    <menucontrol>9000</menucontrol>
+    
+    <animation effect="fade" start="0,0" time="100">WindowOpen</animation>
+    <coordinates>
+        <left>0</left>
+        <top>0</top>
+    </coordinates>
+    <controls>
+        <control type="image" id="20100">
+            <description>background image control</description>
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <visible>true</visible>
+            <fadetime>200</fadetime>
+			<texture>bg-fade.png</texture>
+            <aspectratio>keep</aspectratio>
+        </control>
+
+        <control type="image" id="20101">
+            <description>Branding Logo</description>
+            <left>20</left>
+            <top>5</top>
+            <width>350</width>
+            <height>90</height>
+            <visible>true</visible>
+            <align>left</align>
+            <aligny>top</aligny>
+            <texture>logo.png</texture>
+            <aspectratio>keep</aspectratio>
+        </control>
+
+        <control type="textbox" id="20301">
+            <description>title box control</description>
+            <left>680</left>
+            <top>25</top>
+            <width>500</width>
+            <height>50</height>
+            <visible>true</visible>
+            <font>font20</font>
+            <align>center</align>
+            <aligny>top</aligny>
+            <!--<textcolor>ffE7AD00</textcolor>-->
+            <textcolor>ff00c0ff</textcolor>
+        </control>
+
+        <control type="textbox" id="20302">
+            <description>contents box control</description>
+            <left>60</left>
+            <top>90</top>
+            <width>1750</width>
+            <height>890</height>
+            <visible>true</visible>
+            <font>font10</font>
+            <align>left</align>
+            <aligny>top</aligny>
+            <onup>20291</onup>
+            <ondown>20290</ondown>
+            <onleft>20293</onleft>
+            <onright>20212</onright>
+            <textcolor>FFD7F6DC</textcolor>
+            <!--<shadowcolor>ff000000</shadowcolor>-->
+            <pagecontrol>20212</pagecontrol>
+        </control>
+
+        <control type="scrollbar" id="20212">
+            <description>scroll bar vertical control</description>
+            <left>1870</left>
+            <top>90</top>
+            <width>30</width>
+            <height>890</height>
+            <subtype>text</subtype>
+            <visible>true</visible>
+            <texturesliderbackground>scrollbar-V-background.png</texturesliderbackground>
+            <texturesliderbar>scrollbar-V.png</texturesliderbar>
+            <texturesliderbarfocus colordiffuse="FFFF0000">scrollbar-V-focus.png</texturesliderbarfocus>
+            <orientation>vertical</orientation>
+            <showonepage>true</showonepage>
+            <!--<onclick>pageup</onclick>-->
+            <!--<onclick>pagedown</onclick>-->
+            <onup>20291</onup>
+            <ondown>20215</ondown>
+            <onleft>20215</onleft>
+            <onright>20215</onright>
+        </control>
+
+        <control type="group" id="20215">
+            <description>page scroll button group control</description>
+            <defaultcontrol>20302</defaultcontrol>
+            <left>75r</left>
+            <top>1030</top>
+            <width>auto</width>
+            <height>50</height>
+            <visible>true</visible>
+            <onup>20212</onup>
+            <ondown>20291</ondown>
+            <onleft>20290</onleft>
+            <onright>20293</onright>
+
+            <control type="label" id="20201">
+                <description>list position</description>
+                <posx>60r</posx>
+                <posy>0</posy>
+                <width>500</width>
+                <height>30</height>
+                <!--<label>-</label>-->
+                <font>font10</font>
+                <align>right</align>
+                <textcolor>ffffffff</textcolor>
+            </control>
+
+            <control type="button" id="20216">
+                <description>Page Down button control</description>
+                <left>50r</left>
+                <width>50</width>
+                <height>30</height>
+                <colordiffuse>FFFFFFFF</colordiffuse>
+                <texturefocus colordiffuse="FFFFAAFF">page-down-focus.png</texturefocus>
+                <texturenofocus colordiffuse="FFFFAAFF">page-down.png</texturenofocus>
+                <onleft>20290</onleft>
+                <onright>20217</onright>
+                <onup>20212</onup>
+                <ondown>20291</ondown>
+                <onclick>PageDown(20212)</onclick>
+            </control>
+
+            <control type="button" id="20217">
+                <description>Page Up button control</description>
+                <left>0r</left>
+                <width>50</width>
+                <height>30</height>
+                <colordiffuse>FFFFFFFF</colordiffuse>
+                <texturefocus colordiffuse="FFFFAAFF">page-up-focus.png</texturefocus>
+                <texturenofocus colordiffuse="FFFFAAFF">page-up.png</texturenofocus>
+                <onleft>20216</onleft>
+                <onright>20293</onright>
+                <onup>20212</onup>
+                <ondown>20291</ondown>
+                <onclick>PageUp(20212)</onclick>
+            </control>
+
+        </control>
+        <control type="button" id="20291">
+            <description>exit button control</description>
+            <left>95r</left>
+            <top>5</top>
+            <width>90</width>
+            <height>45</height>
+            <visible>true</visible>
+            <!--<colordiffuse>FFFFFFFF</colordiffuse>-->
+            <texturefocus>close-fo.png</texturefocus>
+            <texturenofocus>close-nofo.png</texturenofocus>
+            <!--<pulseonselect>"true"</pulseonselect>-->
+            <onclick>close</onclick>
+            <onup>20215</onup>
+            <ondown>20212</ondown>
+            <onleft>20293</onleft>
+            <onright>20215</onright>
+            <aspectratio>keep</aspectratio>
+        </control>
+
+
+        <control type="button" id="20293">
+            <description>reload contents button control</description>
+            <left>20</left>
+            <top>1010</top>
+            <width>60</width>
+            <height>55</height>
+            <visible>true</visible>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <texturefocus>reload.png</texturefocus>
+            <texturenofocus colordiffuse="FFFFAAFF">reload.png</texturenofocus>
+            <onleft>20217</onleft>
+            <onright>20290</onright>
+            <onup>20291</onup>
+            <ondown>20291</ondown>
+        </control>
+
+    </controls>
+</window>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<category label="Maintenance">
+		<setting id="notify_mode" type="bool" label="Show Stats at Startup" default="false" />
+		<setting id="startup.cache" type="bool" label="AutoClean at Startup" default="true" />
+		<setting type="lsep" label="Package Folder Limits" />
+		<setting id="filesize_alert" type="slider" label="Max Total Files Size (MB)" default="200" range="25,500" option="int" />
+		<setting id="packagenumbers_alert" type="slider" label="Max Number of Zip Files" default="50" range="5,200" option="int" />
+		<setting type="lsep" label="Thumbnails Folder Limits" />
+		<setting id="filesizethumb_alert" type="slider" label="Max Total Files Size (MB)" default="500" range="50,2000" option="int" />
+	</category>
+	
+	<category label="Wizard Creator">
+		<setting id="enable_wiz1" type="bool" label="Enable wizard" default="false"/>
+		<setting id="name1" type="text" label="Name" default="name" enable="!eq(-1,false)"/>
+		<setting id="url1" type="text" label="Zip Url" default="zip url" enable="!eq(-2,false)"/>
+		<setting id="img1" type="text" label="Image" default="special://home/addons/script.ezmaintenanceplus/fanart.jpg" enable="!eq(-3,false)"/>
+ 
+		<setting id="enable_wiz2" type="bool" label="Enable wizard" default="false"/>
+		<setting id="name2" type="text" label="Name" default="name" enable="!eq(-1,false)"/>
+		<setting id="url2" type="text" label="Zip Url" default="https://" enable="!eq(-2,false)"/>
+		<setting id="img2" type="text" label="Image" default="special://home/addons/script.ezmaintenanceplus/fanart.jpg" enable="!eq(-3,false)"/>
+
+		<setting id="enable_wiz3" type="bool" label="Enable wizard" default="false"/>
+		<setting id="name3" type="text" label="Name" default="name" enable="!eq(-1,false)"/>
+		<setting id="url3" type="text" label="Zip Url" default="https://" enable="!eq(-2,false)"/>
+		<setting id="img3" type="text" label="Image" default="special://home/addons/script.ezmaintenanceplus/fanart.jpg" enable="!eq(-3,false)"/>
+ 
+		<setting id="enable_wiz4" type="bool" label="Enable wizard" default="false"/>
+		<setting id="name4" type="text" label="Name" default="name" enable="!eq(-1,false)"/>
+		<setting id="url4" type="text" label="Zip Url" default="https://" enable="!eq(-2,false)"/>
+		<setting id="img4" type="text" label="Image" default="special://home/addons/script.ezmaintenanceplus/fanart.jpg" enable="!eq(-3,false)"/>
+ 
+		<setting id="enable_wiz5" type="bool" label="Enable wizard" default="false"/>
+		<setting id="name5" type="text" label="Name" default="" enable="!eq(-1,false)"/>
+		<setting id="url5" type="text" label="Zip Url" default="http://" enable="!eq(-2,false)"/>
+		<setting id="img5" type="text" label="Image" default="special://home/addons/script.ezmaintenanceplus/fanart.jpg" enable="!eq(-3,false)"/>
+    </category>     	
+	<category label="Backup/Resore">
+		<setting id="download.path" type="folder" label="Backup Location" visible="True" />
+		<setting id="restore.path" type="folder" label="Restore from Zip Location (folder)" visible="True" />
+    </category>  
+</settings>

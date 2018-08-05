@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<setting id="download.path" type="folder" label="Download Location" visible="True" />
+</settings>

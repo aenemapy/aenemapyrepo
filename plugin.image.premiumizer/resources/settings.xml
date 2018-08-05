@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<category label="32310">
+		<setting type="lsep" label="Premiumize Settings" />
+		<setting id="premiumize.customer_id" type="text" visible="true" label="Premiumize Customer ID" default="" />
+		<setting id="premiumize.pin" type="text" visible="true" label="Premiumize PIN" default="" />
+		<setting id="premiumize.tls" type="bool" label="Use HTTPS protocol" default="true" />
+		<setting type="lsep" label="Developer Settings" />
+		<setting id="premiumizer.debug" type="bool" label="Enable Debug Log" default="false" />
+
+	</category>
+ 	<category label="32347">
+		<setting id="downloads" type="bool" label="32348" default="false" />
+		<setting id="download.path" type="folder" label="Path" enable="!eq(-1,false)" default="" />
+
+	</category>
+
+	
+	<category id="general" label="Backup/Restore">
+		<setting id="remote_path" type="folder" label="Backup Location" visible="True" />
+		<setting id="remote_restore_path" type="file" label="Restore from Zip File" visible="true" />
+	</category>	
+
+</settings>
