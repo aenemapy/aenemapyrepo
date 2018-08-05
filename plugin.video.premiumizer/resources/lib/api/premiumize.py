@@ -584,10 +584,8 @@ def getFolder(id, meta=None, list=False):
 
 				isFolder = False
 				isPlayable = 'true'
-				if artMeta == True:  
-					playLink = urllib.quote(playLink)					
-					url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, playLink, systitle , year, imdb, sysmeta, id)
-				else: url = playLink
+				playLink = urllib.quote(playLink)					
+				url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, playLink, systitle , year, imdb, sysmeta, id)
 				
 				if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s)' % (sysaddon, name, url)))
 						
