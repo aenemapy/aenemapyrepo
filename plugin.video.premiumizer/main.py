@@ -523,8 +523,15 @@ elif action == 'clearSources':
     sources().clearSources()
 	
 elif action == 'clearMeta':
-    from resources.lib.sources import sources
-    sources().clearMeta()
+    import os
+    from resources.lib.modules import control
+    control.idle()
+    try: os.remove(control.cacheFile)
+    except:pass
+    try: os.remove(control.metacacheFile)
+    except:pass
+			
+    control.infoDialog('Meta Cache Deleted', sound=True, icon='INFO')
 
 elif action == 'backupSettings':
 	from resources.lib.modules import updater

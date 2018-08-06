@@ -210,8 +210,8 @@ class navigator:
         self.addDirectoryItem(32048, 'openSettings&query=2.0', 'settings.png', 'DefaultAddonProgram.png')
         self.addDirectoryItem(40005, 'openSettings&query=3.0', 'settings.png', 'DefaultAddonProgram.png')
 
-        self.addDirectoryItem(32052, 'clearCache', 'settings.png', 'DefaultAddonProgram.png')
-        self.addDirectoryItem(40008, 'clearMeta', 'settings.png', 'DefaultAddonProgram.png')
+        #self.addDirectoryItem(32052, 'clearCache', 'settings.png', 'DefaultAddonProgram.png')
+        self.addDirectoryItem('[B]SETTINGS:[/B] Clear Cache/Meta', 'clearMeta', 'settings.png', 'DefaultAddonProgram.png')
 
         self.addDirectoryItem(40006, 'backupSettings', 'settings.png', 'DefaultAddonProgram.png')
         self.addDirectoryItem(40007, 'restoreSettings', 'settings.png', 'DefaultAddonProgram.png')		
