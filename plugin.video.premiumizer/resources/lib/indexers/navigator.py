@@ -61,8 +61,9 @@ class navigator:
         self.addDirectoryItem(40000, 'moviesInProgress', 'movies.png', 'DefaultRecentlyAddedMovies.png')
         self.addDirectoryItem(32017, 'movies&url=trending', 'movies.png', 'DefaultRecentlyAddedMovies.png')
     	self.addDirectoryItem(32005, 'movies&url=featured', 'movies.png', 'DefaultRecentlyAddedMovies.png')
+        self.addDirectoryItem('New HD Releases', 'movies&url=newreleases', 'movies.png', 'DefaultRecentlyAddedMovies.png')
         self.addDirectoryItem(32018, 'movies&url=popular', 'movies.png', 'DefaultMovies.png')
-        self.addDirectoryItem(40001, 'movies&url=tmdbdvd', 'movies.png', 'DefaultRecentlyAddedMovies.png')
+
         self.addDirectoryItem(32019, 'movies&url=views', 'movies.png', 'DefaultMovies.png')
 
         self.addDirectoryItem(32020, 'movies&url=boxoffice', 'movies.png', 'DefaultMovies.png')

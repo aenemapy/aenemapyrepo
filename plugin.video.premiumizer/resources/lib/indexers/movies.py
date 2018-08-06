@@ -96,7 +96,7 @@ class movies:
         self.oscars_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&production_status=released&groups=oscar_best_picture_winners&sort=year,desc&count=40&start=1'
         self.theaters_link = 'http://www.imdb.com/search/title?title_type=feature&num_votes=1000,&release_date=%s,%s&sort=release_date_us,desc&count=40&start=1' % (self.lastYear, self.Today)
         self.trending_link = 'http://api.trakt.tv/movies/trending?limit=40&page=1'
-
+        self.newreleases_link         = 'https://www.imdb.com/search/title?online_availability=US/today/Amazon/paid,US/today/Amazon/subs,US/today/Amazon/subs,UK/today/Amazon/paid,UK/today/Amazon/subs,UK/today/Amazon/subs&title_type=feature,movie,tv_movie&languages=en&num_votes=1000,&production_status=released&release_date=%s,%s&count=50&sort=moviemeter,asc&start=1'	% (self.lastYear, self.lastMonth)		
         self.disney_link = 'http://www.imdb.com/search/title?companies=disney&title_type=feature,tv_movie&start=1'
         self.top250_link = 'http://www.imdb.com/search/title?groups=top_250&title_type=feature,tv_movie'
 				
