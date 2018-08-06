@@ -223,47 +223,62 @@ class seasons:
 
             cast = '0'
 			
-			
             try: plot = api['overview']
             except: plot = '0'
             if plot == '': plot = '0'
             plot = client.replaceHTMLCodes(plot)
             plot = plot.encode('utf-8')
-
-				
-            tvdbApi = self.tvdb2_episodes % tvdb		
-            result2 = tvdbapi.getTvdb(tvdbApi)
-            tvdb_req = json.loads(result2)
-            tvdb_data = tvdb_req['data']
-				
 		
             episodes = []
-
-            lastPage = tvdb_req['links']['last']
-			
+		
             if limit == '':
-				for i in range(1, int(lastPage)+1):
-					if i != 1: 
-						nextPage = "?page=%s" % i
-						netxPage = tvdbApi + nextPage
-						json_tvdb = tvdbapi.getTvdb(netxPage)
-						tvdb_req  = json.loads(json_tvdb)
-						tvdb_data += tvdb_req['data']
+				tvdb_Api = self.tvdb2_episodes % tvdb		
+				result2 = tvdbapi.getTvdb(tvdb_Api)
+				tvdb_req = json.loads(result2)
+				tvdb_data = tvdb_req['data']
+			
+				lastPage = tvdb_req['links']['last']
+				if int(lastPage) > 1:
+					for i in range(1, int(lastPage)+1):
+						if i != 1: 
+							nextPage = "?page=%s" % i
+							nextPage = tvdb_Api + nextPage
+							json_tvdb = tvdbapi.getTvdb(nextPage)
+							tvdb_req  = json.loads(json_tvdb)
+							tvdb_data += tvdb_req['data']
 							
 				seasons = [i for i in tvdb_data if str(i['airedEpisodeNumber']) == '1' and not str(i['airedSeason']) == '0']
 				seasons = sorted(seasons, key = lambda x : x['airedSeason'])
 			
-            # episodes = [i for i in tvdbApi]			
-            # episodes = sorted(episodes, key = lambda x : x['airedSeason'])
+
             threadSeason = []		
 
             if limit == '':  episodes = []
             else:
-                episodes = "https://api.thetvdb.com/series/%s/episodes/query?airedSeason=%s" % (tvdb, str(limit))
-                episodes = tvdbapi.getTvdb(episodes)
-                episodes = json.loads(episodes)
-                episodes = episodes['data']				
+                tvdb_Api = "https://api.thetvdb.com/series/%s/episodes/query?airedSeason=%s" % (tvdb, str(limit))
+                json_tvdb = tvdbapi.getTvdb(tvdb_Api)
+                tvdb_req = json.loads(json_tvdb)
+                lastPage = tvdb_req['links']['last']
+                tvdb_data = tvdb_req['data']
+
+                if int(lastPage) > 1:
+					for i in range(1, int(lastPage)+1):
+						if i != 1: 
+							nextPage = "?page=%s" % i
+							nextPage = tvdb_Api + nextPage
+							json_tvdb = tvdbapi.getTvdb(nextPage)
+							tvdb_req  = json.loads(json_tvdb)
+							tvdb_data += tvdb_req['data']	
+							
+                episodes = sorted(tvdb_data, key = lambda x : int(x['airedEpisodeNumber']))	
                 seasons = []
+				
+				
+
+				
+				
+				
+				
         except:
             pass
 	
