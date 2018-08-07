@@ -69,7 +69,10 @@ class player(xbmc.Player):
 
             self.metaID = [self.imdb, self.tvdb]
             self.metaID = [i for i in self.metaID if not str(i) == '0']
-
+            if self.content == 'movie': self.ids = {'imdb': self.imdb}
+            else: self.ids = {'imdb': self.imdb, 'tvdb': self.imdb }
+            self.ids = dict((k,v) for k, v in self.ids.iteritems() if not v == '0')
+			
             poster, thumb, fanart, meta = self.getMeta(meta)
 
             item = control.item(path=url)
@@ -80,10 +83,14 @@ class player(xbmc.Player):
 
             if 'plugin' in control.infoLabel('Container.PluginName'):
 				control.player.play(url, item)
+            
+            else: control.resolve(int(sys.argv[1]), True, item)
 
-            control.resolve(int(sys.argv[1]), True, item)
-
+            control.window.setProperty('script.trakt.ids', json.dumps(self.ids))
+			
             self.keepPlaybackAlive()
+			
+            control.window.clearProperty('script.trakt.ids')
 
         except:
             return

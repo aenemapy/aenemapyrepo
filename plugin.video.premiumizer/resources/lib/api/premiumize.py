@@ -115,14 +115,8 @@ def renameItem(title, id, type):
 	r = reqJson(url, data=data)
 	control.refresh()
 	
-	
-
-	
-
-		
 def libPlayer(title, url, xbmc_id, content):
 	from resources.lib.modules import library_player
-	url = urllib.urlencode(url)
 	library_player.player().run(title, url, xbmc_id, content)
 		
 		
@@ -580,11 +574,13 @@ def getFolder(id, meta=None, list=False):
 					size = getSize(size)
 				except: size = ''
 				if size != '': fileLabel = fileLabel + " | " + str(size)
-				
 
 				isFolder = False
 				isPlayable = 'true'
-				playLink = urllib.quote(playLink)					
+				
+				try: playLink = urllib.quote_plus(playLink)
+				except: pass					
+				
 				url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, playLink, systitle , year, imdb, sysmeta, id)
 				
 				if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s)' % (sysaddon, name, url)))
