@@ -84,7 +84,7 @@ class player(xbmc.Player):
             if 'plugin' in control.infoLabel('Container.PluginName'):
 				control.player.play(url, item)
             
-            else: control.resolve(int(sys.argv[1]), True, item)
+            control.resolve(int(sys.argv[1]), True, item)
 
             control.window.setProperty('script.trakt.ids', json.dumps(self.ids))
 			
