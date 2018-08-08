@@ -1053,21 +1053,24 @@ class tvshows:
 					
             # print ("FANART TV ART 1", self.fanart_tv_user)
             if tvdb == '' or tvdb == None or tvdb == '0': raise Exception()
-	
+            clearlogo = '0'
+            clearart = '0'	
+            banner = '0'				
             try: 
 				dbmeta = metalibrary.metaTV(imdb,tvdb)
 				poster = dbmeta['poster']
 				fanart = dbmeta['fanart']
-				tvdbposter = dbmeta['tvdbposter']
-				tvdbfanart = dbmeta['tvdbfanart']
+				tvdbposter = dbmeta['poster2']
+				tvdbfanart = dbmeta['fanart2']
+				clearlogo  = dbmeta['clearlogo']
+				banner     = dbmeta['banner']
 				if poster == '0' or poster == '' or poster == None: poster = tvdbposter
 				if fanart == '0' or fanart == '' or fanart == None: fanart = tvdbfanart
 				tmdb = dbmeta['tmdb']
 				metaDB = True
             except: metaDB = False	
 
-            clearlogo = '0'
-            clearart = '0'	
+
 			
 
             if poster == '' or poster =='0' or poster == None or fanart == '' or fanart =='0' or fanart == None:

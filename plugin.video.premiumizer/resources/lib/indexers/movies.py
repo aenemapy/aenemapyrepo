@@ -1038,14 +1038,22 @@ class movies:
             tmdb = self.list[i]['tmdb'] if 'tmdb' in self.list[i] else '0'
 
             artmeta = True
+            poster2 = '0'
+            poster3 = '0'
+            fanart2 = '0'
+            clearlogo = '0'
+            clearart = '0'
+            banner = '0'
+			
             try: 
 				dbmeta = metalibrary.metaMovies(imdb)
 				posterTMDB = dbmeta['poster']
 				if posterTMDB == '' or posterTMDB == None or posterTMDB == '0': poster = poster
 				else: poster = posterTMDB
 				fanart = dbmeta['fanart']
-				ftvfanart = dbmeta['ftvfanart']
-				
+				ftvfanart = dbmeta['fanart2']
+				clearlogo = dbmeta['clearlogo']
+				banner    = dbmeta['banner']
 				if fanart == '' or fanart == None or fanart == '0':
 					if ftvfanart == '' or ftvfanart == None or ftvfanart == '0': fanart = '0'
 					else: fanart = ftvfanart
@@ -1055,12 +1063,7 @@ class movies:
 				metaDB = True
             except: metaDB = False	
 			
-            poster2 = '0'
-            poster3 = '0'
-            fanart2 = '0'
-            clearlogo = '0'
-            clearart = '0'
-            banner = '0'
+
 
             if fanart == '0' or fanart == '' or fanart == None or poster == '' or poster == None or poster == '0': 
 				tmdbArt = tmdbapi.getImdb(imdb)

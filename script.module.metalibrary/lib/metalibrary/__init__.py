@@ -22,19 +22,22 @@ except: from pysqlite2 import dbapi2 as database
 
 def metaMovies(imdb):
 	try:
-		moviesDB = control.moviesDB
-		dbcon = database.connect(moviesDB)
+		DBASE = control.metaDB
+		#print ("META LIBRARY MOVIES PATH", DBASE)
+		dbcon = database.connect(DBASE)
 		dbcur = dbcon.cursor()
 		sources = []
 		dbcur.execute("SELECT * FROM movies WHERE imdb = '%s'" % (imdb))
 		match = dbcur.fetchone()
-		imdb = str(match[0])
-		tmdb = str(match[1])
-		poster = str(match[2]) 
-		fanart = str(match[3]) 
-		ftvposter = str(match[4]) 
-		ftvfanart = str(match[5]) 
-		meta = {'poster':poster, 'fanart': fanart, 'imdb':imdb, 'tmdb':tmdb ,'ftvposter':ftvposter, 'ftvfanart':ftvfanart}
+		tmdb = str(match[0])
+		imdb = str(match[1])
+		poster = str(match[3]) 
+		fanart = str(match[4]) 
+		poster2 = str(match[5]) 
+		fanart2 = str(match[6]) 
+		clearlogo = str(match[7]) 
+		banner    = str(match[8])
+		meta = {'imdb':imdb, 'tmdb':tmdb , 'poster':poster, 'fanart': fanart, 'poster2': poster2, 'fanart2':fanart2, 'clearlogo': clearlogo, 'banner': banner}
 		print ("[META LIBRARY] >>> ", meta)
 		return meta
 	except: 
@@ -42,25 +45,38 @@ def metaMovies(imdb):
 
 
 
-def metaTV(imdb,tvdb):
+def metaTV(imdb, tvdb):
 	try:
-		tvDB = control.tvDB
-		dbcon = database.connect(tvDB)
+		DBASE = control.metaDB
+		#print ("META LIBRARY TV PATH", DBASE)
+		dbcon = database.connect(DBASE)
 		dbcur = dbcon.cursor()
 		sources = []
-		dbcur.execute("SELECT * FROM tv WHERE imdb = '%s' or tvdb ='%s'" % (imdb, tvdb))
+		if imdb != '0' and imdb!= None: dbcur.execute("SELECT * FROM tv WHERE imdb = '%s'" % (imdb))
+		elif tvdb != '0' and tvdb != None: dbcur.execute("SELECT * FROM tv WHERE tvdb = '%s'" % (tvdb))
+		else: raise Exception()
 		match = dbcur.fetchone()
-		tmdb = str(match[2])
-		try: poster = str(match[3])
+		tmdb = str(match[0])
+		imdb = str(match[1])
+		try: poster = str(match[4])
 		except: poster = '0'
-		try: fanart = str(match[4]) 
+		try: fanart = str(match[5]) 
 		except: fanart = '0'
-		try: tvdbposter = str(match[5])
-		except: tvdbposter = '0'
-		try: tvdbfanart = str(match[6])
-		except: tvdbfanart = '0'
-		meta = {'poster':poster, 'fanart': fanart, 'tmdb':tmdb, 'tvdbposter':tvdbposter, 'tvdbfanart':tvdbfanart}
-		print ("[META LIBRARY] >>> ", meta)
+		try: poster2 = str(match[6])
+		except: poster2 = '0'
+		try: fanart2 = str(match[7])
+		except: fanart2 = '0'
+		try: poster3 = str(match[8])
+		except: poster3 = '0'
+		try: fanart3 = str(match[9])
+		except: fanart3 = '0'
+
+		try: clearlogo = str(match[10])
+		except: clearlogo = '0'
+		try: banner = str(match[11])
+		except: banner = '0'		
+		meta = {'imdb':imdb, 'tvdb':tvdb, 'tmdb':tmdb, 'poster':poster, 'fanart': fanart, 'poster2': poster2, 'fanart2':fanart2, 'poster3': poster3, 'fanart3': fanart3, 'banner': banner, 'clearlogo': clearlogo}
+		print ("[META LIBRARY TV] >>> ", meta)
 		return meta
 	except:
 		return

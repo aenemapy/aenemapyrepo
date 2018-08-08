@@ -43,5 +43,10 @@ direct = params.get('direct')
 provider = params.get('provider')
 
 
+
+
+#------------------------ FREEDOC -----------------------------
+
+	
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
 

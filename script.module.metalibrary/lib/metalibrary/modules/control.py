@@ -94,10 +94,10 @@ addonPath = xbmc.translatePath(addonInfo('path'))
 
 addon_id = 'script.module.metalibrary'
 
-moviesDB = os.path.join(xbmcaddon.Addon(addon_id).getAddonInfo('path'), 'resources', 'data', 'movies.db')
-tvDB = os.path.join(xbmcaddon.Addon(addon_id).getAddonInfo('profile'), 'resources', 'data', 'tv.db')
+resourcePath = os.path.join(xbmcaddon.Addon(addon_id).getAddonInfo('path'), 'resources', 'data')
+metaDB = xbmc.translatePath(os.path.join(resourcePath,'meta.db'))
 profilePath = xbmc.translatePath(os.path.join('special://home/userdata/addon_data/' + addon_id,''))
 if not os.path.exists(profilePath): os.makedirs(profilePath)
-playcountDB = os.path.join(profilePath, 'playcount.db')
+playcountDB = xbmc.translatePath(os.path.join(profilePath,'playcount.db'))
 
 
