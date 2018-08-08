@@ -133,7 +133,7 @@
 	</extension>
 </addon>
 
-<addon id="script.module.metalibrary" name="Meta Library" version="2018.08.08" provider-name="aenema">
+<addon id="script.module.metalibrary" name="Meta Library" version="2018.08.08.2" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0" />
 	</requires>
