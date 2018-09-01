@@ -50,6 +50,10 @@ if action == None:
     from resources.lib.indexers import navigator
     navigator.navigator().root()
 	
+elif action == 'browse_nav':
+    from resources.lib.indexers import navigator
+    navigator.navigator().browse_nav()
+	
 elif action == 'play':
 	from resources.lib.sources import sources	
 	sources().play(title, year, imdb, tvdb, season, episode, tvshowtitle, premiered, meta, select=select)
@@ -504,8 +508,29 @@ elif action == 'authTrakt':
 
 elif action == 'download':
     from resources.lib.api import premiumize
-    premiumize.downloadItem(name, url)
+    premiumize.downloadItem(name, url, id)
+	
+elif action == 'download_manager':
+    from resources.lib.indexers import navigator
+    navigator.navigator().download_manager()
+	
+elif action == 'download_manager_list':
+    from resources.lib.modules import downloader
+    downloader.downloader().download_manager()
+	
 
+	
+elif action == 'download_manager_stop':
+
+    from resources.lib.modules import downloader, control
+    downloader.downloader().logDownload(title, '0', '0', mode='stop')
+    control.refresh()
+	
+elif action == 'download_manager_delete':
+    from resources.lib.modules import downloader, control
+    downloader.downloader().logDownload(title, '0', '0', mode='delete')
+    control.refresh()
+	
 elif action == 'addItem':
     from resources.lib.sources import sources
     sources().addItem(title)
@@ -541,7 +566,6 @@ elif action == 'restoreSettings':
 	from resources.lib.modules import updater
 	updater.restoreAddon()
 
-
-		
+	
 	
 	

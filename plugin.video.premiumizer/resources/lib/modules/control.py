@@ -124,6 +124,8 @@ transfersList = os.path.join(dataPath, 'transfers.json')
 
 selectiveLibrary = os.path.join(dataPath, 'selective_sync.json')
 
+logDownloads = os.path.join(dataPath, 'downloads.db')
+
 addon_id = 'plugin.video.premiumizer'
 
 

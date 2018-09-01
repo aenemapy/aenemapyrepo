@@ -89,9 +89,9 @@ def add():
 		if (q == None or q == ''): return
 		add_download(q, q)
 		
-def downloadItem(name, url):
+def downloadItem(name, url, id):
 	from resources.lib.modules import downloader
-	downloader.download(name, url)
+	downloader.downloader().download(name, url)
 		
 def deleteItem(id, type):
 	data = {'id': id , 'type': type}
@@ -583,7 +583,7 @@ def getFolder(id, meta=None, list=False):
 				
 				url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, playLink, systitle , year, imdb, sysmeta, id)
 				
-				if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s)' % (sysaddon, name, url)))
+				if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s&id=%s)' % (sysaddon, name, url, id)))
 						
 			label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
 			item = control.item(label=label)
@@ -606,6 +606,9 @@ def getFolder(id, meta=None, list=False):
 		control.directory(syshandle, cacheToDisc=False)
 	except: pass
 
+	
+def direct_downlaod(id):
+	return
 
 def openFolderx(id, meta=None):
 	# meta = json.loads(meta)	

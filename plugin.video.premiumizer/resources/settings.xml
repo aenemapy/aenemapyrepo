@@ -73,7 +73,7 @@
 	<category id="general" label="Scraper Settings">
 		<setting id="scraper.matchtitle" type="bool" label="Show Only Matching Titles while Scraping" default="true" />
 		<setting id="scraper.filesonly" type="bool" label="Show Only Files Results" default="true" />
-		<setting id="scraper.autoplay" type="bool" label="AutoPlay if Single Matched Item" default="false" />
+		<setting id="scraper.autoplay" type="bool" label="AutoPlay if Single Matched Item" default="true" />
 	</category>	
 	
  	<category label="32347">
@@ -81,7 +81,6 @@
 		<setting id="download.path" type="folder" label="Path" enable="!eq(-1,false)" default="" />
 
 	</category>
-
 	
 	<category id="general" label="Backup/Restore">
 		<setting id="remote_path" type="folder" label="Backup Location" visible="True" />
