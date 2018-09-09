@@ -166,7 +166,6 @@ class navigator:
     def tvshows(self, lite=False):
         self.addDirectoryItem(32006, 'calendar&url=added', 'tv.png', 'DefaultRecentlyAddedEpisodes.png', queue=True)
         self.addDirectoryItem(32017, 'tvshows&url=trending', 'tv.png', 'DefaultRecentlyAddedEpisodes.png')
-        self.addDirectoryItem(32004, 'mytvliteNavigator', 'mytv.png', 'DefaultVideoPlaylists.png')
         self.addDirectoryItem('MY Watchlist', 'tvFavourites', 'mymovies.png', 'DefaultMovies.png')   
         if traktCredentials == True:
             self.addDirectoryItem(32032, 'tvshows&url=traktcollection', 'trakt.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktcollection'))
