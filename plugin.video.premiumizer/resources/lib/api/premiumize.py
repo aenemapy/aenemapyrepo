@@ -552,8 +552,6 @@ def getFolder(id, meta=None, list=False):
 					cm.append(('Browse Cloud Folder', 'Container.Update(%s)' % (url)))
 					url = '%s?action=episodes&tvshowtitle=%s&year=%s&imdb=%s&tvdb=%s&season=%s' % (sysaddon, superInfo['title'], superInfo['year'], superInfo['imdb'], superInfo['tvdb'], season)
 								
-			cm.append(('Delete from Cloud', 'RunPlugin(%s?action=premiumizeDeleteItem&id=%s&type=%s)' % (sysaddon, id, type)))
-			cm.append(('Rename Item', 'RunPlugin(%s?action=premiumizeRename&id=%s&type=%s&title=%s)' % (sysaddon, id, type, name)))
 			links = []
 			if type == 'file':
 				if control.setting('transcoded.play') == 'true':
@@ -582,9 +580,12 @@ def getFolder(id, meta=None, list=False):
 				except: pass					
 				
 				url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, playLink, systitle , year, imdb, sysmeta, id)
-				
+				cm.append(('Queue Item', 'RunPlugin(%s?action=queueItem)' % sysaddon))					
 				if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s&id=%s)' % (sysaddon, name, url, id)))
-						
+
+			cm.append(('Delete from Cloud', 'RunPlugin(%s?action=premiumizeDeleteItem&id=%s&type=%s)' % (sysaddon, id, type)))
+			cm.append(('Rename Item', 'RunPlugin(%s?action=premiumizeRename&id=%s&type=%s&title=%s)' % (sysaddon, id, type, name)))
+			
 			label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
 			item = control.item(label=label)
 			item.setProperty('IsPlayable', isPlayable)	
