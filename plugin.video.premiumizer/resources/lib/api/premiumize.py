@@ -875,12 +875,21 @@ def transferList():
 	url = urlparse.urljoin(premiumize_Api, premiumizeTransfer) 
 	r = reqJson(url)
 	r = r['transfers']
+	
 	for result in r:
 		cm = []
 		status = result['status']
+		progress = result.get('progress')
+		file_id = result['file_id']
+		if file_id != '' and file_id != None: isFolder = False
+		else: isFolder = True
+
+		id = result['id']
+		folder_id = result['folder_id']
 		name = result['name'].encode('utf-8')
 		name = normalize(name)
-		progress = result.get('progress')
+		superInfo = {'title': name, 'year':'0', 'imdb':'0'}
+			
 		if not status == 'finished': 
 			if not progress == '0':
 				try:
@@ -893,20 +902,32 @@ def transferList():
 				except: message = ''								
 			label = "[B]" + status.upper() + "[/B] [" + str(progress) + " %] " + message  + " | " + name
 		else: label = "[B]" + status.upper() + "[/B] | " + name
-		id = result['id']
-		type = 'torrent'
-		url = '0'
-		cm.append(('Delete from Cloud', 'RunPlugin(%s?action=premiumizeDeleteItem&id=%s&type=%s)' % (sysaddon, id, type)))
+
+		
+		url = '%s?action=%s&id=%s' % (sysaddon, 'premiumizeOpenFolder', folder_id)
+		
+		sysmeta = urllib.quote_plus(json.dumps(superInfo))	
+		systitle = urllib.quote_plus(superInfo['title'])		
+		if isFolder == False:
+			playLink = getIDLink(file_id)
+			isPlayable = 'true'
+			try: playLink = urllib.quote_plus(playLink)
+			except: pass	
+			url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, playLink, systitle , superInfo['year'], superInfo['imdb'], sysmeta, file_id)		
+			if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s&id=%s)' % (sysaddon, name, url, id)))
+			cm.append(('Queue Item', 'RunPlugin(%s?action=queueItem)' % sysaddon))				
+			
+
+		cm.append(('Delete from Cloud', 'RunPlugin(%s?action=premiumizeDeleteItem&id=%s&type=torrent)' % (sysaddon, id)))
 		item.setArt({'icon': control.icon, 'thumb': control.icon})
 		item.setProperty('Fanart_Image', control.addonFanart())
 		
 		item = control.item(label=label)
 		item.addContextMenuItems(cm)
-		control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
+		control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)
 				
-	control.content(syshandle, 'addons')
 	control.directory(syshandle, cacheToDisc=True)
-	
+
 def clearfinished():
     url = urlparse.urljoin(premiumize_Api, premiumizeClearFinished) 
     r = reqJson(url)
