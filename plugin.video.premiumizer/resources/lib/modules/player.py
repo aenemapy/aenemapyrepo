@@ -30,7 +30,7 @@ from resources.lib.modules import cleantitle
 from resources.lib.modules import playcount
 from resources.lib.modules import favourites
 from resources.lib.modules import bookmarks
-
+from resources.lib.modules import nextup
 inprogress_db = control.setting('inprogress_db')
 progressFile = control.progressFile
 dataPath = control.dataPath
@@ -46,16 +46,19 @@ class player(xbmc.Player):
         try:
             control.sleep(200)
 
-            # try: self.debridHandle = url['handle'].encode('utf-8')	
-            # except: self.debridHandle = '0'
-            # url = url['url'].encode('utf-8')
+            self.nextup_timeout   = control.setting('nextup.timeout')
+            self.nextup_service   = control.setting('nextup.service')
+            self.next_episode = []			
             self.seekStatus = False
 
             self.totalTime = 0 ; self.currentTime = 0
             self.original_meta = meta
             self.content = 'movie' if season == None or episode == None else 'episode'
 
-            self.title = title ; self.year = year
+            self.tvshowtitle = title
+            self.title = title
+            self.year = year
+
             self.name = urllib.quote_plus(title) + urllib.quote_plus(' (%s)' % year) if self.content == 'movie' else urllib.quote_plus(title) + urllib.quote_plus(' S%02dE%02d' % (int(season), int(episode)))
             self.name = urllib.unquote_plus(self.name)
             self.season = '%01d' % int(season) if self.content == 'episode' else None
@@ -76,10 +79,15 @@ class player(xbmc.Player):
             poster, thumb, fanart, meta = self.getMeta(meta)
 
             item = control.item(path=url)
+			
+            self.infolabels = {"Title": title, "Plot": meta['plot'], "year": meta['year'], "imdb": self.imdb, "imdbnumber": self.imdb}
+            if self.content != 'movie': self.infolabels.update({"season": meta['season'], "episode": meta['episode'], "tvshowtitle": meta['tvshowtitle'], "showtitle": meta['tvshowtitle'], "tvdb": self.tvdb})
+            self.original_meta = meta
+
             if self.content == 'episode': item.setArt({'icon': thumb, 'thumb': fanart, 'poster': poster, 'fanart':fanart, 'tvshow.poster': poster, 'season.poster': thumb , 'tvshow.landscape':thumb})
             else: item.setArt({'icon': thumb, 'thumb': thumb, 'poster': thumb, 'fanart':thumb})
 
-            item.setInfo(type='Video', infoLabels = meta)
+            item.setInfo(type='Video', infoLabels = self.infolabels)
 
             if 'plugin' in control.infoLabel('Container.PluginName'):
 				control.player.play(url, item)
@@ -215,7 +223,10 @@ class player(xbmc.Player):
 		
 		
     def keepPlaybackAlive(self):
-        self.playedOverlay = False
+        self.playedOverlay    = False
+        self.nextupDialog     = False	
+        self.playNext		  = False
+		
         for i in range(0, 240):
             if self.isPlayingVideo(): break
             xbmc.sleep(200)
@@ -228,9 +239,53 @@ class player(xbmc.Player):
 				if setWatched and not self.playedOverlay == True:
 					self.playedOverlay = True
 					self.setPlayingOverlay()
+
+				# NEXTUP MODE
+				self.time_remaining  = (self.totalTime - self.currentTime) + 15  # ADDING SECONDS TO SCRAPE FOR NEXT EPISODE
+				if int(self.nextup_timeout) >= int(self.time_remaining) and self.nextup_service == 'true' and self.content != 'movie' and self.nextupDialog == False:
+				#if self.nextup_service == 'true' and self.content != 'movie' and self.nextupDialog == False: #TEST MODE
+					self.nextupDialog = True
+					t = libThread.Thread(self.nextup_routine, 'on')
+					t.start()
+					
             except:
 				pass
             xbmc.sleep(2000)
+			
+    def nextup_routine(self, mode):
+			try:
+				self.next_episode = self.smartplay(mode='next_episode')	
+				self.playNext = nextup.nextup(self.next_episode)
+			except:
+				pass		
+		
+    def smartplay(self, mode='next'):
+        if mode == 'scrape_next_episode':
+			try:
+				if self.content == 'movie': raise Exception()
+				from resources.lib.modules import smartplay
+				t = libThread.Thread(smartplay.scrape_next_episode, self.tvshowtitle, self.year, self.imdb, self.tvdb, 'en', season=self.season, episode=self.episode)
+				t.start()
+			except:
+				pass
+        elif mode == 'next_episode':
+			try:
+				if self.content == 'movie': raise Exception()
+				from resources.lib.modules import smartplay
+				if len(self.next_episode) > 0: raise Exception()
+				self.next_episode = smartplay.next_episode(self.tvshowtitle, self.year, self.imdb, self.tvdb, 'en', season=self.season, episode=self.episode)
+				return self.next_episode
+			except:
+				pass	
+				
+        elif mode == 'play_next':
+			try:
+				from resources.lib.modules import smartplay
+				self.next_episode = smartplay.next_episode(self.tvshowtitle, self.year, self.imdb, self.tvdb, 'en', season=self.season, episode=self.episode)
+				smartplay.play_next_episode(self.next_episode)
+			except:
+				pass
+				
 			
     def setPlayingOverlay(self):
 	
@@ -349,6 +404,9 @@ class player(xbmc.Player):
 
     def onPlayBackStopped(self):
         self.setProgress()
+        if self.playNext == True: 
+			from resources.lib.modules import smartplay
+			smartplay.play_next_episode(self.next_episode)
 		
     def onPlayBackEnded(self):
         self.onPlayBackStopped()

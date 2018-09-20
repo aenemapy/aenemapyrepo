@@ -206,10 +206,7 @@ class movies:
             if (title == None or title == ''): return
 
             url = self.imdbsearch_link % title
-            self.list = self.imdb_list(url)
-            self.worker()
-
-            self.movieDirectory(self.list)
+            self.get(url)
             
         except:
             pass

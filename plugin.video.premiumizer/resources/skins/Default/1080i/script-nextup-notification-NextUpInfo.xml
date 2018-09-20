@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <defaultcontrol always="true">3012</defaultcontrol>
+    <zorder>0</zorder>
+    <controls>
+        <control type="label" id="3000"><visible>false</visible></control>
+        <control type="textbox" id="3001"><visible>false</visible></control>
+        <control type="label" id="3002"><visible>false</visible></control>
+        <control type="label" id="3003"><visible>false</visible></control>
+        <control type="label" id="3004"><visible>false</visible></control>
+
+        <control type="group">
+
+            <right>20</right>
+            <bottom>20</bottom>
+            <width>592</width>
+            <height>200</height>
+
+            <control type="label" description="text">
+                <top>-54</top>
+                <left>0</left>
+                <right>20</right>
+                <height>64</height>
+                <aligny>center</aligny>
+                <font>font10</font>
+                <label>Next Episode in ...    $INFO[Player.TimeRemaining(ss)] sec</label>
+                <textcolor>ffcccccc</textcolor>
+                <shadowcolor>bf000000</shadowcolor>
+            </control>
+
+            <control type="image" description="fanart">
+                <fadetime>350</fadetime>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+                <texture>$INFO[Player.Art(fanart)]</texture>
+				<left>-24</left>
+				<right>-24</right>
+				<top>-24</top>
+				<bottom>-24</bottom>
+				<bordersize>24</bordersize>
+				<bordertexture border="32">common/shadow-24.png</bordertexture>
+            </control>
+
+            <control type="image" description="blackline">
+                <width>100%</width>
+                <height>64</height>
+				<top>136</top>
+				<left>0</left>
+                <bottom>0</bottom>
+                <right>0</right>
+                <aspectratio scalediffuse="false">scale</aspectratio>
+                <texture colordiffuse="b3181818">common/white.png</texture>
+            </control>
+
+<!--             <control type="image" description="blackline">
+                <height>64</height>
+                <width>64</width>
+				<top>35</top>
+				<left>270</left>
+                <bottom>20</bottom>
+                <right>0</right>
+                <aspectratio scalediffuse="false">keep</aspectratio>
+                <texture colordiffuse="b3181818">common/circle.png</texture>
+            </control>
+            <control type="label">
+                <description>Remaining</description>
+				<top>50</top>
+				<left>288</left>
+                <bottom>30</bottom>
+                <right>0</right>
+                <height>64</height>
+                <width>64</width>
+                <font>font10</font>
+                <textcolor>ffcccccc</textcolor>
+                <label>$INFO[Player.TimeRemaining(ss)]</label>
+            </control>
+ -->
+
+            <control type="label" description="text">
+                <left>20</left>
+                <right>120</right>
+                <height>64</height>
+                <bottom>0</bottom>
+                <aligny>center</aligny>
+                <font>font10</font>
+                <label>$INFO[Control.GetLabel(3002),, ]$INFO[Control.GetLabel(3000)]</label>
+                <textcolor>ffededed</textcolor>
+            </control>
+
+            <control type="button" id="3012">
+                <description>Play</description>
+                <right>64</right>
+                <bottom>0</bottom>
+                <width>62</width>
+                <height>62</height>
+                <label></label>
+                <align>center</align>
+                <aligny>center</aligny>
+                <textoffsetx>0</textoffsetx>
+                <onleft>3013</onleft>
+                <onright>3013</onright>
+                <font>font10</font>
+                <textcolor>ffcccccc</textcolor>
+                <focusedcolor>ffededed</focusedcolor>
+                <texturefocus colordiffuse="selected" border="5">common/white.png</texturefocus>
+                <texturenofocus colordiffuse="00ffffff" border="5">noop</texturenofocus>
+            </control>
+            <control type="image">
+                <description>Play</description>
+				<top>140</top>
+				<left>470</left>
+                <right>2</right>
+                <bottom>0</bottom>
+                <width>52</width>
+                <height>52</height>
+                <texture>common/playwhite.png</texture>
+                <aspectratio>keep</aspectratio>
+                <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(3012)">Conditional</animation>
+            </control>
+            <control type="button" id="3013">
+                <description>Cancel</description>
+
+                <right>2</right>
+                <bottom>0</bottom>
+                <width>62</width>
+                <height>62</height>
+                <label></label>
+                <align>center</align>
+                <aligny>center</aligny>
+                <textoffsetx>0</textoffsetx>
+                <onleft>3012</onleft>
+                <onright>3012</onright>
+                <font>font10</font>
+                <textcolor>ffcccccc</textcolor>
+                <focusedcolor>ffededed</focusedcolor>
+                <texturefocus colordiffuse="selected" border="5">common/white.png</texturefocus>
+                <texturenofocus colordiffuse="00ffffff" border="5">noop</texturenofocus>
+            </control>
+            <control type="image">
+                <description>Stop</description>
+				<top>135</top>
+				<left>528</left>
+                <right>0</right>
+                <bottom>0</bottom>
+                <width>64</width>
+                <height>64</height>
+                <texture>common/stopwhite.png</texture>
+                <aspectratio>keep</aspectratio>
+                <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(3013)">Conditional</animation>
+            </control>
+        </control>
+    </controls>
+</window>

@@ -10,7 +10,13 @@
 		
 		<setting type="lsep" label="Playback Settings" />			
 		<setting id="transcoded.play" type="bool" label="Play Transcoded Files if avaialable" default="false" />
-
+		<setting type="lsep" label="Nextup Notification" />	
+		<setting type="sep" />	
+		<setting id="nextup.service" type="bool" label="Nextup Notification for Tv Shows" default="false" />
+		<setting id="nextup.timeout" type="slider" label="Time left for notification (seconds)" default="45" range="10,300" option="int"  visible="eq(-1,true)" />
+		<setting id="nextup.action" type="enum" label="Default Action after dialog ends" values="Play|Do Nothing" default="0" visible="eq(-2,true)" />
+		<setting id="nextup.skin.native" type="bool" label="Skin native look for Popup (if supported)" default="true" visible="eq(-3,true)" />
+				
 		<setting type="lsep" label="Post-Playback Settings" />			
 		<setting id="cloud.askdelete" type="bool" label="Delete Watched File" default="false" />
 		<setting id="cloud.autodelete" type="bool" label="Autodelete Watched File" default="false" visible="!eq(-1,false)"/>
@@ -23,6 +29,7 @@
 		<setting id="api.language" type="select" label="32316" values="AUTO|Bulgarian|Chinese|Croatian|Czech|Danish|Dutch|English|Finnish|French|German|Greek|Hebrew|Hungarian|Italian|Japanese|Korean|Norwegian|Polish|Portuguese|Romanian|Russian|Serbian|Slovak|Slovenian|Spanish|Swedish|Thai|Turkish|Ukrainian" default="English" />
 		<setting id="fanart" type="bool" label="32318" default="true" />
 		<setting id="bookmarks" type="bool" label="32344" default="true" />
+		<setting id="bookmarks.autoresume" type="bool" label="Auto Resume Bookmars" visible="!eq(-1,false)" default="true" />
 		<setting id="indicators.alt" type="enum" label="32313" lvalues="32314|32315" default="0" />
 		<setting id="inprogress_db" type="bool" label="Enable In Progress Database" default="true" />		
 

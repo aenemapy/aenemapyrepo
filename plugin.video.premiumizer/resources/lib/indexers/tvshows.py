@@ -308,7 +308,7 @@ class tvshows:
 
     def searchTvdb(self):
         try:
-            control.idle()
+            #control.idle()
 
             t = control.lang(32010).encode('utf-8')
             k = control.keyboard('', t) ; k.doModal()
@@ -317,8 +317,7 @@ class tvshows:
             if (q == None or q == ''): return
 
             url = 'https://api.thetvdb.com/search/series?name=%s'  % (urllib.quote_plus(q))
-            url = '%s?action=tvshowsTvdb&url=%s' % (sys.argv[0], urllib.quote_plus(url))
-            control.execute('Container.Update(%s)' % url)
+            self.getTvdb(url)
         except:
             return	
 					
@@ -333,8 +332,7 @@ class tvshows:
             if (q == None or q == ''): return
 
             url = self.search_link + urllib.quote_plus(q)
-            url = '%s?action=tvshowPage&url=%s' % (sys.argv[0], urllib.quote_plus(url))
-            control.execute('Container.Update(%s)' % url)
+            self.get(url)
         except:
             return
 
@@ -351,7 +349,7 @@ class tvshows:
 
             url = self.persons_link + urllib.quote_plus(q)
             url = '%s?action=tvPersons&url=%s' % (sys.argv[0], urllib.quote_plus(url))
-            control.execute('Container.Update(%s)' % url)
+            self.persons(url)
         except:
             return
 

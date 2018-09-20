@@ -44,6 +44,9 @@ class bookmarks:
             dbcon.commit()
 
             if self.offset == '0': raise Exception()
+			
+			# AUTO RESUME
+            if control.setting('bookmarks.autoresume') == 'true': return self.offset
 
             minutes, seconds = divmod(float(self.offset), 60) ; hours, minutes = divmod(minutes, 60)
             label = '%02d:%02d:%02d' % (hours, minutes, seconds)
