@@ -50,10 +50,17 @@ class player(xbmc.Player):
             self.nextup_service   = control.setting('nextup.service')
             self.next_episode = []			
             self.seekStatus = False
-
+            infoMeta = False
             self.totalTime = 0 ; self.currentTime = 0
             self.original_meta = meta
             self.content = 'movie' if season == None or episode == None else 'episode'
+			
+            if self.content == 'movie' and imdb != '0' and imdb != None: infoMeta = True
+            else: infoMeta = False
+			
+            if self.content == 'episode' and imdb != '0' and imdb != None: infoMeta = True
+            elif self.content == 'episode' and tvdb != '0' and tvdb != None: infoMeta = True
+            else: infoMeta = False
 
             self.tvshowtitle = title
             self.title = title
@@ -66,6 +73,9 @@ class player(xbmc.Player):
             # self.Nextup = None
             self.DBID = None
 			
+            try: plot = meta['plot']
+            except: plot = ''
+
             self.FileId = id
             self.imdb = imdb if not imdb == None else '0'
             self.tvdb = tvdb if not tvdb == None else '0'
@@ -79,9 +89,8 @@ class player(xbmc.Player):
             poster, thumb, fanart, meta = self.getMeta(meta)
 
             item = control.item(path=url)
-			
-            self.infolabels = {"Title": title, "Plot": meta['plot'], "year": meta['year'], "imdb": self.imdb, "imdbnumber": self.imdb}
-            if self.content != 'movie': self.infolabels.update({"season": meta['season'], "episode": meta['episode'], "tvshowtitle": meta['tvshowtitle'], "showtitle": meta['tvshowtitle'], "tvdb": self.tvdb})
+            self.infolabels = {"Title": title, "Plot": plot, "year": self.year}
+            if self.content == 'episode' and infoMeta == True: self.infolabels.update({"season": meta['season'], "episode": meta['episode'], "tvshowtitle": meta['tvshowtitle'], "showtitle": meta['tvshowtitle'], "tvdb": self.tvdb})
             self.original_meta = meta
 
             if self.content == 'episode': item.setArt({'icon': thumb, 'thumb': fanart, 'poster': poster, 'fanart':fanart, 'tvshow.poster': poster, 'season.poster': thumb , 'tvshow.landscape':thumb})
@@ -110,7 +119,7 @@ class player(xbmc.Player):
             thumb = meta['thumb'] if 'thumb' in meta else poster
             fanart = meta['fanart'] if 'fanart' in meta else '0'
             if poster == '0': poster = control.addonPoster()
-
+            if thumb == '0': thumb = control.addonPoster()
             return (poster, thumb, fanart, meta)
         except:
             pass
