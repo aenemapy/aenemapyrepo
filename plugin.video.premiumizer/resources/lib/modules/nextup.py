@@ -8,7 +8,22 @@ OS_MACHINE = machine()
 addonSettings = xbmcaddon.Addon(id='plugin.video.premiumizer')
 
 def nextup(episode):
-	print ("NEXTUP EPISODE", episode)
+	if episode == None or episode == '':
+		episode = {}
+		episode['poster'] = control.addonIcon()
+		episode['fanart'] = control.addonIcon()
+		episode['plot']   = ''
+		episode['title']  = 'No episode data found'
+		episode['tvshowtitle'] = 'No show data found'
+		episode['season'] = '0'
+		episode['episode'] = '0'
+		episode['plot'] = ''
+		episode['rating'] = '0.0'
+		episode['year'] = '0'
+		print ("NEXTUP >>> NO EPISODE DATA FOUND")
+		return False
+		
+		
 	nextup_action = control.setting('nextup.action')
 	skin_native = control.setting('nextup.skin.native')
 	try:
