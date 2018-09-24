@@ -15,7 +15,7 @@
 		<setting id="nextup.service" type="bool" label="Nextup Notification for Tv Shows" default="false" />
 		<setting id="nextup.timeout" type="slider" label="Time left for notification (seconds)" default="45" range="10,300" option="int"  visible="eq(-1,true)" />
 		<setting id="nextup.action" type="enum" label="Default Action after dialog ends" values="Play|Do Nothing" default="0" visible="eq(-2,true)" />
-		<setting id="nextup.skin.native" type="bool" label="Skin native look for Popup (if supported)" default="true" visible="eq(-3,true)" />
+		<setting id="nextup.skin.native" type="bool" label="Skin native look for Popup (if supported)" default="false" visible="eq(-3,true)" />
 				
 		<setting type="lsep" label="Post-Playback Settings" />			
 		<setting id="cloud.askdelete" type="bool" label="Delete Watched File" default="false" />

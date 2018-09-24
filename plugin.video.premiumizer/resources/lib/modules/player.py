@@ -87,7 +87,7 @@ class player(xbmc.Player):
             self.ids = dict((k,v) for k, v in self.ids.iteritems() if not v == '0')
 			
             poster, thumb, fanart, meta = self.getMeta(meta)
-
+			
             item = control.item(path=url)
             self.infolabels = {"Title": title, "Plot": plot, "year": self.year}
             if self.content == 'episode' and infoMeta == True: self.infolabels.update({"season": meta['season'], "episode": meta['episode'], "tvshowtitle": meta['tvshowtitle'], "showtitle": meta['tvshowtitle'], "tvdb": self.tvdb})
@@ -98,10 +98,9 @@ class player(xbmc.Player):
 
             item.setInfo(type='Video', infoLabels = self.infolabels)
 
-            if 'plugin' in control.infoLabel('Container.PluginName'):
-				control.player.play(url, item)
+            control.player.play(url, item)
             
-            control.resolve(int(sys.argv[1]), True, item)
+            #control.resolve(int(sys.argv[1]), True, item)
 
             control.window.setProperty('script.trakt.ids', json.dumps(self.ids))
 			
@@ -245,13 +244,15 @@ class player(xbmc.Player):
 				self.totalTime = self.getTotalTime()
 				self.currentTime = self.getTime()
 				setWatched =  self.currentTime / self.totalTime >= .90
-				if setWatched and not self.playedOverlay == True:
+				self.inWatching  =  (self.currentTime >= 60) # 1 MINUTE or More
+				
+				if setWatched and not self.playedOverlay == True and self.inWatching == True:
 					self.playedOverlay = True
 					self.setPlayingOverlay()
 
 				# NEXTUP MODE
 				self.time_remaining  = (self.totalTime - self.currentTime) + 15  # ADDING SECONDS TO SCRAPE FOR NEXT EPISODE
-				if int(self.nextup_timeout) >= int(self.time_remaining) and self.nextup_service == 'true' and self.content != 'movie' and self.nextupDialog == False:
+				if int(self.nextup_timeout) >= int(self.time_remaining) and self.inWatching == True and self.nextup_service == 'true' and self.content != 'movie' and self.nextupDialog == False:
 				#if self.nextup_service == 'true' and self.content != 'movie' and self.nextupDialog == False: #TEST MODE
 					self.nextupDialog = True
 					t = libThread.Thread(self.nextup_routine, 'on')

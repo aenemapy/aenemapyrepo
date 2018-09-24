@@ -23,7 +23,6 @@ def nextup(episode):
 		print ("NEXTUP >>> NO EPISODE DATA FOUND")
 		return False
 		
-		
 	nextup_action = control.setting('nextup.action')
 	skin_native = control.setting('nextup.skin.native')
 	try:
@@ -84,15 +83,18 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
     def onInit(self):
         self.action_exitkeys_id = [10, 13]
 
-        image = self.item['poster']
-        landscapeimage = self.item['poster']
+        try: image = self.item['poster']
+        except: image = '0'
         if "fanart" in self.item: fanartimage = self.item['fanart']
-        else: fanartimage = self.item['poster']
+        else: fanartimage = '0'
         if "fanart" in self.item: landscapeimage = self.item['fanart']
-        else: landscapeimage = self.item['poster']
-        if "fanart" in self.item: thumb = self.item['fanart']
-        else: thumb = self.item['poster']		
-		
+        else: landscapeimage = control.addonIcon()
+        if "thumb" in self.item: thumb = self.item['thumb']
+        else: thumb = '0'		
+        if thumb != '0' and thumb != None: image = fanartimage = landscapeimage = thumb
+        elif fanartimage != '0' and fanartimage != None: image = thumb = landscapeimage = fanartimage
+        elif image != '0' and image != None: fanartimage = thumb = landscapeimage = image
+				
         overview = self.item['plot']
         tvshowtitle = self.item['tvshowtitle']
         name = self.item['title']
@@ -111,6 +113,7 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         self.getControl(3001).setText(overview)
         self.getControl(3002).setLabel(episodeInfo)
         self.getControl(3004).setLabel(info)
+        self.getControl(3008).setLabel(thumb)	
 		
         if rating is not None:
             self.getControl(3003).setLabel(rating)
@@ -142,6 +145,7 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
             thumbControl = self.getControl(3008)
             if thumbControl != None:
                 self.getControl(3008).setImage(thumb)
+                thumbControl.setLabel(thumb)
         except:
             pass
 
