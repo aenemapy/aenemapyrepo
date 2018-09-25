@@ -5,8 +5,6 @@ from resources.lib.modules import control
 ACTION_PLAYER_STOP = 13
 OS_MACHINE = machine()
 
-addonSettings = xbmcaddon.Addon(id='plugin.video.premiumizer')
-
 def nextup(episode):
 	if episode == None or episode == '':
 		episode = {}
@@ -26,8 +24,8 @@ def nextup(episode):
 	nextup_action = control.setting('nextup.action')
 	skin_native = control.setting('nextup.skin.native')
 	try:
-		if skin_native == 'true': nextUpPage = NextUpInfo("script-nextup-notification-NextUpInfo.xml", addonSettings.getAddonInfo('path'), "default", "1080i")
-		else: nextUpPage = NextUpInfo("script-nextup.xml", addonSettings.getAddonInfo('path'), "default", "1080i")
+		if skin_native == 'true': nextUpPage = NextUpInfo("script-nextup-notification-NextUpInfo.xml", control.addonPath, "default", "1080i")
+		else: nextUpPage = NextUpInfo("script-nextup.xml", control.addonPath, "default", "1080i")
 		nextUpPage.setItem(episode)	
 		nextUpPage.show()
 		
@@ -113,8 +111,8 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
         self.getControl(3001).setText(overview)
         self.getControl(3002).setLabel(episodeInfo)
         self.getControl(3004).setLabel(info)
-        self.getControl(3008).setLabel(thumb)	
-		
+        self.getControl(7777).setLabel(thumb)
+
         if rating is not None:
             self.getControl(3003).setLabel(rating)
         else:
@@ -145,7 +143,6 @@ class NextUpInfo(xbmcgui.WindowXMLDialog):
             thumbControl = self.getControl(3008)
             if thumbControl != None:
                 self.getControl(3008).setImage(thumb)
-                thumbControl.setLabel(thumb)
         except:
             pass
 
