@@ -940,21 +940,34 @@ def DeleteAllTypes(id, mode='normal'):
 		
 		u = urlparse.urljoin(premiumize_Api, premiumizeItemDetails) 
 		details = reqJson(u, data=data)
-			
+		filename = details['name']	
+		folderId = details['folder_id']	
+		
 		url = urlparse.urljoin(premiumize_Api, premiumizeDeleteItem) 
 		r = reqJson(url, data=data)
 			#print ("PREMIUMIZE DELETE ITEM", url, r)
 		try:
 			if mode != 'full': raise Exception()
-			folderId = details['folder_id']
+
+			ext = filename.split('.')
+			ext = '.%s' % ext[-1]
+			
 			if folderId == '0' or folderId == None or folderId == '': raise Exception()
 			x = premiumizeFolder + str(folderId)
 			folder = urlparse.urljoin(premiumize_Api, x)
 			folder = reqJson(folder)
 			folderName = folder['name']
 			if folderName.lower() == 'root': raise Exception()
-			query = control.yesnoDialog('Found Parent Folder: ', folderName , 'Do you want to delete it?', nolabel='No', yeslabel='Yes')
-			if query == 1: deleteItem(folderId, 'folder')
+			folderName = folderName + ext
+			folderClear = re.sub('\n|([[].+?[]])|([(].+?[)])|\s', '', folderName)
+			filenameClean = re.sub('\n|([[].+?[]])|([(].+?[)])|\s', '', filename)
+			if control.setting('cloud.autodelete') == 'true':
+				if folderClear.lower() == filenameClean.lower(): 
+					deleteItem(folderId, 'folder')
+					raise Exception()			
+			else:
+				query = control.yesnoDialog('Found Parent Folder: ', folderName , 'Do you want to delete it?', nolabel='No', yeslabel='Yes')
+				if query == 1: deleteItem(folderId, 'folder')
 		except:pass
 	except:pass
 
