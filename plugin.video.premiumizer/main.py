@@ -449,6 +449,11 @@ elif action == 'episodes':
 elif action == 'calendar':
     from resources.lib.indexers import episodes
     episodes.episodes().calendar(url)
+	
+elif action == 'traktOnDeck':
+	if content == 'movies':
+		from resources.lib.indexers import movies
+		movies.movies().traktOnDeck()
 
 elif action == 'tvWidget':
     from resources.lib.indexers import episodes

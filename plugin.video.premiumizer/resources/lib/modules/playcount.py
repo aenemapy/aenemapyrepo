@@ -23,6 +23,25 @@ import json
 from resources.lib.modules import control
 from resources.lib.api import trakt
 from metalibrary import playcountMeta
+
+
+
+def traktscrobblePlayback(action, type, imdb = None, tvdb = None, season = None, episode = None, progress = 0):
+    try:
+        if control.setting('trakt.scrobblePlayback') == 'false': raise Exception()
+        if trakt.getTraktIndicatorsInfo() == False: raise Exception()
+        result = trakt.scrobblePlayback(action, type, imdb = imdb, tvdb = tvdb, season = season, episode = episode, progress = progress)
+    except: pass
+		
+def traktPlayback(type, imdb = None, tvdb = None, season = None, episode = None):
+    try:
+        if control.setting('trakt.scrobblePlayback') == 'false': raise Exception()
+        if trakt.getTraktIndicatorsInfo() == False: raise Exception()
+        result = trakt.returnPlayback(type, imdb = imdb, tvdb = tvdb, season = season, episode = episode)
+        return result
+    except: pass
+
+	
 def getMovieIndicators(refresh=False):
     try:
         if trakt.getTraktIndicatorsInfo() == True: raise Exception()

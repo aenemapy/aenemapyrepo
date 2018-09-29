@@ -131,7 +131,35 @@ class movies:
         except:
             pass
 			
-			
+    def traktOnDeck(self):
+        from resources.lib.api import trakt
+        items = trakt.getTraktAsJson('/sync/playback/movies')
+
+        for item in items:
+            try:
+                title = item['movie']['title']
+                title = client.replaceHTMLCodes(title)
+
+                year = item['movie']['year']
+                year = re.sub('[^0-9]', '', str(year))
+
+                if int(year) > int((self.datetime).strftime('%Y')): raise Exception()
+
+                imdb = item['movie']['ids']['imdb']
+                if imdb == None or imdb == '': raise Exception()
+                imdb = 'tt' + re.sub('[^0-9]', '', str(imdb))
+
+                tmdb = str(item.get('ids', {}).get('tmdb', 0))
+
+                trakt = item['id']
+
+                self.list.append(
+                    {'title': title, 'originaltitle': title, 'year': year, 'imdb': imdb, 'tmdb': tmdb, 'tvdb': '0',
+                     'trakt': trakt})
+            except:
+                pass
+        self.worker()
+        self.movieDirectory(self.list)			
 
     def get(self, url, idx=True, create_directory=True):
         try:

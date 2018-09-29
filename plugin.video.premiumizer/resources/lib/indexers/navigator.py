@@ -78,8 +78,9 @@ class navigator:
         self.addDirectoryItem('New HD Releases', 'movies&url=newreleases', 'movies.png', 'DefaultRecentlyAddedMovies.png')
         self.addDirectoryItem(32017, 'movies&url=trending', 'movies.png', 'DefaultRecentlyAddedMovies.png')
         self.addDirectoryItem(40009, 'movieFavourites', 'mymovies.png', 'DefaultMovies.png')
-
+        if traktCredentials == True: self.addDirectoryItem('Trakt on Deck', 'traktOnDeck&content=movies', 'trakt.png', 'DefaultMovies.png', queue=True)		
         if traktCredentials == True and imdbCredentials == True:
+
             self.addDirectoryItem(32032, 'movies&url=traktcollection', 'trakt.png', 'DefaultMovies.png', queue=True, context=(32551, 'moviesToLibrary&url=traktcollection'))
             self.addDirectoryItem(32033, 'movies&url=traktwatchlist', 'trakt.png', 'DefaultMovies.png', queue=True, context=(32551, 'moviesToLibrary&url=traktwatchlist'))
             self.addDirectoryItem(32034, 'movies&url=imdbwatchlist','imdb.png', 'DefaultMovies.png', queue=True)
@@ -136,11 +137,13 @@ class navigator:
         self.addDirectoryItem(40009, 'movieFavourites', 'mymovies.png', 'DefaultMovies.png')
 
         if traktCredentials == True and imdbCredentials == True:
+	
             self.addDirectoryItem(32032, 'movies&url=traktcollection', 'trakt.png', 'DefaultMovies.png', queue=True, context=(32551, 'moviesToLibrary&url=traktcollection'))
             self.addDirectoryItem(32033, 'movies&url=traktwatchlist', 'trakt.png', 'DefaultMovies.png', queue=True, context=(32551, 'moviesToLibrary&url=traktwatchlist'))
             self.addDirectoryItem(32034, 'movies&url=imdbwatchlist','imdb.png', 'DefaultMovies.png', queue=True)
 
         elif traktCredentials == True:
+            self.addDirectoryItem('Trakt on Deck', 'traktOnDeck&content=movies', 'trakt.png', 'DefaultMovies.png', queue=True)		
             self.addDirectoryItem(32032, 'movies&url=traktcollection', 'trakt.png', 'DefaultMovies.png', queue=True, context=(32551, 'moviesToLibrary&url=traktcollection'))
             self.addDirectoryItem(32033, 'movies&url=traktwatchlist', 'trakt.png', 'DefaultMovies.png', queue=True, context=(32551, 'moviesToLibrary&url=traktwatchlist'))
 
@@ -149,6 +152,7 @@ class navigator:
             self.addDirectoryItem(32033, 'movies&url=imdbwatchlist2', 'imdb.png', 'DefaultMovies.png', queue=True)
 
         if traktCredentials == True:
+            self.addDirectoryItem('Trakt on Deck', 'traktOnDeck&content=movies', 'trakt.png', 'DefaultMovies.png', queue=True)	
             self.addDirectoryItem(32035, 'movies&url=traktfeatured', 'trakt.png', 'DefaultMovies.png', queue=True)
 
         elif imdbCredentials == True:
@@ -168,6 +172,7 @@ class navigator:
         self.addDirectoryItem(32017, 'tvshows&url=trending', 'tv.png', 'DefaultRecentlyAddedEpisodes.png')
         self.addDirectoryItem('MY Watchlist', 'tvFavourites', 'mymovies.png', 'DefaultMovies.png')   
         if traktCredentials == True:
+            self.addDirectoryItem('Trakt On Deck', 'calendar&url=traktOnDeck', 'trakt.png', 'DefaultTVShows.png')
             self.addDirectoryItem(32032, 'tvshows&url=traktcollection', 'trakt.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktcollection'))
             self.addDirectoryItem(32033, 'tvshows&url=traktwatchlist', 'trakt.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktwatchlist'))
             self.addDirectoryItem(32035, 'tvshows&url=traktfeatured', 'trakt.png', 'DefaultTVShows.png')

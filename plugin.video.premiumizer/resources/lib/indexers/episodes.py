@@ -785,7 +785,8 @@ class episodes:
         self.traktlists_link = 'http://api.trakt.tv/users/me/lists'
         self.traktlikedlists_link = 'http://api.trakt.tv/users/likes/lists?limit=1000000'
         self.traktlist_link = 'http://api.trakt.tv/users/%s/lists/%s/items'
-
+        self.traktOnDeck_link = 'http://api.trakt.tv/sync/playback/episodes?extended=full&limit=20'
+		
     def getLibrary(self, tvshowtitle, year, imdb, tvdb, season=None, episode=None, meta=None, idx=True, create_directory=True):
         try:
 
@@ -818,9 +819,13 @@ class episodes:
         try:
             try: url = getattr(self, url + '_link')
             except: pass
+            print ("TRAKT URL", url)
+            if self.trakt_link in url and url == self.traktOnDeck_link:
+                self.blist = cache.get(self.trakt_episodes_list, 720, url, self.trakt_user, self.lang)
+                self.list = []
+                self.list = cache.get(self.trakt_episodes_list, 0, url, self.trakt_user, self.lang)
 
-
-            if self.trakt_link in url and url == self.progress_link:
+            elif self.trakt_link in url and url == self.progress_link:
                 self.blist = cache.get(self.trakt_progress_list, 720, url, self.trakt_user, self.lang)
                 self.list = []
                 self.list = cache.get(self.trakt_progress_list, 0, url, self.trakt_user, self.lang)

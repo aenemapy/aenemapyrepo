@@ -37,7 +37,7 @@ REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
 
 sync_history = ['https://api.trakt.tv/sync/history']
 
-post_links = ['/sync/history', '/oauth/', '/sync/collection', '/sync/collection/remove', '/sync/watchlist', '/sync/watchlist/remove' ] 
+post_links = ['/sync/history', '/oauth/' , '/scrobble/', '/sync/collection', '/sync/collection/remove', '/sync/watchlist', '/sync/watchlist/remove' ] 
 def __getTrakt(url, post=None):
     try:
         url = urlparse.urljoin(BASE_URL, url)
@@ -178,7 +178,7 @@ def authTrakt():
         control.setSetting(id='trakt.token', value=token)
         control.setSetting(id='trakt.refresh', value=refresh)
         control.setSetting(id='indicators.alt', value='1')
-
+        control.setSetting(id='trakt.scrobblePlayback', value='true')
         raise Exception()
     except:
         control.openSettings('3.1')
@@ -559,3 +559,83 @@ def getGenre(content, type, type_id):
         return r
     except:
         return []
+
+		
+def returnPlayback(type, imdb = None, tvdb = None, season = None, episode = None):
+	try:
+		if not imdb == None: imdb = str(imdb)
+		if not tvdb == None: tvdb = int(tvdb)
+		if not episode == None: episode = int(episode)
+		if not season  == None: season = int(season)
+		link = '/sync/playback/type'
+		items = getTraktAsJson(link)
+		if type == 'episode':
+			if imdb:
+				for item in items:
+					if 'show' in item and 'imdb' in item['show']['ids'] and item['show']['ids']['imdb'] == imdb:
+						if item['episode']['season'] == season and item['episode']['number'] == episode:
+							return item['progress']
+			elif tvdb:
+				for item in items:
+					if 'show' in item and 'tvdb' in item['show']['ids'] and item['show']['ids']['tvdb'] == tvdb:
+						if item['episode']['season'] == season and item['episode']['number'] == episode:
+		 					return item['progress']
+		else:
+			if imdb:
+				for item in items:
+					if 'movie' in item and 'imdb' in item['movie']['ids'] and item['movie']['ids']['imdb'] == imdb:
+						return item['progress']
+	except: return 0
+	
+def getPlayback(type):
+	try:
+		link = '/sync/playback/%s' % type
+		items = getTraktAsJson(link)
+		return items
+	except: return 0
+	
+	
+def removePlayback(id):
+	try:
+		link = '/sync/playback/%s' % id
+		r = __getTrakt(link, method='delete')
+		return items
+	except: return 0
+
+	
+# action = start, pause, stop
+# type =  episode, movie
+# progress = 0-100
+
+def scrobblePlayback(action, type, imdb = None, tvdb = None, season = None, episode = None, progress = 0):
+	try:
+		if action:
+			if not imdb == None: imdb = str(imdb)
+			if not tvdb == None: tvdb = int(tvdb)
+			if not season == None: season = int(season)
+			if not episode == None: episode = int(episode)
+			if imdb: link = '/search/imdb/' + str(imdb)
+			elif tvdb: link = '/search/tvdb/' + str(tvdb)
+			if type == 'episode': link += '?type=show'
+			else: link += '?type=movie'
+
+			items = cache.get(getTraktAsJson, 720, link)
+
+			if len(items) > 0:
+				item = items[0]
+				if type == 'episode':
+					slug = item['show']['ids']['slug']
+					link = '/shows/%s/seasons/%d/episodes/%d' % (slug, season, episode)
+					item = cache.get(getTraktAsJson, 720, link)
+				else:
+					item = item['movie']
+
+				if item:
+					link = '/scrobble/' + action
+					data = {type : item , 'progress' : progress}
+					result = __getTrakt(link, post = data)
+					return 'progress' in result
+	except:
+		return False
+		
+		
