@@ -588,7 +588,7 @@ def getFolder(id, meta=None, list=False):
 			
 			label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
 			item = control.item(label=label)
-			item.setProperty('IsPlayable', isPlayable)	
+			#item.setProperty('IsPlayable', isPlayable)	
 			cm.append(('Add To Library', 'RunPlugin(%s?action=addToLibrary&id=%s&type=%s&name=%s)' % (sysaddon, id, type, name)))
 			
 			if artMeta == True:
