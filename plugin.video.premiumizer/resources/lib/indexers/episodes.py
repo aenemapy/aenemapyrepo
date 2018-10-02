@@ -366,8 +366,11 @@ class seasons:
                 except: title = '0'	
 
                 try:premiered = item['firstAired'].encode('utf-8')
-                except: premiered = '0'				
-           
+                except: premiered = '0'			
+				
+                if limit == 'nextepisode':
+					if int(re.sub('[^0-9]', '', str(premiered))) > int(re.sub('[^0-9]', '', str(self.today_date))): continue  
+					
                 self.list.append({'id': id, 'epnumber' : epnumber, 'title': title,'label': title, 'season': season, 'episode': epnumber, 'tvshowtitle': tvshowtitle, 'year': year, 'premiered': premiered, 'status': status, 'studio': studio, 'genre': genre, 'duration': duration, 'rating': rating, 'votes': votes, 'mpaa': mpaa, 'director': '0', 'writer': '0', 'cast': '0', 'plot': plot, 'imdb': imdb, 'tvdb': tvdb, 'poster': poster, 'banner': '0', 'fanart': fanart, 'thumb': fanart})
 
                 # self.list.append({'title': title, 'label': label, 'season': season, 'episode': episode, 'tvshowtitle': tvshowtitle, 'year': year, 'premiered': premiered, 'status': status, 'studio': studio, 'genre': genre, 'duration': duration, 'rating': rating, 'votes': votes, 'mpaa': mpaa, 'director': director, 'writer': writer, 'cast': cast, 'plot': episodeplot, 'imdb': imdb, 'tvdb': tvdb, 'poster': poster, 'banner': banner, 'fanart': fanart, 'thumb': thumb})
