@@ -972,7 +972,7 @@ def DeleteAllTypes(id, mode='normal', autodelete='false'):
 	except:pass
 
 def DeleteDialog(id):
-	else: query = control.yesnoDialog('Premiumize Cloud', 'Do you want to delete the file from your cloud?' ,'', nolabel='No', yeslabel='Yes')
+	query = control.yesnoDialog('Premiumize Cloud', 'Do you want to delete the file from your cloud?' ,'', nolabel='No', yeslabel='Yes')
 	if query == 1: # YES
 		DeleteAllTypes(id, mode='full')
 		
