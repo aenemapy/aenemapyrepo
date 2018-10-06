@@ -47,6 +47,10 @@ source = params.get('source')
 content = params.get('content')
 
 if action == None:
+	
+    # from resources.lib.modules import changelog
+    # changelog.get()
+	
     from resources.lib.indexers import navigator
     navigator.navigator().root()
 	
@@ -150,7 +154,6 @@ elif action == 'forcecloudsync':
 	updater.updatelibrary()	
 	
 elif action == 'service':
-	from resources.lib.modules import control
 	if control.setting('cachecloud.startup') == 'true':
 		from resources.lib.api import premiumize
 		premiumize.cloudCache(mode='new')

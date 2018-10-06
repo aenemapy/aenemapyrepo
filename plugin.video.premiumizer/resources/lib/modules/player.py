@@ -50,17 +50,29 @@ class player(xbmc.Player):
             self.next_episode = []			
             self.seekStatus = False
             infoMeta = False
+            self.filetype = 'unknown'
+			
             self.totalTime = 0 ; self.currentTime = 0
             self.original_meta = meta
             self.content = 'movie' if season == None or episode == None else 'episode'
 			
-            if self.content == 'movie' and imdb != '0' and imdb != None: infoMeta = True
+            if self.content == 'movie' and imdb != '0' and imdb != None: 
+				self.filetype = 'movie'
+				infoMeta = True
             else: infoMeta = False
 			
-            if self.content == 'episode' and imdb != '0' and imdb != None: infoMeta = True
-            elif self.content == 'episode' and tvdb != '0' and tvdb != None: infoMeta = True
+            if self.content == 'episode' and imdb != '0' and imdb != None: 
+				self.filetype = 'episode'
+				infoMeta = True
+				
+            elif self.content == 'episode' and tvdb != '0' and tvdb != None: 
+				self.filetype = 'episode'
+				infoMeta = True
+				
             else: infoMeta = False
 
+			
+		
             self.tvshowtitle = title
             self.title = title
             self.year = year
@@ -320,10 +332,20 @@ class player(xbmc.Player):
             pass
 			
     def setPlayed(self):
-        try:
-            if control.setting('cloud.askdelete') != 'true': raise Exception()
+        try: # DIALOG DELETE
+            if control.setting('cloud.delete.mode') != '0': raise Exception()
             from resources.lib.api import premiumize
             premiumize.DeleteDialog(self.FileId)
+        except:
+            pass	
+			
+        try: # AUTO DELETE
+            if control.setting('cloud.delete.mode') != '1': raise Exception()
+            if self.filetype == 'unknown' and control.setting('cloud.autodelete.unknown') != 'true': raise Exception()
+            if self.filetype == 'movie' and control.setting('cloud.autodelete.movies') != 'true': raise Exception()
+            if self.filetype == 'episode' and control.setting('cloud.autodelete.tv') != 'true': raise Exception()
+            from resources.lib.api import premiumize
+            premiumize.AutoDelete(self.FileId)
         except:
             pass	
 	

@@ -18,8 +18,11 @@
 		<setting id="nextup.skin.native" type="bool" label="Skin native look for Popup (if supported)" default="false" visible="eq(-3,true)" />
 				
 		<setting type="lsep" label="Post-Playback Settings" />			
-		<setting id="cloud.askdelete" type="bool" label="Delete Watched File" default="false" />
-		<setting id="cloud.autodelete" type="bool" label="Autodelete Watched File" default="false" visible="!eq(-1,false)"/>
+		<setting id="cloud.delete.mode" type="enum" label="Delete Watched File Mode" values="Ask|Autodelete|Off" default="0" />
+		<setting id="cloud.autodelete.movies" type="bool" label="Autodelete Movie File" default="true" visible="eq(-1,1)"/>
+		<setting id="cloud.autodelete.tv" type="bool" label="Autodelete TV File" default="true" visible="eq(-2,1)"/>
+		<setting id="cloud.autodelete.unknown" type="bool" label="Autodelete Unknown Type File" default="true" visible="eq(-3,1)"/>
+
 		<setting type="lsep" label="Meta Settings (experimental - slower)" />		
 		<setting id="movies.meta" type="bool" label="Use Movies Metadata in Cloud Folder" default="false" />		
 		<setting id="tvshows.meta" type="bool" label="Use Tvshows Metadata in Cloud Folder" default="false" />		
@@ -36,7 +39,9 @@
 		<setting id="setting.timezone" type="labelenum" visible="!eq(-1,false)" label="TimeZone UTC" default="+0" values="+0|+1|+2|+3|+4|+5|+6|+7|+8|+9|+10|+11|+12|-1|-2|-3|-4|-5|-6|-7|-8|-9|-10|-11|-12" />
 		<setting type="lsep" label="Developer Settings" />
 		<setting id="premiumizer.debug" type="bool" label="Enable Debug Log" default="false" />
-
+		
+		
+		<setting id="last.version" type="text" label="Notification Popup" default="0" visible="false" />	
 	</category>
 	<category label="32346">
 		<setting id="remotedb.list" type="bool" label="Remote SQL Database" visible='false' default="false" />
@@ -94,5 +99,5 @@
 		<setting id="remote_path" type="folder" label="Backup Location" visible="True" />
 		<setting id="remote_restore_path" type="file" label="Restore from Zip File" visible="true" />
 	</category>	
-
+	
 </settings>

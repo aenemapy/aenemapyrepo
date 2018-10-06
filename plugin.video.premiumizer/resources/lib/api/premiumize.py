@@ -933,7 +933,7 @@ def clearfinished():
     r = reqJson(url)
     control.refresh()
 	
-def DeleteAllTypes(id, mode='normal'):
+def DeleteAllTypes(id, mode='normal', autodelete='false'):
 	try:
 		if id == '' or id == '0' or id == None or id == 'false': raise Exception()
 		data = {'id': id }
@@ -956,26 +956,28 @@ def DeleteAllTypes(id, mode='normal'):
 			x = premiumizeFolder + str(folderId)
 			folder = urlparse.urljoin(premiumize_Api, x)
 			folder = reqJson(folder)
-			folderName = folder['name']
-			if folderName.lower() == 'root': raise Exception()
-			folderName = folderName + ext
+			folderNameOrig = folder['name']
+			if folderNameOrig.lower() == 'root': raise Exception()
+			folderName = folderNameOrig + ext
 			folderClear = re.sub('\n|([[].+?[]])|([(].+?[)])|\s', '', folderName)
 			filenameClean = re.sub('\n|([[].+?[]])|([(].+?[)])|\s', '', filename)
-			if control.setting('cloud.autodelete') == 'true':
+			if autodelete == 'true':
 				if folderClear.lower() == filenameClean.lower(): 
 					deleteItem(folderId, 'folder')
 					raise Exception()			
 			else:
-				query = control.yesnoDialog('Found Parent Folder: ', folderName , 'Do you want to delete it?', nolabel='No', yeslabel='Yes')
+				query = control.yesnoDialog('Found Parent Folder: ', folderNameOrig , 'Do you want to delete it?', nolabel='No', yeslabel='Yes')
 				if query == 1: deleteItem(folderId, 'folder')
 		except:pass
 	except:pass
 
 def DeleteDialog(id):
-	if control.setting('cloud.autodelete') == 'true': query = 1
 	else: query = control.yesnoDialog('Premiumize Cloud', 'Do you want to delete the file from your cloud?' ,'', nolabel='No', yeslabel='Yes')
 	if query == 1: # YES
 		DeleteAllTypes(id, mode='full')
+		
+def AutoDelete(id):
+	DeleteAllTypes(id, mode='full', autodelete='true')
 	
 def add_file():
     dialog = xbmcgui.Dialog()
