@@ -107,7 +107,23 @@ def renameItem(title, id, type):
 	if type == 'folder': renameUrl = '/api/folder/rename'
 	elif type == 'torrent': renameUrl = '/api/transfer/rename'
 	else: renameUrl = premiumizeRenameItem
-	k = control.keyboard(title, 'Rename Item') ; k.doModal()	
+	folderName = ''
+	
+	if type != 'folder':
+		u = urlparse.urljoin(premiumize_Api, premiumizeItemDetails) 
+		details = reqJson(u, data=data)
+
+		filename = details['name']	
+		ext = filename.split('.')[-1]
+		folderId = details['folder_id']	
+		x = premiumizeFolder + str(folderId)
+		folder = urlparse.urljoin(premiumize_Api, x)
+		folder = reqJson(folder)
+		folderName = folder['name']
+		if folderName == 'root': folderName = filename
+		else: folderName = folderName + '.' + ext
+	
+	k = control.keyboard(folderName, 'Rename Item (includes Extension)') ; k.doModal()	
 	q = k.getText() if k.isConfirmed() else None
 	if (q == None or q == ''): return
 	data['name'] = q
@@ -726,18 +742,19 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
 	if season != None:
 		epcheck    = "s%02de%02d" % (int(season), int(episode))
 		epcheck_2  = "%02dx%02d"  % (int(season), int(episode))
-		epcheck_3  = "%sx%s[._ -]" %(season, episode)
-				
+		
+		dd_season  = "%02d" % int(season)
+		dd_episode = "%02d" % int(episode)
+		
 		exactCheck_1 = titleCheck + epcheck
 		exactCheck_2 = titleCheck + epcheck_2
-		exactCheck_3 = titleCheck + epcheck_3
+
 	else:
 		if year == '' or year == None or year == '0': year = ''
 		exactCheck_1 = titleCheck + year
 		exactCheck_2 = titleCheck + year
-		exactCheck_3 = titleCheck + year		
-
 	
+
 	for x in r:
 		cm = []
 		type = x['type']
@@ -752,8 +769,16 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
 			if not cleantitle.get(title) in cleantitle.get(name): continue
 
 		normalSources.append(x)
-		if exactCheck_1 in cleantitle.get(name) or exactCheck_2 in cleantitle.get(name) or exactCheck_3 in cleantitle.get(name):
+		if exactCheck_1 in cleantitle.get(name) or exactCheck_2 in cleantitle.get(name):
 			exactSources.append(x)
+		else:
+			epmixed = re.findall('[._ -]s?(\d+)[e|x](\d+)[._ -]', name.lower())[0]
+			s = epmixed[0]
+			e = epmixed[1]
+			if cleantitle.get(title) in cleantitle.get(name):
+				if s == dd_season or s == season:
+					if e == dd_episode or e == episode: exactSources.append(x)
+								
 			
 	if len(exactSources) > 0: 
 		content = exactSources
