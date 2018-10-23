@@ -756,29 +756,31 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
 	
 
 	for x in r:
-		cm = []
-		type = x['type']
-		if filesOnly == 'true':
-			if type.lower() != 'file': continue
-		fileLabel = type
-		id = x['id']
-		name = x['name'].encode('utf-8')
-		name = normalize(name)
+		try:
+			cm = []
+			type = x['type']
+			if filesOnly == 'true':
+				if type.lower() != 'file': raise Exception()
+			fileLabel = type
+			id = x['id']
+			name = x['name'].encode('utf-8')
+			name = normalize(name)
 
-		if match == 'true': 
-			if not cleantitle.get(title) in cleantitle.get(name): continue
+			
+			if not titleCheck in cleantitle.get(name): raise Exception()
 
-		normalSources.append(x)
-		if exactCheck_1 in cleantitle.get(name) or exactCheck_2 in cleantitle.get(name):
-			exactSources.append(x)
-		else:
-			epmixed = re.findall('[._ -]s?(\d+)[e|x](\d+)[._ -]', name.lower())[0]
-			s = epmixed[0]
-			e = epmixed[1]
-			if cleantitle.get(title) in cleantitle.get(name):
+			normalSources.append(x)
+			
+			if exactCheck_1 in cleantitle.get(name) or exactCheck_2 in cleantitle.get(name):
+				exactSources.append(x)
+			else:
+				epmixed = re.findall('[._ -]s?(\d+)[e|x](\d+)[._ -]', name.lower())[0]
+				s = epmixed[0]
+				e = epmixed[1]
 				if s == dd_season or s == season:
 					if e == dd_episode or e == episode: exactSources.append(x)
-								
+		except:pass
+		
 			
 	if len(exactSources) > 0: 
 		content = exactSources
