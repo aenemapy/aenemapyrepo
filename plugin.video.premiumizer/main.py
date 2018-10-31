@@ -154,6 +154,7 @@ elif action == 'forcecloudsync':
 	updater.updatelibrary()	
 	
 elif action == 'service':
+	from resources.lib.modules import control	
 	if control.setting('cachecloud.startup') == 'true':
 		from resources.lib.api import premiumize
 		premiumize.cloudCache(mode='new')

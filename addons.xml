@@ -49,13 +49,12 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.premiumizer" version="2018.10.23" name="Premiumizer" provider-name="aenema">
+<addon id="plugin.video.premiumizer" version="2018.10.31" name="Premiumizer" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.beautifulsoup4" />
 		<import addon="script.module.metalibrary" />
 		<import addon="script.module.requests" />
-
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="main.py">
 		<provides>video</provides>
