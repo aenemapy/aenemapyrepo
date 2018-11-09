@@ -4,7 +4,7 @@ from resources.lib.modules import control
 from resources.lib.modules import updater
 
 updateService = control.setting('library.update')
-control.setSetting(id='cachecloud.remember', value='false')
+control.setSetting(id='first.start', value='true') # FORCE NEW CACHE
 
 if updateService != 'false': 
 	control.execute('RunPlugin(plugin://plugin.video.premiumizer/?action=service)')

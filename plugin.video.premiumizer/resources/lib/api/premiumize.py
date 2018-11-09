@@ -705,10 +705,18 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
 	cached_time, cached_results = cloudCache(mode='get')
 	
 	if cached_time != '0' and cached_time != None:
-		if cachedSession == 'true': r = cached_results
+		if cachedSession == 'true': 
+			if control.setting('first.start') == 'true':
+				control.setSetting(id='first.start', value='false')
+				progress.create('Scraping Your Cloud','Please Wait...')
+				progress.update(100,'Scraping Your Cloud','Please Wait...')
+				r = PremiumizeScraper().sources()
+				cloudCache(mode='write', data=r)
+			else:
+				r = cached_results
 		else:
 			cachedLabel = "Cached Cloud: %s" % cached_time
-			results = [cachedLabel, 'New Cloud Scrape', '[AUTO] Cached Cloud until Next Start']
+			results = [cachedLabel, 'New Cloud Scrape', '[AUTO] Cached Cloud']
 			select = control.selectDialog(results)
 			if select == 0: r = cached_results
 			elif select == 1: 
@@ -716,13 +724,25 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
 				progress.update(100,'Scraping Your Cloud','Please Wait...')
 				r = PremiumizeScraper().sources()
 				cloudCache(mode='write', data=r)
-			elif select == 2: 
+			elif select == 2: # FORCE NEW CACHE AND AUTO CACHE MODE
 				control.setSetting(id='cachecloud.remember', value='true')
+				control.setSetting(id='first.start', value='false')
 				progress.create('Scraping Your Cloud','Please Wait...')
 				progress.update(100,'Scraping Your Cloud','Please Wait...')
 				r = PremiumizeScraper().sources()
 				cloudCache(mode='write', data=r)
 	else:
+		if cachedSession == 'true': 
+			control.setSetting(id='first.start', value='false')
+			progress.create('Scraping Your Cloud','Please Wait...')
+			progress.update(100,'Scraping Your Cloud','Please Wait...')
+			r = PremiumizeScraper().sources()
+			cloudCache(mode='write', data=r)
+		else:
+			r = PremiumizeScraper().sources()
+			cloudCache(mode='write', data=r)
+
+		
 		progress.create('Scraping Your Cloud','Please Wait...')
 		progress.update(100,'Scraping Your Cloud','Please Wait...')
 		

@@ -2,6 +2,7 @@
 <settings>
 	<category label="32310">
 		<setting type="lsep" label="Premiumize Settings" />
+		<setting id="first.start" type="bool" label="startup control" default="true" visible="false" />
 		<setting id="premiumize.customer_id" type="text" visible="true" label="Premiumize Customer ID" default="" />
 		<setting id="premiumize.pin" type="text" visible="true" label="Premiumize PIN" default="" />
 		<setting id="premiumize.tls" type="bool" label="Use HTTPS protocol" default="true" />
