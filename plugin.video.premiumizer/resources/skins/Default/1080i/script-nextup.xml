@@ -1,153 +1,179 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <window>
-    <defaultcontrol always="true">3012</defaultcontrol>
-    <zorder>0</zorder>
-    <controls>
+	<defaultcontrol always="true">3012</defaultcontrol>
+	<controls>
+		<!--3000 - Title
+		3001 - Plot
+		3002 - Season/Episode
+		3003 - Rating
+		3004 - First Aired
+		3005 - TV Show Fanart
+		3006 - TV Show ClearArt
+		3007 - TV Show Title
+		3008 - Episode Thumb
+		3009 - TV Show Poster
+		3010 - TV Show Landscape
+		3011 - Video Resolution
+		3012 - Watch Now Button
+		3013 - Cancel Button
+		3015 - Season Number
+		3016 - Episode Number
+		3018 - Play Count-->
         <control type="label" id="3000"><visible>false</visible></control>
         <control type="textbox" id="3001"><visible>false</visible></control>
         <control type="label" id="3002"><visible>false</visible></control>
         <control type="label" id="3003"><visible>false</visible></control>
         <control type="label" id="3004"><visible>false</visible></control>
+        <control type="label" id="3005"><visible>false</visible></control>
+        <control type="label" id="3007"><visible>false</visible></control>
+        <control type="label" id="3008"><visible>false</visible></control>
         <control type="label" id="7777"><visible>false</visible></control>
-
-        <control type="group">
-
-            <right>20</right>
-            <bottom>20</bottom>
-            <width>592</width>
-            <height>200</height>
-
-            <control type="label" description="text">
-                <top>-54</top>
-                <left>0</left>
-                <right>20</right>
-                <height>64</height>
-                <aligny>center</aligny>
-                <font>font10</font>
-                <label>Next Episode in ...    $INFO[Player.TimeRemaining]</label>
-                <textcolor>ffcccccc</textcolor>
-                <shadowcolor>bf000000</shadowcolor>
-            </control>
-
-            <control type="image" description="fanart">
-                <fadetime>350</fadetime>
-                <aspectratio scalediffuse="false">scale</aspectratio>
-                <texture>$INFO[Control.GetLabel(7777)]</texture>
-				<left>-24</left>
-				<right>-24</right>
-				<top>-24</top>
-				<bottom>-24</bottom>
-				<bordersize>24</bordersize>
-				<bordertexture border="32">common/shadow-24.png</bordertexture>
-            </control>
-
-            <control type="image" description="blackline">
-                <width>100%</width>
-                <height>64</height>
-				<top>136</top>
-				<left>0</left>
-                <bottom>0</bottom>
-                <right>0</right>
-                <aspectratio scalediffuse="false">scale</aspectratio>
-                <texture colordiffuse="b3181818">common/white.png</texture>
-            </control>
-
-<!--             <control type="image" description="blackline">
-                <height>64</height>
-                <width>64</width>
-				<top>35</top>
-				<left>270</left>
-                <bottom>20</bottom>
-                <right>0</right>
-                <aspectratio scalediffuse="false">keep</aspectratio>
-                <texture colordiffuse="b3181818">common/circle.png</texture>
-            </control>
-            <control type="label">
-                <description>Remaining</description>
-				<top>50</top>
-				<left>288</left>
-                <bottom>30</bottom>
-                <right>0</right>
-                <height>64</height>
-                <width>64</width>
-                <font>font10</font>
-                <textcolor>ffcccccc</textcolor>
-                <label>$INFO[Player.TimeRemaining(ss)]</label>
-            </control>
- -->
-
-            <control type="label" description="text">
-                <left>20</left>
-                <right>120</right>
-                <height>64</height>
-                <bottom>0</bottom>
-                <aligny>center</aligny>
-                <font>font10</font>
-                <label>$INFO[Control.GetLabel(3002),, ]$INFO[Control.GetLabel(3000)]</label>
-                <textcolor>ffededed</textcolor>
-            </control>
-
-            <control type="button" id="3012">
-                <description>Play</description>
-                <right>64</right>
-                <bottom>0</bottom>
-                <width>62</width>
-                <height>62</height>
-                <label></label>
-                <align>center</align>
-                <aligny>center</aligny>
-                <textoffsetx>0</textoffsetx>
-                <onleft>3013</onleft>
-                <onright>3013</onright>
-                <font>font10</font>
-                <textcolor>ffcccccc</textcolor>
-                <focusedcolor>ffededed</focusedcolor>
-                <texturefocus colordiffuse="ff0288d1" border="5">common/white.png</texturefocus>
-                <texturenofocus colordiffuse="00ffffff" border="5">noop</texturenofocus>
-            </control>
-            <control type="image">
-                <description>Play</description>
-				<top>140</top>
-				<left>470</left>
-                <right>2</right>
-                <bottom>0</bottom>
-                <width>52</width>
-                <height>52</height>
-                <texture>common/playwhite.png</texture>
-                <aspectratio>keep</aspectratio>
-                <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(3012)">Conditional</animation>
-            </control>
-            <control type="button" id="3013">
-                <description>Cancel</description>
-
-                <right>2</right>
-                <bottom>0</bottom>
-                <width>62</width>
-                <height>62</height>
-                <label></label>
-                <align>center</align>
-                <aligny>center</aligny>
-                <textoffsetx>0</textoffsetx>
-                <onleft>3012</onleft>
-                <onright>3012</onright>
-                <font>font10</font>
-                <textcolor>ffcccccc</textcolor>
-                <focusedcolor>ffededed</focusedcolor>
-                <texturefocus colordiffuse="ff0288d1" border="5">common/white.png</texturefocus>
-                <texturenofocus colordiffuse="00ffffff" border="5">noop</texturenofocus>
-            </control>
-            <control type="image">
-                <description>Stop</description>
-				<top>135</top>
-				<left>528</left>
-                <right>0</right>
-                <bottom>0</bottom>
-                <width>64</width>
-                <height>64</height>
-                <texture>common/stopwhite.png</texture>
-                <aspectratio>keep</aspectratio>
-                <animation effect="fade" start="100" end="50" time="0" condition="!Control.HasFocus(3013)">Conditional</animation>
-            </control>
-        </control>
-    </controls>
+        <control type="label" id="3008"><visible>false</visible></control>
+        <control type="label" id="3015"><visible>false</visible></control>
+        <control type="label" id="3016"><visible>false</visible></control>
+		
+		<!-- OSD -->
+		<control type="group">
+			<animation effect="fade" start="0" end="100" time="0">Visible</animation>
+			<animation effect="fade" start="100" end="0" time="400m">Hidden</animation>
+			<!--Bottom-->
+			<control type="group">
+				<!-- mask -->
+				<control type="image">
+					<bottom>0</bottom>
+					<width>100%</width>
+					<height>180</height>
+					<texture colordiffuse="FF000000">views/player/mask_bottom.png</texture>
+				</control>
+				<!-- Wide -->
+				<control type="group">
+					<visible>true</visible>
+					<control type="image">
+						<bottom>20</bottom>
+						<left>20</left>
+						<width>268</width>
+						<height>159</height>
+						<texture>views/player/shadow_wide.png</texture>
+					</control>
+					<control type="image">
+						<bottom>29</bottom>
+						<left>29</left>
+						<width>250</width>
+						<height>141</height>
+						<texture colordiffuse="ff181818" diffuse="views/player/mask_wide.png">common/white.jpg</texture>
+						<aspectratio scalediffuse="false">stretch</aspectratio>
+						<visible>String.IsEmpty(Control.GetLabel(3005)) + String.IsEmpty(Control.GetLabel(3008))</visible>
+					</control>
+					<control type="textbox">
+						<bottom>39</bottom>
+						<left>39</left>
+						<width>230</width>
+						<height>121</height>
+						<font>Light24</font>
+						<textcolor>white</textcolor>
+						<align>center</align>
+						<aligny>center</aligny>
+						<label>$INFO[Control.GetLabel(3007)]</label>
+						<visible>String.IsEmpty(Control.GetLabel(3005)) + String.IsEmpty(Control.GetLabel(3008))</visible>
+					</control>
+					<control type="image">
+						<bottom>29</bottom>
+						<left>29</left>
+						<width>250</width>
+						<height>141</height>
+						<texture colordiffuse="ff181818" diffuse="views/player/mask_wide.png">common/white.jpg</texture>
+						<aspectratio scalediffuse="false">stretch</aspectratio>
+						<visible>!String.IsEmpty(Control.GetLabel(7777)) | !String.IsEmpty(Control.GetLabel(3005)) | !String.IsEmpty(Control.GetLabel(3008))</visible>
+					</control>
+					<control type="image">
+						<bottom>29</bottom>
+						<left>29</left>
+						<width>250</width>
+						<height>141</height>
+						<texture diffuse="views/player/mask_square.png">$INFO[Control.GetLabel(7777)]</texture>
+						<aspectratio scalediffuse="false">scale</aspectratio>
+						<visible>!String.IsEmpty(Control.GetLabel(7777)) | !String.IsEmpty(Control.GetLabel(3005)) | !String.IsEmpty(Control.GetLabel(3008))</visible>
+					</control>
+				</control>
+				<!-- Label section -->
+				<control type="grouplist">
+					<orientation>horizontal</orientation>
+					<height>31</height>
+					<bottom>135</bottom>
+					<left>309</left>
+					<right>30</right>
+					<itemgap>0</itemgap>
+					<control type="label">
+						<width>auto</width>
+						<height>30</height>
+						<aligny>center</aligny>
+						<font>med28</font>
+						<textcolor>white</textcolor>
+						<label>[LIGHT]Next Up   [COLOR ffb9090b]$INFO[Player.TimeRemaining][/COLOR][/LIGHT]</label>
+					</control>
+				</control>
+				<!-- Details -->
+				<control type="grouplist">
+					<orientation>horizontal</orientation>
+					<height>31</height>
+					<bottom>98</bottom>
+					<left>309</left>
+					<right>30</right>
+					<itemgap>0</itemgap>
+					<control type="label">
+						<width>auto</width>
+						<height>30</height>
+						<aligny>center</aligny>
+						<font>reg24</font>
+						<textcolor>white</textcolor>
+						<label>$INFO[Control.GetLabel(3007),, - ]$INFO[Control.GetLabel(3015),S,:]$INFO[Control.GetLabel(3016),E, - ]$INFO[Control.GetLabel(3000)]   </label>
+						<visible>!String.IsEmpty(Control.GetLabel(3000))</visible>
+					</control>
+				</control>
+				<!-- Bottom label section -->
+				<control type="grouplist">
+					<orientation>horizontal</orientation>
+					<height>56</height>
+					<bottom>27</bottom>
+					<left>309</left>
+					<right>20</right>
+					<itemgap>5</itemgap>
+					<control type="button" id="3012">
+						<font>font10</font>
+						<animation effect="slide" time="0" end="-2,0" condition="true">Conditional</animation>
+						<height>56</height>
+						<textcolor>ccffffff</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<selectedcolor>ccffffff</selectedcolor>
+						<shadowcolor>66000000</shadowcolor>
+						<aligny>center</aligny>
+						<align>center</align>
+						<texturefocus border="10" colordiffuse="ffb9090b">items/button.png</texturefocus>
+						<texturenofocus border="10" colordiffuse="80000000">items/button.png</texturenofocus>
+						<alttexturefocus border="10" colordiffuse="ffb9090b">items/button.png</alttexturefocus>
+						<alttexturenofocus border="10" colordiffuse="80000000">items/button.png</alttexturenofocus>
+						<pulseonselect>no</pulseonselect>
+						<label>Watch Now</label>
+					</control>
+					<control type="button" id="3013">
+						<font>font10</font>
+						<animation effect="slide" time="0" end="-2,0" condition="true">Conditional</animation>
+						<height>56</height>
+						<textcolor>ccffffff</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<selectedcolor>ccffffff</selectedcolor>
+						<shadowcolor>66000000</shadowcolor>
+						<aligny>center</aligny>
+						<align>center</align>
+						<texturefocus border="10" colordiffuse="ffb9090b">items/button.png</texturefocus>
+						<texturenofocus border="10" colordiffuse="80000000">items/button.png</texturenofocus>
+						<alttexturefocus border="10" colordiffuse="ffb9090b">items/button.png</alttexturefocus>
+						<alttexturenofocus border="10" colordiffuse="80000000">items/button.png</alttexturenofocus>
+						<pulseonselect>no</pulseonselect>
+						<label>Close</label>
+					</control>
+				</control>
+			</control>
+		</control>
+	</controls>
 </window>

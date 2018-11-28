@@ -1,3 +1,4 @@
+[B]2018.11.28[/B] - Hotfixes and changed NextUp skin
 [B]2018.08.06[/B] - Fixed missing tv shows seasons while browsing content
 [B]2018.08.05[/B] - Fixed Playback Issues
 [B]2018.07.10[/B] - Improved post playback routines and checks
