@@ -349,22 +349,6 @@ class player(xbmc.Player):
         except:
             pass	
 	
-        try:
-            if self.content == 'movie': playcount.markMovieDuringPlayback(self.imdb, '7')
-            elif self.content == 'episode':playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '7')
-        except:
-            pass
-        try:
-            if self.DBID == None: raise Exception()
-            if self.content == 'movie':
-                rpc = '{"jsonrpc": "2.0", "method": "VideoLibrary.SetMovieDetails", "params": {"movieid" : %s, "playcount" : 1 }, "id": 1 }' % str(self.DBID)
-            elif self.content == 'episode':
-                rpc = '{"jsonrpc": "2.0", "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid" : %s, "playcount" : 1 }, "id": 1 }' % str(self.DBID)
-               
-            control.jsonrpc(rpc)
-        except:
-            pass
-			
         control.refresh()
 			
 			
