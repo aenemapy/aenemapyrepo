@@ -143,16 +143,17 @@ def getIDLink(id):
 	file = r['link']
 	return file
 
-	
-def downloadFolder(name, url):
-	data = {'items[0][id]': name, 'items[0][name]': id, 'items[0][type]':'folder'}
+def downloadFolder(name, id):
+	data = {'folders[]': id}
 	req = urlparse.urljoin(premiumize_Api, '/api/zip/generate')
 	u = reqJson(req, data=data)
-	zipLocation = u['location']
+	print ("DOWNLOAD FOLDER", u)
+	zipLink = u['location']
 	name = name.replace(' ','_') + ".zip"
 	from resources.lib.modules import downloader
 	loc = control.setting('download.path')
-	downloader.downloadZip(name, zipLocation)
+	dest = os.path.join(loc, name)
+	downloader.downloadZip(zipLink, dest, name)
 	
 def createLibFolder(path):
     os.makedirs(path)
@@ -598,7 +599,8 @@ def getFolder(id, meta=None, list=False):
 				url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, playLink, systitle , year, imdb, sysmeta, id)
 				cm.append(('Queue Item', 'RunPlugin(%s?action=queueItem)' % sysaddon))					
 				if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s&id=%s)' % (sysaddon, name, url, id)))
-
+			else: cm.append(('Download Folder (Zip)', 'RunPlugin(%s?action=downloadZip&name=%s&id=%s)' % (sysaddon, name, id)))
+			
 			cm.append(('Delete from Cloud', 'RunPlugin(%s?action=premiumizeDeleteItem&id=%s&type=%s)' % (sysaddon, id, type)))
 			cm.append(('Rename Item', 'RunPlugin(%s?action=premiumizeRename&id=%s&type=%s&title=%s)' % (sysaddon, id, type, name)))
 			

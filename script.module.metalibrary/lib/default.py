@@ -46,6 +46,13 @@ provider = params.get('provider')
 
 
 #------------------------ FREEDOC -----------------------------
+if action == 'rdUser':
+	
+	import tvresolver
+	from tvresolver.modules import control
+	tvresolver.getDebridUser()
+	control.openSettings('1.0')	
+
 
 	
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

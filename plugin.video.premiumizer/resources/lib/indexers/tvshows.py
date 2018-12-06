@@ -63,8 +63,15 @@ class tvshows:
         self.tvdb_by_query = 'http://thetvdb.com/api/GetSeries.php?seriesname=%s'
         self.tvdb_image = 'http://thetvdb.com/banners/'
 
-        self.tmdb_image = 'https://image.tmdb.org/t/p/original'
-        self.tmdb_poster = 'https://image.tmdb.org/t/p/w500'
+
+        poster_size = ['w154', 'w500', 'original']
+        fanart_size = ['w300', 'w1280', 'original']
+		
+        poster_quality = poster_size[int(control.setting('poster.type'))]
+        fanart_quality = fanart_size[int(control.setting('fanart.type'))]
+		
+        self.tmdb_image = 'https://image.tmdb.org/t/p/%s'  % fanart_quality
+        self.tmdb_poster = 'https://image.tmdb.org/t/p/%s' % poster_quality	
 				
 
         self.persons_link = 'http://www.imdb.com/search/name?count=100&name='
@@ -982,6 +989,15 @@ class tvshows:
 
         if self.fanart_tv_user == '':
             for i in self.list: i.update({'clearlogo': '0', 'clearart': '0'})
+			
+			
+    def remotedb_meta(self, imdb=None, tmdb=None, tvdb=None):
+		try:
+			dbmeta = metalibrary.metaTV(imdb=imdb, tmdb=tmdb, tvdb=tvdb)
+			return dbmeta
+            
+		except:pass
+		
 
 
     def super_info(self, i):
@@ -1053,20 +1069,18 @@ class tvshows:
             if tvdb == '' or tvdb == None or tvdb == '0': raise Exception()
             clearlogo = '0'
             clearart = '0'	
-            banner = '0'				
+            banner = '0'		
+			
             try: 
-				dbmeta = metalibrary.metaTV(imdb,tvdb)
-				poster = dbmeta['poster']
-				fanart = dbmeta['fanart']
-				tvdbposter = dbmeta['poster2']
-				tvdbfanart = dbmeta['fanart2']
-				clearlogo  = dbmeta['clearlogo']
-				banner     = dbmeta['banner']
-				if poster == '0' or poster == '' or poster == None: poster = tvdbposter
-				if fanart == '0' or fanart == '' or fanart == None: fanart = tvdbfanart
-				tmdb = dbmeta['tmdb']
-				metaDB = True
-            except: metaDB = False	
+                self.remotedbMeta = self.remotedb_meta(imdb=imdb, tvdb=tvdb)
+                if len(self.remotedbMeta) > 0: 
+					meta = self.remotedbMeta
+					meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': meta['title'], 'originaltitle': meta['title'], 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
+					self.list[i].update(meta)
+					return
+            except: pass
+			
+            metaDB = False	
 
 
 			
@@ -1273,8 +1287,12 @@ class tvshows:
 
                 if 'poster' in i and i['poster'] != '0' and i['poster'] != '' and i['poster'] != None:
                     art.update({'icon': i['poster'], 'thumb': i['poster'], 'poster': i['poster']})
-                #elif 'poster2' in i and not i['poster2'] == '0':
-                    #art.update({'icon': i['poster2'], 'thumb': i['poster2'], 'poster': i['poster2']})
+
+                elif 'poster2' in i and i['poster2'] != '0' and i['poster2'] != '' and i['poster2'] != None:
+                    art.update({'icon': i['poster2'], 'thumb': i['poster2'], 'poster': i['poster2']})
+
+                elif 'poster3' in i and i['poster3'] != '0' and i['poster3'] != '' and i['poster3'] != None:
+                    art.update({'icon': i['poster3'], 'thumb': i['poster3'], 'poster': i['poster3']})					
                 else:
                     art.update({'icon': addonPoster, 'thumb': addonPoster, 'poster': addonPoster})
 
@@ -1295,17 +1313,19 @@ class tvshows:
 
                 if settingFanart == 'true' and 'fanart' in i and i['fanart'] != '0' and i['fanart'] != '' and i['fanart'] != None:
                     item.setProperty('Fanart_Image', i['fanart'])
-                #elif settingFanart == 'true' and 'fanart2' in i and not i['fanart2'] == '0':
-                    #item.setProperty('Fanart_Image', i['fanart2'])
+					
+                elif settingFanart == 'true' and 'fanart2' in i and i['fanart2'] != '0' and i['fanart2'] != '' and i['fanart2'] != None:
+                    item.setProperty('Fanart_Image', i['fanart2'])
+
+                elif settingFanart == 'true' and 'fanart3' in i and i['fanart3'] != '0' and i['fanart3'] != '' and i['fanart3'] != None:
+                    item.setProperty('Fanart_Image', i['fanart3'])
+
                 elif not addonFanart == None:
                     item.setProperty('Fanart_Image', addonFanart)
 
                 item.setArt(art)
                 item.addContextMenuItems(cm)
                 item.setInfo(type='Video', infoLabels = meta)
-
-                video_streaminfo = {'codec': 'h264'}
-                item.addStreamInfo('video', video_streaminfo)
 
                 control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
             except:

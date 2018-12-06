@@ -71,8 +71,14 @@ class movies:
         self.user = 'premiumizer'
         self.lang = control.apiLanguage()['trakt']
 
-        self.tmdb_image = 'https://image.tmdb.org/t/p/original'
-        self.tmdb_poster = 'https://image.tmdb.org/t/p/w500'
+        poster_size = ['w154', 'w500', 'original']
+        fanart_size = ['w300', 'w1280', 'original']
+		
+        poster_quality = poster_size[int(control.setting('poster.type'))]
+        fanart_quality = fanart_size[int(control.setting('fanart.type'))]
+		
+        self.tmdb_image = 'https://image.tmdb.org/t/p/%s'  % fanart_quality
+        self.tmdb_poster = 'https://image.tmdb.org/t/p/%s' % poster_quality
 		
         self.search_link = 'http://api.trakt.tv/search/movie?limit=20&page=1&query='
         self.fanart_tv_art_link = 'http://webservice.fanart.tv/v3/movies/%s'
@@ -1031,6 +1037,13 @@ class movies:
             self.meta.append(meta)
         except:
             pass
+			
+    def remotedb_meta(self, imdb=None, tmdb=None):
+		try:
+			dbmeta = metalibrary.metaMovies(imdb=imdb, tmdb=tmdb)
+			return dbmeta
+            
+		except:pass
 				
 
     def super_info(self, i):
@@ -1070,23 +1083,16 @@ class movies:
             clearart = '0'
             banner = '0'
 			
-            try: 
-				dbmeta = metalibrary.metaMovies(imdb)
-				posterTMDB = dbmeta['poster']
-				if posterTMDB == '' or posterTMDB == None or posterTMDB == '0': poster = poster
-				else: poster = posterTMDB
-				fanart = dbmeta['fanart']
-				ftvfanart = dbmeta['fanart2']
-				clearlogo = dbmeta['clearlogo']
-				banner    = dbmeta['banner']
-				if fanart == '' or fanart == None or fanart == '0':
-					if ftvfanart == '' or ftvfanart == None or ftvfanart == '0': fanart = '0'
-					else: fanart = ftvfanart
-								
-				
-				tmdb = dbmeta['tmdb']
-				metaDB = True
-            except: metaDB = False	
+            try:
+                self.remotedbMeta = self.remotedb_meta(imdb=imdb, tmdb=tmdb)
+                if len(self.remotedbMeta) > 0: 
+					meta = self.remotedbMeta
+					meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
+					self.list[i].update(meta)
+					return
+            except:pass
+
+            metaDB = False	
 			
 
 
@@ -1210,7 +1216,6 @@ class movies:
 		
         for i in items:
             try:
-				
                 label = '%s' % (i['title'])
 
                 imdb, tmdb, title, year = i['imdb'], i['tmdb'], i['originaltitle'], i['year']
@@ -1237,8 +1242,7 @@ class movies:
                 try: meta.update({'genre': cleangenre.lang(meta['genre'], self.lang)})
                 except: pass
 
-                poster = [i[x] for x in ['poster3', 'poster', 'poster2'] if i.get(x, '0') != '0']
-                poster = poster[0]
+                poster = i['poster']
                 if poster == '' or poster == '0' or poster == None: poster = addonPoster
 
                 
@@ -1277,7 +1281,14 @@ class movies:
                 item = control.item(label=label)
                
                 art = {}
-                art.update({'icon': poster, 'thumb': poster, 'poster': poster})
+                if 'poster' in i and i['poster'] != '0' and i['poster'] != '' and i['poster'] != None:
+                    art.update({'icon': i['poster'], 'thumb': i['poster'], 'poster': i['poster']})
+
+                elif 'poster2' in i and i['poster2'] != '0' and i['poster2'] != '' and i['poster2'] != None:
+                    art.update({'icon': i['poster2'], 'thumb': i['poster2'], 'poster': i['poster2']})
+					
+                else:
+                    art.update({'icon': addonPoster, 'thumb': addonPoster, 'poster': addonPoster})
 
                 if 'banner' in i and not i['banner'] == '0':
                     art.update({'banner': i['banner']})
@@ -1290,13 +1301,11 @@ class movies:
                 if 'clearart' in i and not i['clearart'] == '0':
                     art.update({'clearart': i['clearart']})
 
-
-                if settingFanart == 'true' and 'fanart2' in i and i['fanart2'] != '0' and i['fanart2'] != '' and i['fanart2'] != None:
-                    item.setProperty('Fanart_Image', i['fanart2'])
-                elif settingFanart == 'true' and 'fanart' in i and i['fanart'] != '0' and i['fanart'] != '' and i['fanart'] != None:
+                if settingFanart == 'true' and 'fanart' in i and i['fanart'] != '0' and i['fanart'] != '' and i['fanart'] != None:
                     item.setProperty('Fanart_Image', i['fanart'])
-                elif not addonFanart == None:
-                    item.setProperty('Fanart_Image', addonFanart)
+					
+                elif settingFanart == 'true' and 'fanart2' in i and i['fanart2'] != '0' and i['fanart2'] != '' and i['fanart2'] != None:
+                    item.setProperty('Fanart_Image', i['fanart2'])
 
                 item.setArt(art)
                			
@@ -1307,9 +1316,6 @@ class movies:
                 item.setProperty('resumetime', played)
 
                 item.setInfo(type='Video', infoLabels = meta)
-               
-                video_streaminfo = {'codec': 'h264'}
-                item.addStreamInfo('video', video_streaminfo)
                
                 control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
             except:

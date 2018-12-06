@@ -13,6 +13,9 @@ from resources.lib.modules import control
 try: from sqlite3 import dbapi2 as database
 except: from pysqlite2 import dbapi2 as database
 
+import time
+import requests
+start = time.time()
 
 class downloader(object):
 	def __init__(self):
@@ -418,3 +421,53 @@ class downloader(object):
 				else:
 					#use existing response
 					pass
+					
+
+
+class customdownload(urllib.FancyURLopener):
+    version = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'
+
+def silent_download(url, dest):
+    customdownload().retrieve(url, dest)	
+
+def downloadZip(url, dest, name, dp = None):
+    if not dp:
+        dp = xbmcgui.DialogProgress()
+        dp.create("Premiumizer Downloader","Downloading: " + str(name),' ', ' ')
+    dp.update(0)
+    start_time= time.time()
+    customdownload().retrieve(url,dest,lambda nb, bs, fs, url=url: _pbhook(nb, bs, fs, dp, name, start_time))
+	
+def _pbhook(numblocks, blocksize, filesize, dp, name, start_time):
+        try: 
+            percent = min(numblocks * blocksize * 100 / filesize, 100)
+            currently_downloaded = float(numblocks) * blocksize / (1024 * 1024) 
+            kbps_speed = numblocks * blocksize / (time.time() - start_time) 
+            if kbps_speed > 0: 
+                eta = (filesize - numblocks * blocksize) / kbps_speed 
+            else: 
+                eta = 0 
+            kbps_speed = kbps_speed / 1024 
+            total = float(filesize) / (1024 * 1024) 
+            mbs = '%.02f MB of %.02f MB' % (currently_downloaded, total) 
+            e = 'Speed: %.02f Kb/s ' % kbps_speed 
+            e += 'ETA: %02d:%02d' % divmod(eta, 60)
+			
+            end = time.time()
+
+            elapsed = end - start
+            if dp.iscanceled(): raise Exception()
+			
+            
+            string = '[COLOR Lime]Downloading... Please Wait...[/COLOR]'
+            line1 = "Downloading: " + str(name)
+            line2 = mbs
+            line3 = e
+            dp.update(percent, line1, line2, line3)
+        except Exception as e:
+            try: dp.close()
+            except:pass
+            percent = 100 
+            print ("PREMIUMIZER DOWNLOADER ERROR", str(e))
+        if dp.iscanceled(): 
+			dp.close()

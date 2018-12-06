@@ -135,6 +135,10 @@ elif action == 'premiumizeDeleteItem':
 elif action == 'downloadFolder':
     from resources.lib.api import premiumize
     premiumize.downloadFolder(name, id)	
+
+elif action == 'downloadZip':
+    from resources.lib.api import premiumize
+    premiumize.downloadFolder(name, id)	
 	
 elif action == 'premiumizeRename':
     from resources.lib.api import premiumize

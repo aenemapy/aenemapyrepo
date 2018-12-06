@@ -19,65 +19,56 @@ from modules import control
 try: from sqlite3 import dbapi2 as database
 except: from pysqlite2 import dbapi2 as database
 
+def open_database():
+    DATABASE = control.metaDB
+    connection = database.connect(DATABASE)
+    #connection.text_factory = str
+    connection.text_factory = lambda x: unicode(x, 'utf-8', 'ignore')
+    connection.row_factory = database.Row
+    print "DB connection opened to {0}.".format(DATABASE)
+    return connection
 
-def metaMovies(imdb):
+def metaMovies(imdb=None, tmdb=None):
 	try:
-		DBASE = control.metaDB
-		#print ("META LIBRARY MOVIES PATH", DBASE)
-		dbcon = database.connect(DBASE)
-		dbcur = dbcon.cursor()
-		sources = []
-		dbcur.execute("SELECT * FROM movies WHERE imdb = '%s'" % (imdb))
-		match = dbcur.fetchone()
-		tmdb = str(match[0])
-		imdb = str(match[1])
-		poster = str(match[3]) 
-		fanart = str(match[4]) 
-		poster2 = str(match[5]) 
-		fanart2 = str(match[6]) 
-		clearlogo = str(match[7]) 
-		banner    = str(match[8])
-		meta = {'imdb':imdb, 'tmdb':tmdb , 'poster':poster, 'fanart': fanart, 'poster2': poster2, 'fanart2':fanart2, 'clearlogo': clearlogo, 'banner': banner}
-		print ("[META LIBRARY] >>> ", meta)
+	
+		if imdb != None: 
+			type = 'imdb'
+			id = imdb
+		elif tmdb != None:
+			type = 'tmdb'
+			id = tmdb
+		
+		conn = open_database()
+		cursor = conn.cursor()
+		cursor.execute("SELECT * FROM movies WHERE %s = '%s'" % (type, id))
+		row = cursor.fetchone()
+		meta = {}
+		for id in row.keys(): meta[id] = row[id]
 		return meta
+		print ("[METALIBRARY]", meta)
 	except: 
 		return
 
-
-
-def metaTV(imdb, tvdb):
+def metaTV(imdb=None, tmdb=None, tvdb=None):
 	try:
-		DBASE = control.metaDB
-		#print ("META LIBRARY TV PATH", DBASE)
-		dbcon = database.connect(DBASE)
-		dbcur = dbcon.cursor()
-		sources = []
-		if imdb != '0' and imdb!= None: dbcur.execute("SELECT * FROM tv WHERE imdb = '%s'" % (imdb))
-		elif tvdb != '0' and tvdb != None: dbcur.execute("SELECT * FROM tv WHERE tvdb = '%s'" % (tvdb))
-		else: raise Exception()
-		match = dbcur.fetchone()
-		tmdb = str(match[0])
-		imdb = str(match[1])
-		try: poster = str(match[4])
-		except: poster = '0'
-		try: fanart = str(match[5]) 
-		except: fanart = '0'
-		try: poster2 = str(match[6])
-		except: poster2 = '0'
-		try: fanart2 = str(match[7])
-		except: fanart2 = '0'
-		try: poster3 = str(match[8])
-		except: poster3 = '0'
-		try: fanart3 = str(match[9])
-		except: fanart3 = '0'
-
-		try: clearlogo = str(match[10])
-		except: clearlogo = '0'
-		try: banner = str(match[11])
-		except: banner = '0'		
-		meta = {'imdb':imdb, 'tvdb':tvdb, 'tmdb':tmdb, 'poster':poster, 'fanart': fanart, 'poster2': poster2, 'fanart2':fanart2, 'poster3': poster3, 'fanart3': fanart3, 'banner': banner, 'clearlogo': clearlogo}
-		print ("[META LIBRARY TV] >>> ", meta)
+		if imdb != None: 
+			type = 'imdb'
+			id = imdb
+		elif tmdb != None:
+			type = 'tmdb'
+			id = tmdb	
+		elif tvdb != None:
+			type = 'tvdb'
+			id = tvdb	
+			
+		conn = open_database()
+		cursor = conn.cursor()
+		cursor.execute("SELECT * FROM tv WHERE %s = '%s'" % (type, id))
+		row = cursor.fetchone()
+		meta = {}
+		for id in row.keys(): meta[id] = row[id]
 		return meta
+		print ("[METALIBRARY] >>> ", meta)
 	except:
 		return
 		

@@ -27,7 +27,9 @@
 		<setting type="lsep" label="Meta Settings (experimental - slower)" />		
 		<setting id="movies.meta" type="bool" label="Use Movies Metadata in Cloud Folder" default="false" />		
 		<setting id="tvshows.meta" type="bool" label="Use Tvshows Metadata in Cloud Folder" default="false" />		
-
+		<setting type="lsep" label="Cosmetics" />		
+		<setting id="poster.type" type="enum" label="Poster Quality" values="SD|HD|Max Quality" default="1" />
+		<setting id="fanart.type" type="enum" label="Fanart Quality" values="SD|HD|Max Quality" default="2" />
 		
 		<setting type="lsep" label="General Settings" />		
 		<setting id="api.language" type="select" label="32316" values="AUTO|Bulgarian|Chinese|Croatian|Czech|Danish|Dutch|English|Finnish|French|German|Greek|Hebrew|Hungarian|Italian|Japanese|Korean|Norwegian|Polish|Portuguese|Romanian|Russian|Serbian|Slovak|Slovenian|Spanish|Swedish|Thai|Turkish|Ukrainian" default="English" />

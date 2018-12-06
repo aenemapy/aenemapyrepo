@@ -1,0 +1,40 @@
+for movies you will need to pass imdb:
+import metalibrary
+dbmeta = metalibrary.metaMovies(imdb)
+
+for tv you can pass imdb or tvdb (if you just have one of those two ids just pass the other one as '0'):
+import metalibrary
+dbmeta = metalibrary.metaMovies(imdb, '0')
+
+
+the database will report the following info:
+
+for movies:
+IMDB id
+TMDB id
+poster (TMDB)
+fanart (TMDB)
+poster2 (FANART.TV)
+fanart2 (FANART.TV)
+clearlogo
+banner
+
+
+for tv:
+IMDB id
+TMDB id
+TVDB id
+poster (TMDB)
+fanart (TMDB)
+poster2 (TVDB)
+fanart2 (TVDB)
+poster3 (FANART.TV)
+fanart3 (FANART.TV)
+clearlogo
+banner
+
+
+you can access the infos easily:
+poster = dbmeta['poster']
+fanart = dbmeta['fanart']
+etc.
