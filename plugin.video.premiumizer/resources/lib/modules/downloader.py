@@ -456,8 +456,6 @@ def _pbhook(numblocks, blocksize, filesize, dp, name, start_time):
             end = time.time()
 
             elapsed = end - start
-            if dp.iscanceled(): raise Exception()
-			
             
             string = '[COLOR Lime]Downloading... Please Wait...[/COLOR]'
             line1 = "Downloading: " + str(name)
@@ -470,4 +468,8 @@ def _pbhook(numblocks, blocksize, filesize, dp, name, start_time):
             percent = 100 
             print ("PREMIUMIZER DOWNLOADER ERROR", str(e))
         if dp.iscanceled(): 
-			dp.close()
+			raise Exception("Canceled")
+			try: dp.close()
+			except:pass
+			try: dp.close()
+			except:pass
