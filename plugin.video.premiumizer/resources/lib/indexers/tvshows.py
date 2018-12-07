@@ -182,7 +182,7 @@ class tvshows:
     def getTvdbFav(self, idx=True, create_directory=True):	
         url = '0'
         if control.setting('tvdb.cache') == 'true': self.list = cache.get(self.getTvdbList, 60, url, self.user)	
-        else: self.list = cself.getTvdbList(url, self.user)			
+        else: self.list = self.getTvdbList(url, self.user)			
         try:self.worker()
         except:pass
         self.list = sorted(self.list, key=lambda k: utils.title_key(k['title']))
@@ -287,7 +287,8 @@ class tvshows:
 					try: 
 						tvdb = item['id']
 						tvdb = str(tvdb)
-					except: tvdb = ''
+					except: tvdb = '0'
+					
 					# print ("SEARCH TVDB tvdb", tvdb)
 					if tvdb == '': raise Exception()
 					try: plot = item['overview']
@@ -611,6 +612,22 @@ class tvshows:
                 if imdb == None or imdb == '': imdb = '0'
                 else: imdb = 'tt' + re.sub('[^0-9]', '', str(imdb))
 
+                self.remotedbMeta = self.remotedb_meta(imdb=imdb)
+                if len(self.remotedbMeta) > 0: 
+					meta = self.remotedbMeta
+					meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': meta['title'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
+					self.list.append(meta)
+					raise Exception()
+						
+				
+                self.remotedbMeta = self.remotedb_meta(imdb=imdb)
+                if len(self.remotedbMeta) > 0: 
+					meta = self.remotedbMeta
+					meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': meta['title'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
+					self.list.append(meta)
+					raise Exception()
+					
+
                 tvdb = item['ids']['tvdb']
                 tvdb = re.sub('[^0-9]', '', str(tvdb))
 
@@ -730,6 +747,20 @@ class tvshows:
 
         for item in items:
             try:
+			
+                imdb = client.parseDOM(item, 'a', ret='href')[0]
+                imdb = re.findall('(tt\d*)', imdb)[0]
+                imdb = imdb.encode('utf-8')
+				
+				# METALIBRARY
+                self.remotedbMeta = self.remotedb_meta(imdb=imdb)
+                if len(self.remotedbMeta) > 0: 
+					meta = self.remotedbMeta
+					meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': meta['title'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
+					self.list.append(meta)
+					raise Exception()
+					
+					
                 title = client.parseDOM(item, 'a')[1]
                 title = client.replaceHTMLCodes(title)
                 title = title.encode('utf-8')
@@ -741,9 +772,7 @@ class tvshows:
 
                 if int(year) > int((self.datetime).strftime('%Y')): raise Exception()
 
-                imdb = client.parseDOM(item, 'a', ret='href')[0]
-                imdb = re.findall('(tt\d*)', imdb)[0]
-                imdb = imdb.encode('utf-8')
+
 
                 if imdb in dupes: raise Exception()
                 dupes.append(imdb)
@@ -987,18 +1016,13 @@ class tvshows:
 
         self.list = [i for i in self.list if i['tvdb'] != '0' and i['tvdb'] != '' and i['tvdb'] != None]
 
-        if self.fanart_tv_user == '':
-            for i in self.list: i.update({'clearlogo': '0', 'clearart': '0'})
-			
-			
+		
     def remotedb_meta(self, imdb=None, tmdb=None, tvdb=None):
 		try:
 			dbmeta = metalibrary.metaTV(imdb=imdb, tmdb=tmdb, tvdb=tvdb)
 			return dbmeta
             
 		except:pass
-		
-
 
     def super_info(self, i):
         try:

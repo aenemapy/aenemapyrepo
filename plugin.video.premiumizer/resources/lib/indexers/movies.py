@@ -448,6 +448,14 @@ class movies:
                 imdb = 'tt' + re.sub('[^0-9]', '', str(imdb))
 
                 tmdb = str(item.get('ids', {}).get('tmdb', 0))
+				
+				# METALIBRARY
+                self.remotedbMeta = self.remotedb_meta(imdb=imdb)
+                if len(self.remotedbMeta) > 0: 
+					meta = self.remotedbMeta
+					meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
+					self.list.append(meta)
+					raise Exception()
 
                 try: premiered = item['released']
                 except: premiered = '0'
@@ -546,6 +554,15 @@ class movies:
                 tmdb = item.get('id')
                 tmdb = str(tmdb)
 				
+				# METALIBRARY
+                self.remotedbMeta = self.remotedb_meta(tmdb=tmdb)
+                if len(self.remotedbMeta) > 0: 
+					meta = self.remotedbMeta
+					meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
+					self.list.append(meta)
+					raise Exception()
+					
+				
                 self.list.append({'title': title, 'originaltitle': title, 'year': year, 'tmdb': tmdb, 'tvdb': '0', 'next': next})
             except:
                 pass
@@ -596,6 +613,20 @@ class movies:
 
         for item in items:
             try:
+
+
+                imdb = client.parseDOM(item, 'a', ret='href')[0]
+                imdb = re.findall('(tt\d*)', imdb)[0]
+                imdb = imdb.encode('utf-8')
+				
+				# METALIBRARY
+                self.remotedbMeta = self.remotedb_meta(imdb=imdb)
+                if len(self.remotedbMeta) > 0: 
+					meta = self.remotedbMeta
+					meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
+					self.list.append(meta)
+					raise Exception()
+					
                 title = client.parseDOM(item, 'a')[1]
                 title = client.replaceHTMLCodes(title)
                 title = title.encode('utf-8')
@@ -609,9 +640,6 @@ class movies:
 
                 # if int(year) > int((self.datetime).strftime('%Y')): raise Exception()
 
-                imdb = client.parseDOM(item, 'a', ret='href')[0]
-                imdb = re.findall('(tt\d*)', imdb)[0]
-                imdb = imdb.encode('utf-8')
 
                 try: poster = client.parseDOM(item, 'img', ret='loadlate')[0]
                 except: poster = '0'
@@ -712,6 +740,19 @@ class movies:
 
         for item in items:
             try:
+			
+                imdb = re.findall('data-tconst="(tt\d*)"', item)[0]
+                imdb = imdb.encode('utf-8')
+				
+				
+				# METALIBRARY
+                self.remotedbMeta = self.remotedb_meta(imdb=imdb)
+                if len(self.remotedbMeta) > 0: 
+					meta = self.remotedbMeta
+					meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
+					self.list.append(meta)
+					raise Exception()
+					
                 title = client.parseDOM(item, 'a')[1]
                 title = client.replaceHTMLCodes(title)
                 title = title.encode('utf-8')
@@ -724,8 +765,7 @@ class movies:
                 year = year.encode('utf-8')
 
                 # if int(year) > int((self.datetime).strftime('%Y')): raise Exception()
-                imdb = re.findall('data-tconst="(tt\d*)"', item)[0]
-                imdb = imdb.encode('utf-8')
+
 
                 try: poster = client.parseDOM(item, 'img', ret='loadlate')[0]
                 except: poster = '0'
@@ -922,11 +962,6 @@ class movies:
 
         self.list = [i for i in self.list if not i['imdb'] == '0']
 
-        # self.list = metacache.local(self.list, self.tm_img_link, 'poster3', 'fanart2')
-
-        if self.fanart_tv_user == '':
-            for i in self.list: i.update({'clearlogo': '0', 'clearart': '0'})
-
     def workerTMDB(self, level=1):
         self.meta = []
         total = len(self.list)
@@ -956,7 +991,13 @@ class movies:
         try:
 
             if self.list[i]['metacache'] == True: raise Exception()
-
+			
+            if 'metalibrary' in self.list[i]:
+				print ("USING REMOTEDB META MOVIES")
+				metaDict = {'imdb': self.list[i]['imdb'], 'tmdb': self.list[i]['tmdb'], 'tvdb': '0', 'lang': self.lang, 'user': self.user, 'item': self.list[i]}
+				self.meta.append(metaDict)
+				if self.list[i]['metalibrary'] == True: raise Exception()
+				
             rating = self.list[i]['rating'] if 'rating' in self.list[i] else '0'
             votes = self.list[i]['votes'] if 'votes' in self.list[i] else '0'	
             title = self.list[i]['title'] if 'title' in self.list[i] else '0'
@@ -1049,7 +1090,13 @@ class movies:
     def super_info(self, i):
         try:
             if self.list[i]['metacache'] == True: raise Exception()
-
+			
+            if 'metalibrary' in self.list[i]:
+				print ("USING REMOTEDB META MOVIES")
+				metaDict = {'imdb': self.list[i]['imdb'], 'tmdb': self.list[i]['tmdb'], 'tvdb': '0', 'lang': self.lang, 'user': self.user, 'item': self.list[i]}
+				self.meta.append(metaDict)
+				if self.list[i]['metalibrary'] == True: raise Exception()
+				
             rating = self.list[i]['rating'] if 'rating' in self.list[i] else '0'
             votes = self.list[i]['votes'] if 'votes' in self.list[i] else '0'	
             title = self.list[i]['title'] if 'title' in self.list[i] else '0'
@@ -1083,19 +1130,8 @@ class movies:
             clearart = '0'
             banner = '0'
 			
-            try:
-                self.remotedbMeta = self.remotedb_meta(imdb=imdb, tmdb=tmdb)
-                if len(self.remotedbMeta) > 0: 
-					meta = self.remotedbMeta
-					meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
-					self.list[i].update(meta)
-					return
-            except:pass
-
             metaDB = False	
 			
-
-
             if fanart == '0' or fanart == '' or fanart == None or poster == '' or poster == None or poster == '0': 
 				tmdbArt = tmdbapi.getImdb(imdb)
 				try: 
@@ -1244,7 +1280,6 @@ class movies:
 
                 poster = i['poster']
                 if poster == '' or poster == '0' or poster == None: poster = addonPoster
-
                 
                 sysmeta = urllib.quote_plus(json.dumps(meta))
 
