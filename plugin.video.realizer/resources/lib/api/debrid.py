@@ -105,8 +105,7 @@ def torrentInfo(id):
 	for item in files:
 		name = item['path']
 		if name.startswith('/'):
-			while name.startswith('/'):
-				name = name.replace('/','', 1)
+			name = name.split('/')[-1]
 
 		ext = name.split('.')[-1].encode('utf-8')
 
@@ -325,8 +324,7 @@ def scrapecloud(title, year=None, season=None, episode=None):
 		else: 
 			torrName = content['name']
 			if torrName.startswith('/'):
-				while torrName.startswith('/'):
-					torrName = torrName.replace('/','', 1)
+				torrName = torrName.split('/')[-1]
 			torrFile = torrentItemToDownload(torrName, id)
 			return torrFile['link'], torrFile['id']
 		
@@ -361,8 +359,7 @@ def scrapecloud(title, year=None, season=None, episode=None):
 	if selected_type != 'download': 
 		torrName = selected_name
 		if torrName.startswith('/'):
-			while torrName.startswith('/'):
-				torrName = torrName.replace('/','', 1)
+			torrName = torrName.split('/')[-1]
 		torrFile = torrentItemToDownload(torrName, selected_id)
 		return torrFile['link'], torrFile['id']
 		
