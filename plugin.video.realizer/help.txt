@@ -1,0 +1,7 @@
+This addons uses your Reald Cloud as a base for scraping Movies and TV Shows.
+It is meant to be used with the Realdebrid cloud service based on content you currently own, it does not share/upload/links to copyrighted content, please use this addon responsibly and according to the law of your country.
+Any query/question regarding copyrighted material will not be answered nor addressed.
+
+To get the best out of this addon please add your own TMDB API (https://www.themoviedb.org/) and TVDB API (https://www.thetvdb.com). Some features will not work if you did not set an API from those services, mainly missing fanarts, and some categories.
+
+Bear in mind that any changes to the addons are pure discretions of the developer, the addon is free in the spirit of open source.
