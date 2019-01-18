@@ -101,32 +101,36 @@ def torrentInfo(id):
 	links = r['links']
 	files = r['files']
 
-    
-	for item in files:
-		name = item['path']
-		if name.startswith('/'):
-			name = name.split('/')[-1]
+	for x in files:
+		try:
+			oriGinalName = x['path']
+			if oriGinalName.startswith('/'):
+				name = oriGinalName.split('/')[-1]
 
-		ext = name.split('.')[-1].encode('utf-8')
+			ext = name.split('.')[-1].encode('utf-8')
 
-		if ext in VALID_EXT: isPlayable = True	
-		else: isPlayable = False
-		
-		label = ext.upper() + " | " + name
-		
-		item = control.item(label=label)
-		item.setArt({'icon': control.addonIcon()})
-		item.setProperty('Fanart_Image', control.addonFanart())
+			if ext in VALID_EXT: isPlayable = True	
+			else: isPlayable = False
+			
+			label = ext.upper() + " | " + name
+			
+			item = control.item(label=label)
+			item.setArt({'icon': control.addonIcon()})
+			item.setProperty('Fanart_Image', control.addonFanart())
 
-
-		infolabel = {"Title": label}
-		item.setInfo(type='Video', infoLabels = infolabel)
-		item.setProperty('IsPlayable', 'true')
-				
-		url = url = '%s?action=%s&name=%s&id=%s' % (sysaddon, 'playtorrentItem', name, id) 
-		#item.addContextMenuItems(cm)
-		control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
-				
+			itemID = x['id']
+			listID = int(itemID) - 1
+			playlink = links[listID]
+			
+			infolabel = {"Title": label}
+			item.setInfo(type='Video', infoLabels = infolabel)
+			item.setProperty('IsPlayable', 'true')
+					
+			url = url = '%s?action=%s&name=%s&id=%s' % (sysaddon, 'playtorrentItem', name, playlink) 
+			#item.addContextMenuItems(cm)
+			control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
+		except: pass
+					
 	control.content(syshandle, 'movies')
 	control.directory(syshandle, cacheToDisc=True)
 	
@@ -135,7 +139,7 @@ def playtorrentItem(name, id):
 	torrInDownload = []
 	try:
 		downloads = realdebrid().transferList()
-		torrInDownload = [i for i in downloads if i['filename'] == name][0]
+		torrInDownload = [i for i in downloads if i['filename'] == name.split('/')[-1]][0]
 	except:pass
 	
 	if len(torrInDownload) > 0:
@@ -149,26 +153,16 @@ def playtorrentItem(name, id):
 		control.resolve(int(sys.argv[1]), True, item)
 		
 	else:
-		r = realdebrid().torrentInfo(id)
-		links = r['links']
-		progress = control.progressDialogBG
-		progress.create('Adding Torrent to Downloads','Please Wait...')
-
 		newTorr = []
-		for item in links:
-			try:
-				result = realdebrid().resolve(item, full=True)
-				if result != None: newTorr.append(result)
-				
-			except:pass
 
-		try: progress.close()
+		try:
+			result = realdebrid().resolve(id, full=True)
+			if result != None: newTorr.append(result)
 		except:pass
-		try: progress.close()
-		except:pass
+
 		time.sleep(1)
 
-		torrItem = [i for i in newTorr if i['filename'] == name][0]
+		torrItem = [i for i in newTorr if i['filename'] == name.split('/')[-1]][0]
 		
 		if len(torrItem) > 0:
 			item = control.item(label=name)
@@ -185,18 +179,27 @@ def torrentItemToDownload(name, id):
 	torrInDownload = []
 	torrItem = []
 	try:
+	
 		r = realdebrid().torrentInfo(id)
 		links = r['links']
+		files = r['files']
 		newTorr = []
-		for item in links:
+		
+		for x in files:
 			try:
-				result = realdebrid().resolve(item, full=True)
+				print('rd torr 1', name, x)
+				itemID = x['id']
+				listID = int(itemID) - 1
+				itemName = x['path']
+				if not itemName == name: raise Exception()
+				playlink = links[listID]
+				print('rd torr 2', playlink)
+				result = realdebrid().resolve(playlink, full=True)
 				if result != None: newTorr.append(result)
 			except:pass
-
+		
 		time.sleep(1)
-
-		torrItem = [i for i in newTorr if i['filename'] == name][0]
+		torrItem = newTorr[0]
 		
 		if len(torrItem) > 0: return torrItem
 	except: return []
@@ -223,8 +226,7 @@ def scrapecloud(title, year=None, season=None, episode=None):
 		progress.update(100,'Scraping Your Cloud [NORMAL]','Please Wait...')
 		
 		r = realdebrid().scraperList()
-		print ("REALDEBRID SCRAPELIST", r)
-		
+
 	try: progress.close()
 	except: pass
 	try: progress.close()
@@ -264,8 +266,6 @@ def scrapecloud(title, year=None, season=None, episode=None):
 	try: torrentList = [i for i in r if i['type'] == 'torrent']
 	except: pass
 		
-	#print ("REALDEBRID DOWNLOADLIST", downloadList)
-	#print ("REALDEBRID torrentList", torrentList)
 	# SCRAPE DOWNLOADLIST FIRST
 	for x in downloadList:
 		try:
@@ -295,7 +295,6 @@ def scrapecloud(title, year=None, season=None, episode=None):
 		content = exactSources[0]
 		exactPlay = True
 
-	#print ("REALDEBRID SOURCE 1", content)
 	# FALLBACK TO TORRENTLIST SCRAPE
 	try:
 		if exactPlay == True: raise Exception()
@@ -303,22 +302,24 @@ def scrapecloud(title, year=None, season=None, episode=None):
 		for y in torrentList:
 			try:
 				if exactPlay == True: raise Exception()
-				id = x['id']
-				name = x['name'].encode('utf-8')
-				name = normalize(name)			
+
+				id = y['id']
+				name = y['name'].encode('utf-8')
+				name = name.split('/')[-1]
+		
 				y.update({'type':'torrent'})
 				if not titleCheck in cleantitle.get(name): raise Exception()
 
-				normalSources.append(x)
+				normalSources.append(y)
 				
 				if exactCheck_1 in cleantitle.get(name) or exactCheck_2 in cleantitle.get(name):
-					exactSources.append(x)
+					exactSources.append(y)
 				else:
 					epmixed = re.findall('[._ -]s?(\d+)[e|x](\d+)[._ -]', name.lower())[0]
 					s = epmixed[0]
 					e = epmixed[1]
 					if s == dd_season or s == season:
-						if e == dd_episode or e == episode: exactSources.append(x)
+						if e == dd_episode or e == episode: exactSources.append(y)
 						
 			except:pass
 
@@ -329,15 +330,12 @@ def scrapecloud(title, year=None, season=None, episode=None):
 
 
 	# EXACT PLAY AND AUTO PLAY MODE
-	#print ("REALDEBRID SOURCE 2", content)	
 	if exactPlay == True and playbackMode == '0': 
 		if content['type'] == 'download': return content['link'], content['id']
 		else: 
 			torrName = content['name']
-			if torrName.startswith('/'):
-				torrName = torrName.split('/')[-1]
 			torrFile = torrentItemToDownload(torrName, id)
-			return torrFile['link'], torrFile['id']
+			return torrFile['download'], torrFile['id']
 		
 	# NORMAL PLAY MODE	
 	elif len(exactSources) > 0:	
@@ -346,17 +344,20 @@ def scrapecloud(title, year=None, season=None, episode=None):
 			fileLabel = type
 			id = result['id']
 			name = result['name'].encode('utf-8')
-			#name = normalize(name)
-			sourceNames.append(name)
+			name = normalize(name)
+
+			try: labelName = name.split('/')[-1]
+			except: labelName = name
 			
 			playLink = result['link']
 
-			label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
+			label = "[B]" + fileLabel.upper() + " |[/B] " + labelName
 
 			labels.append(label)
 			sources.append(playLink)
 			types.append(type)
 			IDs.append(id)
+			sourceNames.append(name)
 	else:
 		
 		for result in normalSources:
@@ -368,8 +369,10 @@ def scrapecloud(title, year=None, season=None, episode=None):
 			sourceNames.append(name)
 			
 			playLink = result['link']
-
-			label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
+			try: labelName = name.split('/')[-1]
+			except: labelName = name
+			
+			label = "[B]" + fileLabel.upper() + " |[/B] " + labelName
 
 			labels.append(label)
 			sources.append(playLink)
@@ -387,10 +390,8 @@ def scrapecloud(title, year=None, season=None, episode=None):
 	
 	if selected_type != 'download': 
 		torrName = selected_name
-		if torrName.startswith('/'):
-			torrName = torrName.split('/')[-1]
 		torrFile = torrentItemToDownload(torrName, selected_id)
-		return torrFile['link'], torrFile['id']
+		return torrFile['download'], torrFile['id']
 		
 	else: return selected_url, selected_id
 	
@@ -576,7 +577,7 @@ class realdebrid:
 			
 	def torrentList(self, page=1):
 		url = self.RealDebridApi + '/torrents'
-		params = {'page': page, 'limit': 100}
+		params = {'limit': 100}
 		result = self.rdRequest(url, method='get', params=params).json()
 		return result
 
@@ -750,10 +751,11 @@ class realdebrid:
 		if url.startswith("//"): url = 'http:' + url
 		u = url
 		try:
-
+			print ("RD UNRESTRICT LINK 1", url)
 			post = {'link': u}		
 			url = self.RealDebridApi + '/unrestrict/link'
 			result = self.rdRequest(url, method='post', data=post).json()
+			print ("RD UNRESTRICT LINK 2", result)
 			if 'error_code' in str(result): return None
 			if full == True: return result
 			try: url = result['download'].encode('utf-8')
