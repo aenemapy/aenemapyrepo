@@ -599,11 +599,7 @@ class realdebrid:
 		try:
 			threads = []
 			torrents = self.torrentList()
-			for item in torrents:
-				threads.append(libThread.Thread(self.torrentScrapeInfo, item['id']))
-			[i.start() for i in threads]
-			[i.join() for i in threads]
-
+			for item in torrents: self.torrentScrapeInfo(tem['id'])
 			return self.torrentFiles
 		except:
 			pass
