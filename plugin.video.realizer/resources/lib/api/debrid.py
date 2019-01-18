@@ -193,13 +193,11 @@ def torrentItemToDownload(name, id):
 		
 		for x in files:
 			try:
-				print('rd torr 1', name, x)
 				itemID = x['id']
 				listID = int(itemID) - 1
 				itemName = x['path']
 				if not itemName == name: raise Exception()
 				playlink = links[listID]
-				print('rd torr 2', playlink)
 				result = realdebrid().resolve(playlink, full=True)
 				if result != None: newTorr.append(result)
 			except:pass
@@ -213,25 +211,29 @@ def torrentItemToDownload(name, id):
 	
 def scrapecloud(title, year=None, season=None, episode=None):
 	progress = control.progressDialogBG
-	cachedSession = control.setting('cachecloud.startup')
+	#cachedSession = control.setting('cachecloud.startup')
 	playbackMode  = control.setting('playback.mode')
 	
 		
-	if cachedSession == 'true': # CACHE MODE	
-			if control.setting('first.start') == 'true':
-				progress.create('Scraping Your Cloud','Please Wait...')
-				progress.update(100,'Scraping Your Cloud','Please Wait...')
-				r = realdebrid().scraperList()
-			else:
-				progress.create('Scraping Your Cache File','Please Wait...')
-				progress.update(100,'Scraping Your Cache File','Please Wait...')
-				r = realdebrid().cloudJson(mode='get')
-				control.setSetting(id='first.start', value='false')
-	else: # NORMAL MODE
-		progress.create('Scraping Your Cloud [NORMAL]','Please Wait...')
-		progress.update(100,'Scraping Your Cloud [NORMAL]','Please Wait...')
+	# if cachedSession == 'true': # CACHE MODE	
+			# if control.setting('first.start') == 'true':
+				# progress.create('Scraping Your Cloud','Please Wait...')
+				# progress.update(100,'Scraping Your Cloud','Please Wait...')
+				# r = realdebrid().scraperList()
+			# else:
+				# progress.create('Scraping Your Cache File','Please Wait...')
+				# progress.update(100,'Scraping Your Cache File','Please Wait...')
+				# r = realdebrid().cloudJson(mode='get')
+				# control.setSetting(id='first.start', value='false')
+				# NORMAL MODE
+	
+	#print ("SCRAPING NORMAL")
+	progress.create('Scraping Your Cloud','Please Wait...')
+	progress.update(100,'Scraping Your Cloud','Please Wait...')
 		
-		r = realdebrid().scraperList()
+	r = realdebrid().scraperList()
+		
+	#print ("SCRAPER LIST 1", r)
 
 	try: progress.close()
 	except: pass
@@ -300,7 +302,7 @@ def scrapecloud(title, year=None, season=None, episode=None):
 	if len(exactSources) == 1:
 		content = exactSources[0]
 		exactPlay = True
-
+		
 	# FALLBACK TO TORRENTLIST SCRAPE
 	try:
 		if exactPlay == True: raise Exception()
@@ -334,9 +336,8 @@ def scrapecloud(title, year=None, season=None, episode=None):
 			exactPlay = True
 	except:pass
 
-
 	# EXACT PLAY AND AUTO PLAY MODE
-	if exactPlay == True and playbackMode == '0': 
+	if playbackMode == '0' and exactPlay == True: 
 		if content['type'] == 'download': return content['link'], content['id']
 		else: 
 			torrName = content['name']
@@ -344,26 +345,25 @@ def scrapecloud(title, year=None, season=None, episode=None):
 			return torrFile['download'], torrFile['id']
 		
 	# NORMAL PLAY MODE	
-	elif len(exactSources) > 0:	
+	elif len(exactSources) > 1:	
 		for result in exactSources:
 			type = result['type']
 			fileLabel = type
 			id = result['id']
 			name = result['name'].encode('utf-8')
-			name = normalize(name)
-
+			#name = normalize(name)
+			sourceNames.append(name)
+			
+			playLink = result['link']
 			try: labelName = name.split('/')[-1]
 			except: labelName = name
 			
-			playLink = result['link']
-
 			label = "[B]" + fileLabel.upper() + " |[/B] " + labelName
 
 			labels.append(label)
 			sources.append(playLink)
 			types.append(type)
 			IDs.append(id)
-			sourceNames.append(name)
 	else:
 		
 		for result in normalSources:
@@ -472,11 +472,11 @@ class realdebrid:
 		if not os.path.exists(dirCheck): os.makedirs(xbmc.translatePath(dirCheck))
 		if token != None: data = {'client_id': client_id, 'client_secret': client_secret, 'token': token, 'refresh_token': refresh_token , 'added':timeNow}
 		else: data = {'client_id': client_id, 'client_secret': client_secret, 'token':'0', 'refresh_token': '0' , 'added': timeNow}
-		print ("SAVING JSON", rdSettings, data)
 		with open(rdSettings, 'w') as outfile: json.dump(data, outfile, indent=2)
 		
 		
 	def refreshToken(self, refresh_token, client_secret, client_id): 
+		print ("REFRESHING TOKEN REALDEBRID >>>")
 		data = {'client_id': client_id, 'client_secret': client_secret, 'code': refresh_token, 'grant_type': 'http://oauth.net/grant_type/device/1.0'}
 		result = requests.post(self.RD_TOKEN_AUTH, data=data, timeout=requestTimeout).json()
 		if 'access_token' in str(result):
@@ -564,16 +564,12 @@ class realdebrid:
 	
 	def transferList(self, page=1):
 		try:
-			threads = []
-
             # --------------- DEBRID AUTH -----------------------------------------
 			url = self.RealDebridApi + '/downloads'
 			params = {'limit': 100, 'page': 1}
 			result = self.rdRequest(url, method='get', params=params)
 			if result != None: self.transfers += result.json()
-
 			return self.transfers
-
 		except:
 			pass
 			
@@ -599,7 +595,7 @@ class realdebrid:
 		try:
 			threads = []
 			torrents = self.torrentList()
-			for item in torrents: self.torrentScrapeInfo(tem['id'])
+			for item in torrents: self.torrentScrapeInfo(item['id'])
 			return self.torrentFiles
 		except:
 			pass
@@ -618,6 +614,7 @@ class realdebrid:
 		self.sources = []
 		try:
 			downloads = self.transferList()
+			#print ("SCRAPERLIST downloads", downloads)
 			for down in downloads:
 				data = {'type': 'download', 'name': down['filename'], 'link': down['download'], 'id': down['id']}
 				self.sources.append(data)
@@ -625,6 +622,7 @@ class realdebrid:
 
 		try:
 			torrents = self.torrentScrape()
+			#print ("SCRAPERLIST torrents", torrents)
 			for torr in torrents:
 				data = {'type': 'torrent', 'name': torr['name'], 'link': '0', 'id': torr['id']}
 				self.sources.append(data)

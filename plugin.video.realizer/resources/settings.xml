@@ -7,8 +7,8 @@
 
 		<setting type="lsep" label="Playback Settings" />			
 		<setting id="playback.mode" type="enum" label="Playback Mode" values="AutoPlay|List" default="1" />
-		<setting id="cachecloud.startup" type="bool" label="Cache Cloud content" default="false" />
-		
+		<!-- <setting id="cachecloud.startup" type="bool" label="Cache Cloud content" default="false" />
+		 -->
 		<setting type="lsep" label="Post-Playback Settings" />	
 		<setting id="cloud.delete.mode" type="bool" label="Delete Watched File"  default="false" />
 		<setting id="cloud.autodelete.movies" type="bool" label="Autodelete Movie File" default="true" visible="eq(-1,true)"/>
