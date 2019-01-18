@@ -9,7 +9,7 @@ from resources.lib.modules import cache
 from resources.lib.modules import metacache
 from resources.lib.modules import playcount
 from resources.lib.modules import utils
-from resources.lib.api import tvdbapi, tmdbapi, fanarttv, premiumize
+from resources.lib.api import tvdbapi, tmdbapi, fanarttv
 from resources.lib.modules import favourites
 import os,sys,re,json,urllib,urlparse,datetime
 import metalibrary

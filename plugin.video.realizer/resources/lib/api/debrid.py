@@ -209,17 +209,21 @@ def scrapecloud(title, year=None, season=None, episode=None):
 	
 		
 	if cachedSession == 'true': # CACHE MODE	
-			if control.setting('first.start') != 'false':
+			if control.setting('first.start') == 'true':
 				progress.create('Scraping Your Cloud','Please Wait...')
 				progress.update(100,'Scraping Your Cloud','Please Wait...')
 				r = realdebrid().scraperList()
 			else:
+				progress.create('Scraping Your Cache File','Please Wait...')
+				progress.update(100,'Scraping Your Cache File','Please Wait...')
 				r = realdebrid().cloudJson(mode='get')
+				control.setSetting(id='first.start', value='false')
 	else: # NORMAL MODE
-		progress.create('Scraping Your Cloud','Please Wait...')
-		progress.update(100,'Scraping Your Cloud','Please Wait...')
+		progress.create('Scraping Your Cloud [NORMAL]','Please Wait...')
+		progress.update(100,'Scraping Your Cloud [NORMAL]','Please Wait...')
 		
 		r = realdebrid().scraperList()
+		print ("REALDEBRID SCRAPELIST", r)
 		
 	try: progress.close()
 	except: pass
@@ -260,12 +264,15 @@ def scrapecloud(title, year=None, season=None, episode=None):
 	try: torrentList = [i for i in r if i['type'] == 'torrent']
 	except: pass
 		
+	#print ("REALDEBRID DOWNLOADLIST", downloadList)
+	#print ("REALDEBRID torrentList", torrentList)
 	# SCRAPE DOWNLOADLIST FIRST
 	for x in downloadList:
 		try:
 			id = x['id']
 			name = x['name'].encode('utf-8')
 			name = normalize(name)
+			x.update({'type':'download'})
 
 			
 			if not titleCheck in cleantitle.get(name): raise Exception()
@@ -282,43 +289,47 @@ def scrapecloud(title, year=None, season=None, episode=None):
 					if e == dd_episode or e == episode: exactSources.append(x)
 		except:pass
 		
-			
-	if len(exactSources) > 0: 
-		content = exactSources
-		exactPlay = True
+	content = []
 
-
-	# FALLBACK TO TORRENTLIST SCRAPE
-	for y in torrentList:
-		try:
-			if exactPlay == True: raise Exception()
-			id = x['id']
-			name = x['name'].encode('utf-8')
-			name = normalize(name)			
-
-			if not titleCheck in cleantitle.get(name): raise Exception()
-
-			normalSources.append(x)
-			
-			if exactCheck_1 in cleantitle.get(name) or exactCheck_2 in cleantitle.get(name):
-				exactSources.append(x)
-			else:
-				epmixed = re.findall('[._ -]s?(\d+)[e|x](\d+)[._ -]', name.lower())[0]
-				s = epmixed[0]
-				e = epmixed[1]
-				if s == dd_season or s == season:
-					if e == dd_episode or e == episode: exactSources.append(x)
-					
-		except:pass
-
-	if len(exactSources) == 1: 
+	if len(exactSources) == 1:
 		content = exactSources[0]
 		exactPlay = True
-			
-	else: content = normalSources
-	
+
+	#print ("REALDEBRID SOURCE 1", content)
+	# FALLBACK TO TORRENTLIST SCRAPE
+	try:
+		if exactPlay == True: raise Exception()
+		exactSources = []
+		for y in torrentList:
+			try:
+				if exactPlay == True: raise Exception()
+				id = x['id']
+				name = x['name'].encode('utf-8')
+				name = normalize(name)			
+				y.update({'type':'torrent'})
+				if not titleCheck in cleantitle.get(name): raise Exception()
+
+				normalSources.append(x)
+				
+				if exactCheck_1 in cleantitle.get(name) or exactCheck_2 in cleantitle.get(name):
+					exactSources.append(x)
+				else:
+					epmixed = re.findall('[._ -]s?(\d+)[e|x](\d+)[._ -]', name.lower())[0]
+					s = epmixed[0]
+					e = epmixed[1]
+					if s == dd_season or s == season:
+						if e == dd_episode or e == episode: exactSources.append(x)
+						
+			except:pass
+
+		if len(exactSources) == 1: 
+			content = exactSources[0]
+			exactPlay = True
+	except:pass
+
+
 	# EXACT PLAY AND AUTO PLAY MODE
-	
+	#print ("REALDEBRID SOURCE 2", content)	
 	if exactPlay == True and playbackMode == '0': 
 		if content['type'] == 'download': return content['link'], content['id']
 		else: 
@@ -329,23 +340,41 @@ def scrapecloud(title, year=None, season=None, episode=None):
 			return torrFile['link'], torrFile['id']
 		
 	# NORMAL PLAY MODE	
-	
-	for result in content:
-		type = result['type']
-		fileLabel = type
-		id = result['id']
-		name = result['name'].encode('utf-8')
-		#name = normalize(name)
-		sourceNames.append(name)
+	elif len(exactSources) > 0:	
+		for result in exactSources:
+			type = result['type']
+			fileLabel = type
+			id = result['id']
+			name = result['name'].encode('utf-8')
+			#name = normalize(name)
+			sourceNames.append(name)
+			
+			playLink = result['link']
+
+			label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
+
+			labels.append(label)
+			sources.append(playLink)
+			types.append(type)
+			IDs.append(id)
+	else:
 		
-		playLink = result['link']
+		for result in normalSources:
+			type = result['type']
+			fileLabel = type
+			id = result['id']
+			name = result['name'].encode('utf-8')
+			#name = normalize(name)
+			sourceNames.append(name)
+			
+			playLink = result['link']
 
-		label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
+			label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
 
-		labels.append(label)
-		sources.append(playLink)
-		types.append(type)
-		IDs.append(id)
+			labels.append(label)
+			sources.append(playLink)
+			types.append(type)
+			IDs.append(id)
 	
 	
 	if len(sources) < 1: return '0', '0'
@@ -403,7 +432,6 @@ class realdebrid:
 				if not float(i) % interval == 0: raise Exception()
 				
 				credentials = self.getCredentials(device_code)
-				print ("RD credentials", credentials)
 				if not "client_secret" in str(credentials): raise Exception()
 				
 				client_secret = credentials['client_secret']
@@ -605,6 +633,7 @@ class realdebrid:
 		except: pass
 
 		if len(self.sources) > 0: self.cloudJson(self.sources)
+		control.setSetting(id='first.start', value='false')
 		return self.sources
         
 	def cloudJson(self, data=None, mode='write'):
@@ -620,9 +649,7 @@ class realdebrid:
 			try:
 				with open(cloudFile, 'r') as file:	
 					data = json.load(file)
-					#print ("PREMIUMIZE CACHE", file)
 					items = data['files']
-					#print ("PREMIUMIZE CACHE", items)
 					return items
 			except:
 				return []

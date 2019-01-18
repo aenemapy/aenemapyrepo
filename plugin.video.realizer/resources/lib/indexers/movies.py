@@ -31,7 +31,7 @@ from resources.lib.modules import utils
 from resources.lib.modules import bookmarks
 from resources.lib.modules import favourites
 
-from resources.lib.api import tmdbapi, fanarttv, premiumize
+from resources.lib.api import tmdbapi, fanarttv
 import os,sys,re,json,urllib,urlparse,datetime
 import requests
 import metalibrary

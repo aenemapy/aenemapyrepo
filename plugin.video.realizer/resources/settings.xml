@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
 	<category label="32310">
-		<setting type="lsep" label="Premiumize Settings" />
+		<setting type="lsep" label="General Settings" />
 		<setting id="first.start" type="bool" label="startup control" default="true" visible="false" />
 		<setting id="realdebrid.authorize" type="action" label="Authorize Real Debrid" option="close" action="RunPlugin(plugin://plugin.video.realizer/?action=authRealdebrid)" />
 
