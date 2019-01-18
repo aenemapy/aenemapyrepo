@@ -117,7 +117,7 @@ class navigator:
 			
         else:
 			self.addDirectoryItem(50002, 'rdTorrentList', 'cloud.png', 'DefaultMovies.png')
-			self.addDirectoryItem(50003, 'rdTransfers', 'cloud.png', 'DefaultMovies.png')
+			self.addDirectoryItem(50003, 'rdTransfers&page=1', 'cloud.png', 'DefaultMovies.png')
 
         self.endDirectory()
 

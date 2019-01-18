@@ -36,13 +36,13 @@ data = {}
 # ################################ REAL DEBRID #######################################
 # ####################################################################################
 
-def transferList():
+def transferList(page='1'):
 	clearAll = '%s?action=%s' % (sysaddon, 'rdDeleteAll')
 	item = control.item(label='[Delete All Downloads]')
 	control.addItem(handle=syshandle, url=clearAll, listitem=item, isFolder=False)
 
 	cm = []
-	r = realdebrid().transferList()
+	r = realdebrid().transferList(page=int(page))
 	try:
 		for result in r:
 			try:
@@ -75,7 +75,13 @@ def transferList():
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
 			except:pass
 	except:pass
-				
+	
+	if len(r) > 99:
+		page = int(page) + 1
+		item = control.item(label='NEXT >>>')
+		url = '%s?action=%s&page=%s' % (sysaddon, 'rdTransfers', page)
+		control.addItem(handle=syshandle, url=clearAll, listitem=item, isFolder=False)	
+	
 	control.content(syshandle, 'movies')
 	control.directory(syshandle, cacheToDisc=True)
 	
@@ -566,19 +572,14 @@ class realdebrid:
 			result = self.rdRequest(url, method='get', params=params)
 			if result != None: self.transfers += result.json()
 
-			totalItems = int(result.headers['X-Total-Count'])
+			return self.transfers
 
-			if totalItems < 100: return self.transfers
-			else:
-				page = page + 1
-				self.transferList(page)
 		except:
 			pass
 			
 	def torrentList(self, page=1):
 		url = self.RealDebridApi + '/torrents'
-		params = {'limit': 100}
-		result = self.rdRequest(url, method='get', params=params).json()
+		result = self.rdRequest(url, method='get').json()
 		return result
 
 	def torrentInfo(self, id):
@@ -751,11 +752,9 @@ class realdebrid:
 		if url.startswith("//"): url = 'http:' + url
 		u = url
 		try:
-			print ("RD UNRESTRICT LINK 1", url)
 			post = {'link': u}		
 			url = self.RealDebridApi + '/unrestrict/link'
 			result = self.rdRequest(url, method='post', data=post).json()
-			print ("RD UNRESTRICT LINK 2", result)
 			if 'error_code' in str(result): return None
 			if full == True: return result
 			try: url = result['download'].encode('utf-8')

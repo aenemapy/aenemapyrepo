@@ -46,6 +46,8 @@ source = params.get('source')
 
 content = params.get('content')
 
+page = params.get('page')
+
 if action == None:
 	
     # from resources.lib.modules import changelog
@@ -110,7 +112,7 @@ elif action == 'premiumizeAdd':
 
 elif action == 'rdTransfers':
     from resources.lib.api import debrid
-    debrid.transferList()	
+    debrid.transferList(page=page)	
 	
 elif action == 'rdTorrentList':
     from resources.lib.api import debrid
