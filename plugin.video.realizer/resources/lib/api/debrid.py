@@ -414,7 +414,7 @@ class realdebrid:
 		self.RD_OAUTH = 'https://api.real-debrid.com/oauth/v2/device/code?client_id=%s&new_credentials=yes' % self.RD_CLIENTID
 		self.RD_TOKEN_AUTH = "https://api.real-debrid.com/oauth/v2/token"
 		self.RD_CREDENTIALS_AUTH = "https://api.real-debrid.com/oauth/v2/device/credentials?client_id=%s&code=%s"
-		self.USER_AGENT = 'RealDebrid OpenApp'
+		self.USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0'
 		self.transfers = []
 		self.torrentFiles = []
 	
@@ -461,8 +461,9 @@ class realdebrid:
 		return result
 					
 	def getAuth(self, url, client_id, client_secret, device_code): 
+		headers = {'User-Agent': self.USER_AGENT}
 		data = {'client_id': client_id, 'client_secret': client_secret, 'code': device_code, 'grant_type': 'http://oauth.net/grant_type/device/1.0'}
-		result = requests.post(url, data=data, timeout=requestTimeout).json()
+		result = requests.post(url, data=data, headers=headers, timeout=requestTimeout).json()
 		return result
 		
 	def saveJson(self, client_id=None, client_secret=None, token=None, refresh_token=None, expires_in=None):
@@ -476,9 +477,9 @@ class realdebrid:
 		
 		
 	def refreshToken(self, refresh_token, client_secret, client_id): 
-		print ("REFRESHING TOKEN REALDEBRID >>>")
+		headers = {'User-Agent': self.USER_AGENT}
 		data = {'client_id': client_id, 'client_secret': client_secret, 'code': refresh_token, 'grant_type': 'http://oauth.net/grant_type/device/1.0'}
-		result = requests.post(self.RD_TOKEN_AUTH, data=data, timeout=requestTimeout).json()
+		result = requests.post(self.RD_TOKEN_AUTH, data=data, headers=headers, timeout=requestTimeout).json()
 		if 'access_token' in str(result):
 			# expires_in = result['expires_in']
 			token = result['access_token']
@@ -553,7 +554,7 @@ class realdebrid:
 			if method == 'get': result = requests.get(url, headers=headers, params=params, timeout=requestTimeout)
 			elif method == 'post': result = requests.post(url, headers=headers, data=data, timeout=requestTimeout)
 			elif method == 'delete': result = requests.delete(url, headers=headers, data=data, timeout=requestTimeout)
-		except requests.Timeout as err: control.infoDialog('REALDEBRID TIMED OUT', heading='TV RESOLVER', time=1)
+		except requests.Timeout as err: control.infoDialog('REALDEBRID TIMED OUT', time=3)
 		if result.status_code == 401: 
 			if not refresh: 
 				result = self.rdRequest(url, method=method, data=data, refresh=True)
