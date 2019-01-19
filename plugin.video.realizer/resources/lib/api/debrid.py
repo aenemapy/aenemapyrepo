@@ -26,7 +26,8 @@ BOUNDARY = 'X-X-X'
 data = {}
 params = {}
 
-VALID_EXT = ['mkv', 'avi', 'mp4' ,'divx', 'mpeg', 'mov', 'wmv', 'avc', 'mk3d', 'xvid', 'mpg', 'flv', 'aac', 'asf', 'm4a', 'm4v', 'mka', 'ogg']
+VALID_EXT = ['mkv', 'avi', 'mp4' ,'divx', 'mpeg', 'mov', 'wmv', 'avc', 'mk3d', 'xvid', 'mpg', 'flv', 'aac', 'asf', 'm4a', 'm4v', 'mka', 'ogg' 'oga', 'ogv', 'ogx', '3gp', 'VIVO', 'PVA', 'NUV', 'NSV', 'NSA', 'FLI', 'FLC']
+
 requestTimeout = 30
 EXT_BLACKLIST = ['rar.html','.php','.txt','.iso','.zip', '.rar', '.jpeg', '.img', '.jpg', '.RAR', '.ZIP', '.png' , '.sub', '.srt']
 
@@ -107,6 +108,7 @@ def torrentInfo(id):
 	links = r['links']
 	files = r['files']
 
+	count = 0
 	for x in files:
 		try:
 			oriGinalName = x['path']
@@ -118,6 +120,9 @@ def torrentInfo(id):
 			if ext in VALID_EXT: isPlayable = True	
 			else: isPlayable = False
 			
+			if not ext.lower() in VALID_EXT: raise Exception()
+			
+			
 			label = ext.upper() + " | " + name
 			
 			item = control.item(label=label)
@@ -125,8 +130,8 @@ def torrentInfo(id):
 			item.setProperty('Fanart_Image', control.addonFanart())
 
 			itemID = x['id']
-			listID = int(itemID) - 1
-			playlink = links[listID]
+			playlink = links[count]
+			count += 1
 			
 			infolabel = {"Title": label}
 			item.setInfo(type='Video', infoLabels = infolabel)
@@ -156,6 +161,7 @@ def playtorrentItem(name, id):
 		item.setInfo(type='Video', infoLabels = infolabel)
 		item.setProperty('IsPlayable', 'true')	
 		item = control.item(path= torrInDownload['download'])
+		
 		control.resolve(int(sys.argv[1]), True, item)
 		
 	else:
@@ -171,6 +177,7 @@ def playtorrentItem(name, id):
 		torrItem = [i for i in newTorr if i['filename'] == name.split('/')[-1]][0]
 		
 		if len(torrItem) > 0:
+			control.infoDialog('Playing Torrent Item', torrItem['filename'], time=3)
 			item = control.item(label=name)
 			item.setArt({'icon': control.addonIcon()})
 			item.setProperty('Fanart_Image', control.addonFanart())		
@@ -185,19 +192,28 @@ def torrentItemToDownload(name, id):
 	torrInDownload = []
 	torrItem = []
 	try:
-	
+		#print ("TORRENT ITEM TO DOWNLOAD", name, id)
 		r = realdebrid().torrentInfo(id)
 		links = r['links']
 		files = r['files']
 		newTorr = []
 		
+		#print ("TORRENT ITEM TO DOWNLOAD LEN", len(links), len(files))
+		count = 0
 		for x in files:
 			try:
 				itemID = x['id']
-				listID = int(itemID) - 1
 				itemName = x['path']
+				
+				ext = itemName.split('.')[-1].encode('utf-8')				
+				if not ext.lower() in VALID_EXT: raise Exception()
+		
+				#print ("TORRENT ITEM TO DOWNLOAD 2", count, itemName)				
+
+				playlink = links[count]
+				count += 1	
+				#print ("TORRENT ITEM TO DOWNLOAD PASSED", count, itemName)
 				if not itemName == name: raise Exception()
-				playlink = links[listID]
 				result = realdebrid().resolve(playlink, full=True)
 				if result != None: newTorr.append(result)
 			except:pass
@@ -213,7 +229,8 @@ def scrapecloud(title, year=None, season=None, episode=None):
 	progress = control.progressDialogBG
 	#cachedSession = control.setting('cachecloud.startup')
 	playbackMode  = control.setting('playback.mode')
-	
+	matchTitle  = control.setting('match.mode')
+		
 		
 	# if cachedSession == 'true': # CACHE MODE	
 			# if control.setting('first.start') == 'true':
@@ -336,16 +353,39 @@ def scrapecloud(title, year=None, season=None, episode=None):
 			exactPlay = True
 	except:pass
 
+	#print ("EXACT SOURCES", exactSources)
+	#print ("NORMAL SOURCES", normalSources)
 	# EXACT PLAY AND AUTO PLAY MODE
 	if playbackMode == '0' and exactPlay == True: 
 		if content['type'] == 'download': return content['link'], content['id']
 		else: 
 			torrName = content['name']
-			torrFile = torrentItemToDownload(torrName, id)
+			torrFile = torrentItemToDownload(torrName, content['id'])
+			control.infoDialog('Playing Torrent Item', torrFile['filename'], time=3)
 			return torrFile['download'], torrFile['id']
 		
 	# NORMAL PLAY MODE	
-	elif len(exactSources) > 1:	
+	elif len(exactSources) > 1 and playbackMode == '0':	
+		for result in exactSources:
+			type = result['type']
+			fileLabel = type
+			id = result['id']
+			name = result['name'].encode('utf-8')
+			#name = normalize(name)
+			sourceNames.append(name)
+			
+			playLink = result['link']
+			try: labelName = name.split('/')[-1]
+			except: labelName = name
+			
+			label = "[B]" + fileLabel.upper() + " |[/B] " + labelName
+
+			labels.append(label)
+			sources.append(playLink)
+			types.append(type)
+			IDs.append(id)
+			
+	elif len(exactSources) > 0 and matchTitle == 'true':	
 		for result in exactSources:
 			type = result['type']
 			fileLabel = type
@@ -397,6 +437,7 @@ def scrapecloud(title, year=None, season=None, episode=None):
 	if selected_type != 'download': 
 		torrName = selected_name
 		torrFile = torrentItemToDownload(torrName, selected_id)
+		control.infoDialog('Playing Torrent Item', torrFile['filename'], time=3)
 		return torrFile['download'], torrFile['id']
 		
 	else: return selected_url, selected_id
@@ -609,6 +650,8 @@ class realdebrid:
 			torrentInfo = self.torrentInfo(id)
 			files = torrentInfo['files']
 			for item in files:
+				ext = item['path'].split('.')[-1]
+				if not ext.lower() in VALID_EXT: continue
 				data = {'name': item['path'], 'id': id}
 				self.torrentFiles.append(data)
 		except:
