@@ -596,7 +596,10 @@ class realdebrid:
 		try:
 			threads = []
 			torrents = self.torrentList()
-			for item in torrents: self.torrentScrapeInfo(item['id'])
+			for item in torrents: 
+				threads.append(libThread.Thread(self.torrentScrapeInfo, item['id']))
+			[i.start() for i in threads]
+			[i.join() for i in threads]
 			return self.torrentFiles
 		except:
 			pass
@@ -629,8 +632,8 @@ class realdebrid:
 				self.sources.append(data)
 		except: pass
 
-		if len(self.sources) > 0: self.cloudJson(self.sources)
-		control.setSetting(id='first.start', value='false')
+		#if len(self.sources) > 0: self.cloudJson(self.sources)
+		#control.setSetting(id='first.start', value='false')
 		return self.sources
         
 	def cloudJson(self, data=None, mode='write'):
