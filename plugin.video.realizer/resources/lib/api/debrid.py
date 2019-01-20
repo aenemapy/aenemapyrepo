@@ -191,6 +191,7 @@ def playtorrentItem(name, id):
 def torrentItemToDownload(name, id):
 	torrInDownload = []
 	torrItem = []
+	FileMatch = False
 	try:
 		#print ("TORRENT ITEM TO DOWNLOAD", name, id)
 		r = realdebrid().torrentInfo(id)
@@ -219,9 +220,35 @@ def torrentItemToDownload(name, id):
 			except:pass
 		
 		time.sleep(1)
-		torrItem = newTorr[0]
+		torrItem = newTorr
 		
-		if len(torrItem) > 0: return torrItem
+		if len(torrItem) > 0: 
+			for x in torrItem:
+				fileName = x['filename']
+				fileName = fileName.split('/')[-1]
+				
+				origName = name.split('/')[-1]
+				if fileName.lower() == origName.lower(): 
+					FileMatch = True
+					return x
+					
+		if FileMatch == False:  #FALLBACK TO UNRESTRICT ALL PACK
+			for y in links:
+				try: 
+					result_2 = realdebrid().resolve(y, full=True)
+					newFileName = result_2['filename']
+					newFileName = newFileName.split('/')[-1]
+					
+					origName = name.split('/')[-1]
+					if newFileName.lower() == origName.lower(): 
+						FileMatch = True
+						return result_2
+						
+					realdebrid().delete(result_2['id'])
+				except:pass
+			
+				
+
 	except: return []
 
 	

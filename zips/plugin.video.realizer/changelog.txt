@@ -1,3 +1,4 @@
+[B]2019.01.20[/B] - Fixed Scraping Bugs and fallback for Torrent Packs
 [B]2019.x.x[/B] - Initial Release
 
 
