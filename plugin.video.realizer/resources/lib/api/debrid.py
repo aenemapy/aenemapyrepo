@@ -129,15 +129,15 @@ def torrentInfo(id):
 			item.setArt({'icon': control.addonIcon()})
 			item.setProperty('Fanart_Image', control.addonFanart())
 
-			itemID = x['id']
-			playlink = links[count]
-			count += 1
+			# itemID = x['id']
+			# playlink = links[count]
+			# count += 1
 			
 			infolabel = {"Title": label}
 			item.setInfo(type='Video', infoLabels = infolabel)
 			item.setProperty('IsPlayable', 'true')
 					
-			url = url = '%s?action=%s&name=%s&id=%s' % (sysaddon, 'playtorrentItem', name, playlink) 
+			url = url = '%s?action=%s&name=%s&id=%s' % (sysaddon, 'playtorrentItem', name, id) 
 			#item.addContextMenuItems(cm)
 			control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
 		except: pass
@@ -148,9 +148,11 @@ def torrentInfo(id):
 	
 def playtorrentItem(name, id):
 	torrInDownload = []
+	try : name = name.split('/')[-1]
+	except: name = name
 	try:
 		downloads = realdebrid().transferList()
-		torrInDownload = [i for i in downloads if i['filename'] == name.split('/')[-1]][0]
+		torrInDownload = [i for i in downloads if i['filename'].lower() == name.lower()][0]
 	except:pass
 	
 	if len(torrInDownload) > 0:
@@ -168,13 +170,13 @@ def playtorrentItem(name, id):
 		newTorr = []
 
 		try:
-			result = realdebrid().resolve(id, full=True)
+			result = torrentItemToDownload(name, id)
 			if result != None: newTorr.append(result)
 		except:pass
 
 		time.sleep(1)
 
-		torrItem = [i for i in newTorr if i['filename'] == name.split('/')[-1]][0]
+		torrItem = newTorr[0]
 		
 		if len(torrItem) > 0:
 			control.infoDialog('Playing Torrent Item', torrItem['filename'], time=3)
@@ -213,8 +215,17 @@ def torrentItemToDownload(name, id):
 
 				playlink = links[count]
 				count += 1	
+				
+				fileName = itemName
+				try: fileName = fileName.split('/')[-1]
+				except:pass
+				
+				origName = name
+				try: origName = origName.split('/')[-1]
+				except: pass
+				
 				#print ("TORRENT ITEM TO DOWNLOAD PASSED", count, itemName)
-				if not itemName == name: raise Exception()
+				if not cleantitle.get(fileName) == cleantitle.get(origName): raise Exception()
 				result = realdebrid().resolve(playlink, full=True)
 				if result != None: newTorr.append(result)
 			except:pass
@@ -225,10 +236,13 @@ def torrentItemToDownload(name, id):
 		if len(torrItem) > 0: 
 			for x in torrItem:
 				fileName = x['filename']
-				fileName = fileName.split('/')[-1]
+				try: fileName = fileName.split('/')[-1]
+				except:pass
 				
-				origName = name.split('/')[-1]
-				if fileName.lower() == origName.lower(): 
+				origName = name
+				try: origName = origName.split('/')[-1]
+				except: pass
+				if cleantitle.get(fileName) == cleantitle.get(origName): 
 					FileMatch = True
 					return x
 					
@@ -237,10 +251,13 @@ def torrentItemToDownload(name, id):
 				try: 
 					result_2 = realdebrid().resolve(y, full=True)
 					newFileName = result_2['filename']
-					newFileName = newFileName.split('/')[-1]
-					
-					origName = name.split('/')[-1]
-					if newFileName.lower() == origName.lower(): 
+					try: newFileName = newFileName.split('/')[-1]
+					except:pass
+					origName = name
+					try: origName = origName.split('/')[-1]	
+					except: pass
+
+					if cleantitle.get(newFileName) == cleantitle.get(origName): 
 						FileMatch = True
 						return result_2
 						
@@ -763,16 +780,6 @@ class realdebrid:
 			pass
 
 
-
-
-
-
-
-
-
-
-
-	
 	def check(self, url, type = 'downloads'):
 		try:
 			if type != 'torrents': raise Exception()
@@ -832,15 +839,16 @@ class realdebrid:
 		except:
 			pass
 
-	
-
-	
-	
-	
-	
-	
-	
-	
+def cleantitle_get(title):
+    if title == None: return
+    title = title.lower()
+    title = re.sub('&#(\d+);', '', title)
+    title = re.sub('(&#[0-9]+)([^;^0-9]+)', '\\1;\\2', title)
+    title = title.replace('&quot;', '\"').replace('&amp;', '&')
+    title = re.sub(r'\<[^>]*\>','', title)
+    title = re.sub('\n|([[].+?[]])|([(].+?[)])|\s(vs|v[.])\s|(:|;|-|"|,|\'|\_|\.|\?)|\(|\)|\[|\]|\{|\}|\s', '', title)
+    title = re.sub('[^A-z0-9]', '', title)
+    return title	
 	
 	
 
