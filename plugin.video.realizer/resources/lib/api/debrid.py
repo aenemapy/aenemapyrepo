@@ -42,54 +42,61 @@ def transferList(page='1'):
 	item = control.item(label='[Delete All Downloads]')
 	control.addItem(handle=syshandle, url=clearAll, listitem=item, isFolder=False)
 
-	cm = []
-	r = realdebrid().transferList(page=int(page))
+	r = []
+	
+	try: r = realdebrid().transferList(page=int(page))
+	except: pass
+	
 	try:
 		for result in r:
 			try:
+				cm = []
 				icon = result['host_icon']
 				name = result['filename']
 				name = normalize(name)
 				id = result['id']
-
 				link = result['link']
 				ext = name.split('.')[-1].encode('utf-8')
 
 				if ext in VALID_EXT: isPlayable = True	
 				else: isPlayable = False
-				
+					
 				label = ext.upper() + " | " + name
 				
 				item = control.item(label=label)
 				item.setArt({'icon': icon, 'thumb': icon})
 				item.setProperty('Fanart_Image', control.addonFanart())
 
-
 				infolabel = {"Title": label}
 				item.setInfo(type='Video', infoLabels = infolabel)
 				item.setProperty('IsPlayable', 'true')
-						
+							
 				url = result['download']
-				cm.append(('Delete Download Item', 'RunPlugin(%s?action=rdDeleteItemid=%s)' % (sysaddon, id)))
+				cm.append(('Delete Download Item', 'RunPlugin(%s?action=rdDeleteItem&id=%s&type=downloads)' % (sysaddon, id)))
 				if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s&id=%s)' % (sysaddon, name, url, id)))
 				item.addContextMenuItems(cm)
 				control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
 			except:pass
 	except:pass
+
 	
-	if len(r) > 99:
-		page = int(page) + 1
-		item = control.item(label='NEXT >>>')
-		url = '%s?action=%s&page=%s' % (sysaddon, 'rdTransfers', page)
-		control.addItem(handle=syshandle, url=clearAll, listitem=item, isFolder=False)	
+	try:
+		if len(r) > 99:
+			page = int(page) + 1
+			item = control.item(label='NEXT >>>')
+			url = '%s?action=%s&page=%s' % (sysaddon, 'rdTransfers', page)
+			control.addItem(handle=syshandle, url=clearAll, listitem=item, isFolder=False)
+	except: pass
 	
 	control.content(syshandle, 'movies')
 	control.directory(syshandle, cacheToDisc=True)
 	
 
 def torrentList():
+
 	r = realdebrid().torrentList()
 	for item in r:
+		cm = []
 		status = item['status']
 		id = item['id']
 		name = item['filename']
@@ -98,7 +105,9 @@ def torrentList():
 		item.setArt({'icon': control.addonIcon()})
 		item.setProperty('Fanart_Image', control.addonFanart())
 		infolabel = {"Title": label}
+		cm.append(('Delete Torrent Item', 'RunPlugin(%s?action=rdDeleteItem&id=%s&type=torrents)' % (sysaddon, id)))
 		url = '%s?action=%s&id=%s' % (sysaddon, 'rdTorrentInfo', id) 
+		item.addContextMenuItems(cm)
 		control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
 				
 	control.directory(syshandle, cacheToDisc=True)

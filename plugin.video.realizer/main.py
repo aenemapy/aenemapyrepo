@@ -135,7 +135,7 @@ elif action == 'rdDeleteAll':
 elif action == 'rdDeleteItem':
 	from resources.lib.modules import control
 	from resources.lib.api import debrid
-	debrid.realdebrid().delete(id)
+	debrid.realdebrid().delete(id, type=type)
 	control.refresh()
 	
 elif action == 'premiumizeClearFinished':
