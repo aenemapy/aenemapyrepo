@@ -26,6 +26,7 @@
 		<setting id="nextup.skin.native" type="bool" label="Skin native look for Popup (if supported)" default="false" visible="eq(-3,true)" />
 		
 		<setting type="lsep" label="Cosmetics" />		
+		<setting id="sort.torrents" type="bool" label="Sort Torrents Alphabetically" default="false" />
 		<setting id="poster.type" type="enum" label="Poster Quality" values="SD|HD|Max Quality" default="1" />
 		<setting id="fanart.type" type="enum" label="Fanart Quality" values="SD|HD|Max Quality" default="2" />
 		

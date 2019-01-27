@@ -95,6 +95,11 @@ def transferList(page='1'):
 def torrentList(page='1'):
 
 	r = realdebrid().torrentList(page=int(page))
+	
+	if control.setting('sort.torrents') == 'true':
+		try: r = sorted(r, key=lambda k: utils.title_key(k['filename']))
+		except: pass
+		
 	for item in r:
 		cm = []
 		status = item['status']

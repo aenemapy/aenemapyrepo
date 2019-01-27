@@ -1,3 +1,4 @@
+[B]2019.01.27.5[/B] - Improved multi pages torrent lists and scraping, (OPTION) Cached cloud list option, (OPTION) sort torrent list alphabetically
 [B]2019.01.22[/B] - Improved matching titles and torrent checks
 [B]2019.01.20[/B] - Fixed Scraping Bugs and fallback for Torrent Packs
 [B]2019.x.x[/B] - Initial Release
