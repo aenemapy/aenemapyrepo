@@ -116,7 +116,7 @@ elif action == 'rdTransfers':
 	
 elif action == 'rdTorrentList':
     from resources.lib.api import debrid
-    debrid.torrentList()	
+    debrid.torrentList(page=page)	
 	
 elif action == 'playtorrentItem':
     from resources.lib.api import debrid

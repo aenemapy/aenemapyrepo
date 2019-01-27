@@ -92,9 +92,9 @@ def transferList(page='1'):
 	control.directory(syshandle, cacheToDisc=True)
 	
 
-def torrentList():
+def torrentList(page='1'):
 
-	r = realdebrid().torrentList()
+	r = realdebrid().torrentList(page=int(page))
 	for item in r:
 		cm = []
 		status = item['status']
@@ -111,6 +111,14 @@ def torrentList():
 		control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
 				
 	control.directory(syshandle, cacheToDisc=True)
+	
+	try:
+		if len(r) > 99:
+			page = int(page) + 1
+			item = control.item(label='NEXT >>>')
+			url = '%s?action=%s&page=%s' % (sysaddon, 'rdTorrentList', page)
+			control.addItem(handle=syshandle, url=clearAll, listitem=item, isFolder=False)
+	except: pass
 	
 def torrentInfo(id):
 	r = realdebrid().torrentInfo(id)
@@ -280,31 +288,27 @@ def torrentItemToDownload(name, id):
 	
 def scrapecloud(title, year=None, season=None, episode=None):
 	progress = control.progressDialogBG
-	#cachedSession = control.setting('cachecloud.startup')
+	cachedSession = control.setting('cached.mode')
 	playbackMode  = control.setting('playback.mode')
 	matchTitle  = control.setting('match.mode')
 		
 		
-	# if cachedSession == 'true': # CACHE MODE	
-			# if control.setting('first.start') == 'true':
-				# progress.create('Scraping Your Cloud','Please Wait...')
-				# progress.update(100,'Scraping Your Cloud','Please Wait...')
-				# r = realdebrid().scraperList()
-			# else:
-				# progress.create('Scraping Your Cache File','Please Wait...')
-				# progress.update(100,'Scraping Your Cache File','Please Wait...')
-				# r = realdebrid().cloudJson(mode='get')
-				# control.setSetting(id='first.start', value='false')
-				# NORMAL MODE
-	
-	#print ("SCRAPING NORMAL")
-	progress.create('Scraping Your Cloud','Please Wait...')
-	progress.update(100,'Scraping Your Cloud','Please Wait...')
-		
-	r = realdebrid().scraperList()
-		
-	#print ("SCRAPER LIST 1", r)
+	if cachedSession == 'true': # CACHE MODE	
+			if control.setting('first.start') == 'true':
+				progress.create('Caching Your Cloud','Please Wait...')
+				progress.update(100,'Caching Your Cloud','Please Wait...')
+				r = realdebrid().scraperList()
+			else:
+				control.infoDialog('Using Cached Cloud List', time = 3)
+				r = realdebrid().cloudJson(mode='get')
+				control.setSetting(id='first.start', value='false')
 
+	else:
+		#print ("SCRAPING NORMAL")
+		progress.create('Scraping Your Cloud','Please Wait...')
+		progress.update(100,'Scraping Your Cloud','Please Wait...')
+		r = realdebrid().scraperList()
+		
 	try: progress.close()
 	except: pass
 	try: progress.close()
@@ -511,7 +515,7 @@ class realdebrid:
 		self.USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0'
 		self.transfers = []
 		self.torrentFiles = []
-	
+		self.torrents = []	
 	
 	def auth(self):
 		result = requests.get(self.RD_OAUTH, timeout=requestTimeout).json()
@@ -668,10 +672,23 @@ class realdebrid:
 		except:
 			pass
 			
-	def torrentList(self, page=1):
+	def torrentList(self, page = 1, scraper = False):
 		url = self.RealDebridApi + '/torrents'
-		result = self.rdRequest(url, method='get').json()
-		return result
+		params = {'limit': 100, 'page': 1}
+		result = self.rdRequest(url, method='get', params=params).json()
+		if result != None: self.torrents += result
+		else: return self.torrents
+		
+		if scraper == True:
+			try:
+				if len(result) > 99: 
+					next = page + 1
+					self.torrentList(page=next, scraper = True)
+				else: return self.torrents
+			except: return self.torrents
+		else:
+			return self.torrents
+
 
 	def torrentInfo(self, id):
 		url = self.RealDebridApi + '/torrents/info/' + id
@@ -689,7 +706,7 @@ class realdebrid:
 	def torrentScrape(self):
 		try:
 			threads = []
-			torrents = self.torrentList()
+			torrents = self.torrentList(scraper = True)
 			for item in torrents: 
 				threads.append(libThread.Thread(self.torrentScrapeInfo, item['id']))
 			[i.start() for i in threads]
@@ -728,9 +745,10 @@ class realdebrid:
 				self.sources.append(data)
 		except: pass
 
-		#if len(self.sources) > 0: self.cloudJson(self.sources)
-		#control.setSetting(id='first.start', value='false')
+		if len(self.sources) > 0: self.cloudJson(self.sources)
+		control.setSetting(id='first.start', value='false')
 		return self.sources
+		
         
 	def cloudJson(self, data=None, mode='write'):
 		control.makeFile(control.dataPath)
