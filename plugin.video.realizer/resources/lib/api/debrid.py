@@ -7,8 +7,7 @@ import time
 import json
 import libThread
 
-params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
-action = params.get('action')
+
 sysaddon = sys.argv[0]
 syshandle = int(sys.argv[1])
 
@@ -706,6 +705,37 @@ class realdebrid:
 		result = self.rdRequest(url, method='post', data=data).json()
 		return result
 
+		
+	def addtorrent(self, torrent):
+		url = self.RealDebridApi + '/torrents/addMagnet'
+		data = {'magnet': torrent}
+		result = self.rdRequest(url, method='post', data=data).json()
+		return result
+
+	def getTorrentFilesId(self, id):
+		try:
+			data = {'files': fileID}
+			idTorrent = '/torrents/selectFiles/%s' % id
+			url = self.RealDebridApi + idTorrent
+			r = self.rdRequest(url, data=data, method='post')
+			if r.status_code == 204: print "[REALDEBRID] >>> TORRENT CACHED"
+		except:
+			pass
+
+
+	def selectTorrentList(self, id, fileIDs):
+		try:
+			files = ','.join(map(str, fileIDs))
+			data = {'files': files}
+			idTorrent = '/torrents/selectFiles/%s' % id
+			url = self.RealDebridApi + idTorrent
+			r = self.rdRequest(url, data=data, method='post')
+			if r.status_code == 204: print "[REALDEBRID] >>> TORRENT CACHED"
+			return r.json()
+		except:
+			pass		
+		
+		
 
 	# #######  REALDEBRID SCRAPERS AND CLOUD CACHE ###############################################
 	def torrentScrape(self):

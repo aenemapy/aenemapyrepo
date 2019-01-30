@@ -138,6 +138,24 @@ elif action == 'rdDeleteItem':
 	debrid.realdebrid().delete(id, type=type)
 	control.refresh()
 	
+elif action == 'rss_manager':
+	from resources.lib.modules import rss
+	rss.manager()
+	
+elif action == 'rss_update':
+	from resources.lib.modules import rss
+	rss.update()
+
+elif action == 'rss_clear':
+	import os
+	from resources.lib.modules import control
+	try: os.remove(control.rssDb)
+	except:pass	
+	try: os.remove(control.rssDb)
+	except:pass	
+	control.refresh()
+	
+	
 elif action == 'premiumizeClearFinished':
     from resources.lib.api import premiumize
     premiumize.clearfinished()	
@@ -181,12 +199,8 @@ elif action == 'forcecloudsync':
 	updater.updatelibrary()	
 	
 elif action == 'service':
-	from resources.lib.modules import control	
-	if control.setting('cachecloud.startup') == 'true':
-		from resources.lib.api import premiumize
-		premiumize.cloudCache(mode='new')
-	from resources.lib.modules import updater
-	updater.updatelibrary()		
+	from resources.lib.modules import rss
+	rss.update()
 		
 elif action == 'clearPremiumize':
     from resources.lib.resolvers import debrid

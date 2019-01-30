@@ -126,6 +126,8 @@ selectiveLibrary = os.path.join(dataPath, 'selective_sync.json')
 
 logDownloads = os.path.join(dataPath, 'downloads.db')
 
+rssDb = os.path.join(dataPath, 'rss.db')
+
 addon_id = 'plugin.video.realizer'
 
 

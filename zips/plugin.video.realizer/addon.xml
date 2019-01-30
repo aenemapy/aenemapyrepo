@@ -1,10 +1,12 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.realizer" version="2019.01.27.5" name="Realizer" provider-name="aenema">
+<addon id="plugin.video.realizer" version="2019.01.30" name="Realizer" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.beautifulsoup4" />
 		<import addon="script.module.metalibrary" />	
 		<import addon="script.module.requests" />		
+		<import addon="script.module.feedparser" />			
+		
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="main.py">
 		<provides>video</provides>

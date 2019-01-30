@@ -2,8 +2,7 @@
 
 from resources.lib.modules import control
 control.setSetting(id='first.start', value='true') # FORCE NEW CACHE
-
-	
+control.execute('RunPlugin(plugin://plugin.video.realizer/?action=service)')	
 # class Service():
     # def __init__(self, *args):
         # addonName = 'Premiumize Transfers'

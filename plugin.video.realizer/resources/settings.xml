@@ -88,6 +88,26 @@
 		<setting id="download.path" type="folder" label="Path" enable="!eq(-1,false)" default="" />
 	</category>
 	
+	<category label="RSS Manager">
+		<setting type="lsep" label="Address 1" />
+		<setting id="rss.1" type="bool" label="Enable Rss" default="false" />
+		<setting id="rss.link.1" type="text" label="Rss Address" default="" visible="eq(-1,true)" />
+		<setting id="rss.link.1.offset" type="slider" label="Max Number of Days to check from today (offset)" default="3" range="0,14" option="int" visible="eq(-2,true)" />
+		<setting type="lsep" label="Address 2" />
+		<setting id="rss.2" type="bool" label="Enable Rss" default="false" />
+		<setting id="rss.link.2" type="text" label="Rss Address" default=""  visible="eq(-1,true)" />
+		<setting id="rss.link.2.offset" type="slider" label="Max Number of Days to check from today (offset)" default="3" range="0,14" option="int" visible="eq(-2,true)" />
+		<setting type="lsep" label="Address 3" />
+		<setting id="rss.3" type="bool" label="Enable Rss" default="false" />
+		<setting id="rss.link.3" type="text"  label="Rss Address" default=""  visible="eq(-1,true)" />
+		<setting id="rss.link.3.offset" type="slider" label="Max Number of Days to check from today (offset)" default="3" range="0,14" option="int"  visible="eq(-2,true)" />
+		<setting type="lsep" label="Address 4" />
+		<setting id="rss.4" type="bool" label="Enable Rss" default="false" />
+		<setting id="rss.link.4" type="text"  label="Rss Address" default=""  visible="eq(-1,true)" />
+		<setting id="rss.link.4.offset" type="slider" label="Max Number of Days to check from today (offset)" default="3" range="0,14" option="int"  visible="eq(-2,true)" />
+				
+	</category>
+	
 	<category id="general" label="Backup/Restore">
 		<setting id="remote_path" type="folder" label="Backup Location" visible="True" />
 		<setting id="remote_restore_path" type="file" label="Restore from Zip File" visible="true" />
