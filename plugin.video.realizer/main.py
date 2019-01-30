@@ -199,8 +199,10 @@ elif action == 'forcecloudsync':
 	updater.updatelibrary()	
 	
 elif action == 'service':
-	from resources.lib.modules import rss
-	rss.update()
+	from resources.lib.modules import control
+	if control.setting('rss.1') == 'true' or control.setting('rss.2') == 'true' or control.setting('rss.3') == 'true' or control.setting('rss.4') == 'true':	
+		from resources.lib.modules import rss
+		rss.update()
 		
 elif action == 'clearPremiumize':
     from resources.lib.resolvers import debrid
