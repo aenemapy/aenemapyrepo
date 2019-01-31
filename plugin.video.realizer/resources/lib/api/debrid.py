@@ -43,7 +43,7 @@ def transferList(page='1'):
 
 	r = []
 	
-	try: r = realdebrid().transferList(page=int(page))
+	try: r, isNext = realdebrid().transferList(page=int(page), info=True)
 	except: pass
 	
 	try:
@@ -80,11 +80,13 @@ def transferList(page='1'):
 
 	
 	try:
-		if len(r) > 99:
+		if isNext == True:
 			page = int(page) + 1
 			item = control.item(label='NEXT >>>')
-			url = '%s?action=%s&page=%s' % (sysaddon, 'rdTransfers', page)
-			control.addItem(handle=syshandle, url=clearAll, listitem=item, isFolder=False)
+			item.setArt({'icon': control.addonIcon()})
+			item.setProperty('Fanart_Image', control.addonFanart())
+			x = '%s?action=%s&page=%s' % (sysaddon, 'rdTransfers', str(page))
+			control.addItem(handle=syshandle, url=x, listitem=item, isFolder=True)
 	except: pass
 	
 	control.content(syshandle, 'movies')
@@ -92,9 +94,8 @@ def transferList(page='1'):
 	
 
 def torrentList(page='1'):
+	r, isNext = realdebrid().torrentList(page=int(page), info=True)
 
-	r = realdebrid().torrentList(page=int(page))
-	
 	if control.setting('sort.torrents') == 'true':
 		try: r = sorted(r, key=lambda k: utils.title_key(k['filename']))
 		except: pass
@@ -113,16 +114,18 @@ def torrentList(page='1'):
 		url = '%s?action=%s&id=%s' % (sysaddon, 'rdTorrentInfo', id) 
 		item.addContextMenuItems(cm)
 		control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)
-				
-	control.directory(syshandle, cacheToDisc=True)
-	
+
 	try:
-		if len(r) > 99:
+		if isNext == True:
 			page = int(page) + 1
 			item = control.item(label='NEXT >>>')
-			url = '%s?action=%s&page=%s' % (sysaddon, 'rdTorrentList', page)
-			control.addItem(handle=syshandle, url=clearAll, listitem=item, isFolder=False)
+			item.setArt({'icon': control.addonIcon()})
+			item.setProperty('Fanart_Image', control.addonFanart())
+			x = '%s?action=%s&page=%s' % (sysaddon, 'rdTorrentList', str(page))
+			control.addItem(handle=syshandle, url=x, listitem=item, isFolder=True)
 	except: pass
+				
+	control.directory(syshandle, cacheToDisc=True)
 	
 def torrentInfo(id):
 	r = realdebrid().torrentInfo(id)
@@ -665,33 +668,72 @@ class realdebrid:
 		else: 
 			return result
 	
-	def transferList(self, page=1):
+	def transferList(self, page = 1, info=False):
 		try:
-            # --------------- DEBRID AUTH -----------------------------------------
 			url = self.RealDebridApi + '/downloads'
-			params = {'limit': 100, 'page': 1}
-			result = self.rdRequest(url, method='get', params=params)
-			if result != None: self.transfers += result.json()
-			return self.transfers
-		except:
-			pass
+			params = {'limit': 100, 'page': page}
+			nextPage = False
 			
-	def torrentList(self, page = 1, scraper = False):
+			result = self.rdRequest(url, method='get', params=params)
+			
+			if result.json() != None: 
+				heads = result.headers
+				totalCounts = heads['X-Total-Count']
+					
+				pageCount = int(page) * 100	
+				if int(totalCounts) > pageCount: nextPage = True
+				self.transfers += result.json()
+				
+				if info == True:
+					return self.transfers, nextPage
+				else:
+					return self.transfers	
+				
+			else:
+				if info == True:
+					return self.transfers, nextPage
+				else:
+					return self.transfers			
+		except:
+			return []
+			
+	def torrentList(self, page = 1, scraper = False, info=False):
 		url = self.RealDebridApi + '/torrents'
-		params = {'limit': 100, 'page': 1}
-		result = self.rdRequest(url, method='get', params=params).json()
-		if result != None: self.torrents += result
-		else: return self.torrents
+		params = {'limit': 100, 'page': page}
+
+		nextPage = False
 		
-		if scraper == True:
+		result = self.rdRequest(url, method='get', params=params)
+		
+		if result.json() != None: 
+			heads = result.headers
+			totalCounts = heads['X-Total-Count']
+				
+			pageCount = int(page) * 100	
+			if int(totalCounts) > pageCount: nextPage = True
+			self.torrents += result.json()
+			
+		else:
+			if info == True:
+				return self.torrents, nextPage
+			else:
+				return self.torrents
+				
+		
+		if scraper == True:   # SCRAPER LOOP AND FINAL RETURNS
 			try:
-				if len(result) > 99: 
+				if nextPage == True: 
 					next = page + 1
 					self.torrentList(page=next, scraper = True)
 				else: return self.torrents
 			except: return self.torrents
-		else:
-			return self.torrents
+			
+			
+		else: # NORMAL RETURNS
+			if info == True:
+				return self.torrents, nextPage
+			else:
+				return self.torrents
 
 
 	def torrentInfo(self, id):

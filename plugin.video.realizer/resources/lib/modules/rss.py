@@ -103,6 +103,7 @@ def update():
 	VALID_EXT = debrid.VALID_EXT
 	rsslist = rssList()
 	sourceList = []
+	if len(rsslist) > 0: control.infoDialog('Checking RSS Lists...')
 	for x in rsslist:
 		u = x['rss']
 		timeNow =  datetime.datetime.utcnow()
@@ -147,11 +148,14 @@ def update():
 					
 					files = select['files']
 					filesIDs = [i['id'] for i in files if i['path'].split('.')[-1].lower() in VALID_EXT]
+					if len(filesIDs) < 1 or filesIDs == []:
+						debrid.realdebrid().delete(id, type = 'torrents')
+						raise Exception()					
 					r = debrid.realdebrid().selectTorrentList(id, filesIDs)
 					source = {'title': title, 'link': link , 'id': id, 'date': str(strDate)}
 					sourceList.append(source)
 			except: pass
-
+	control.infoDialog('RSS Lists check completed')
 	rssDB(data=sourceList)
 
 def manager():
@@ -166,10 +170,13 @@ def manager():
 	control.addItem(handle=syshandle, url=clear, listitem=item, isFolder=False)
 	try:
 		r  = rssDB(mode='get')
+		try: r = sorted(r, key=lambda x: int(x['added']), reverse=True)
+		except: pass
 		for item in r:
 			try:
 				cm = []
 				date = item['added']
+
 				id = item['id']
 				name = item['title']
 				label = date + " | " + name
