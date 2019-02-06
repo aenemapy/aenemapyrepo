@@ -11,6 +11,7 @@
 		
 		<setting type="lsep" label="Playback Settings" />			
 		<setting id="transcoded.play" type="bool" label="Play Transcoded Files if avaialable" default="false" />
+		<setting id="filter.files" type="bool" label="Filter Non Video Files" default="true" />
 		<setting type="lsep" label="Nextup Notification" />	
 		<setting type="sep" />	
 		<setting id="nextup.service" type="bool" label="Nextup Notification for Tv Shows" default="false" />

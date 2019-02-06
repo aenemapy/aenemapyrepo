@@ -581,7 +581,9 @@ def getFolder(id, meta=None, list=False):
 					playLink = result['link']
 
 				ext = playLink.split('.')[-1]
-				if not ext.lower() in VALID_EXT: continue
+				
+				if control.setting('filter.files') == 'true':
+					if not ext.lower() in VALID_EXT: continue
 	
 				fileLabel = type + " " + str(ext)
 				try: 
@@ -593,10 +595,10 @@ def getFolder(id, meta=None, list=False):
 				isFolder = False
 				isPlayable = 'true'
 				
-				try: playLink = urllib.quote_plus(playLink)
-				except: pass					
+				try: sysPlay = urllib.quote_plus(playLink)
+				except: sysPlay = playLink					
 				
-				url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, playLink, systitle , year, imdb, sysmeta, id)
+				url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, sysPlay, systitle , year, imdb, sysmeta, id)
 				cm.append(('Queue Item', 'RunPlugin(%s?action=queueItem)' % sysaddon))					
 				if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s&id=%s)' % (sysaddon, name, url, id)))
 			else: cm.append(('Download Folder (Zip)', 'RunPlugin(%s?action=downloadZip&name=%s&id=%s)' % (sysaddon, name, id)))
@@ -606,7 +608,13 @@ def getFolder(id, meta=None, list=False):
 			
 			label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
 			item = control.item(label=label)
-			#item.setProperty('IsPlayable', isPlayable)	
+			
+			try:
+				if ext.lower() == 'mp3' or ext.lower() == 'flac': 
+					item.setProperty('IsPlayable', isPlayable)	
+					url = playLink
+			except:pass
+				
 			cm.append(('Add To Library', 'RunPlugin(%s?action=addToLibrary&id=%s&type=%s&name=%s)' % (sysaddon, id, type, name)))
 			
 			if artMeta == True:
@@ -629,68 +637,7 @@ def getFolder(id, meta=None, list=False):
 def direct_downlaod(id):
 	return
 
-def openFolderx(id, meta=None):
-	# meta = json.loads(meta)	
-	folder = premiumizeFolder + id
-	url = urlparse.urljoin(premiumize_Api, folder) 
-	r = reqJson(url)
-	r = r['content']
-	for result in r:
-		cm = []
-		type = result['type']
-		fileLabel = type
-		id = result['id']
-		name = result['name'].encode('utf-8')
-		name = normalize(name)
-		superInfo = {'title': name}
-		playLink = '0'
-		isFolder = True
-		isPlayable = 'false'
-		url = '%s?action=%s&id=%s' % (sysaddon, 'premiumizeOpenFolder', id)
-		cm.append(('Delete from Cloud', 'RunPlugin(%s?action=premiumizeDeleteItem&id=%s&type=%s)' % (sysaddon, id, type)))
-		cm.append(('Rename Item', 'RunPlugin(%s?action=premiumizeRename&id=%s&type=%s&title=%s)' % (sysaddon, id, type, name)))
-									
-		if type == 'file':
-			playLink = result['link']
-			ext = playLink.split('.')
-			
-			fileLabel = type + " " + str(ext[-1])
-			try: 
-				size = result['size']
-				size = getSize(size)
-			except: size = ''
-			if size != '': fileLabel = fileLabel + " | " + str(size)
-				
-			isFolder = False
-			isPlayable = 'true'
-			url =  playLink
-			if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s)' % (sysaddon, name, url)))
-		label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
-		item = control.item(label=label)
-		item.setProperty('IsPlayable', isPlayable)
-		item.setArt({'icon': control.icon, 'thumb': control.icon})
-		item.setProperty('Fanart_Image', control.addonFanart())
-		item.addContextMenuItems(cm)
-		
-		sysurl = client.replaceHTMLCodes(url)
-		sysurl = sysurl.encode('utf-8')
-		
-		if meta != None and meta != '':
-			if control.setting('movies.meta') != 'true': raise Exception()
-			items = json.loads(str(meta))
-			systitle = urllib.quote_plus(items['title'])
-			superInfo = {'title': items['title'], 'genre': items['genre'], 'year': items['year'], 'poster': items['poster'], 'imdb': items['imdb'], 'fanart': items['fanart'], 'plot':items['plot'], 'rating':items['rating'], 'duration':items['duration']}
-			sysmeta = urllib.quote_plus(json.dumps(superInfo))
-			url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s' % (sysaddon, playLink, systitle , items['year'], items['imdb'], sysmeta)
-			item.setProperty('Fanart_Image', items['fanart'])
-			
-			item.setArt({'icon': items['poster'], 'thumb': items['poster']})
-			
-		item.setInfo(type='Video', infoLabels = superInfo)
-		control.addItem(handle=syshandle, url=sysurl, listitem=item, isFolder=isFolder)
-	control.content(syshandle, 'addons')
-	control.directory(syshandle, cacheToDisc=True)
-	
+
 def check_cloud(title): 
 	inCloud = False
 	r = PremiumizeScraper().sources()
