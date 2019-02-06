@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from resources.lib.modules import control, cleantitle, client
+from resources.lib.modules import control, cleantitle, utils
 import requests
 import os,sys,re,json,urllib,urlparse
 import xbmc, xbmcaddon, xbmcgui, xbmcvfs
@@ -131,7 +131,8 @@ def torrentInfo(id):
 	r = realdebrid().torrentInfo(id)
 	links = r['links']
 	files = r['files']
-
+	try: files = sorted(files, key=lambda k: utils.title_key(k['path']))
+	except:pass
 	count = 0
 	for x in files:
 		try:
