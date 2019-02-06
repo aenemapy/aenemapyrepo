@@ -304,10 +304,10 @@ def scrapecloud(title, year=None, season=None, episode=None):
 			if control.setting('first.start') == 'true':
 				progress.create('Caching Your Cloud','Please Wait...')
 				progress.update(100,'Caching Your Cloud','Please Wait...')
-				r = realdebrid().scraperList()
+				r = realdebrid().scraperList(cache = True)
 			else:
 				control.infoDialog('Using Cached Cloud List', time = 3)
-				r = realdebrid().cloudJson(mode='get')
+				r = realdebrid().cloudJson(mode= 'get')
 				control.setSetting(id='first.start', value='false')
 
 	else:
@@ -363,7 +363,6 @@ def scrapecloud(title, year=None, season=None, episode=None):
 			name = normalize(name)
 			x.update({'type':'download'})
 
-			
 			if not titleCheck in cleantitle.get(name): raise Exception()
 
 			normalSources.append(x)
@@ -386,12 +385,8 @@ def scrapecloud(title, year=None, season=None, episode=None):
 		
 	# FALLBACK TO TORRENTLIST SCRAPE
 	try:
-		if exactPlay == True: raise Exception()
-		exactSources = []
 		for y in torrentList:
 			try:
-				if exactPlay == True: raise Exception()
-
 				id = y['id']
 				name = y['name'].encode('utf-8')
 				name = name.split('/')[-1]
@@ -684,23 +679,25 @@ class realdebrid:
 				if int(totalCounts) > pageCount: nextPage = True
 				self.transfers += result.json()
 				
-				if info == True:
-					return self.transfers, nextPage
-				else:
-					return self.transfers	
-				
 			else:
 				if info == True:
 					return self.transfers, nextPage
 				else:
-					return self.transfers			
+					return self.transfers	
+
+			if info == True:
+				return self.transfers, nextPage
+			else:
+				return self.transfers	
+					
 		except:
 			return []
 			
-	def torrentList(self, page = 1, scraper = False, info=False):
+	def torrentList(self, page = 1, scraper = False, info = False):
 		url = self.RealDebridApi + '/torrents'
 		params = {'limit': 100, 'page': page}
 
+		#print ("TORRENTLIST", params, scraper)
 		nextPage = False
 		
 		result = self.rdRequest(url, method='get', params=params)
@@ -718,22 +715,12 @@ class realdebrid:
 				return self.torrents, nextPage
 			else:
 				return self.torrents
-				
-		
-		if scraper == True:   # SCRAPER LOOP AND FINAL RETURNS
-			try:
-				if nextPage == True: 
-					next = page + 1
-					self.torrentList(page=next, scraper = True)
-				else: return self.torrents
-			except: return self.torrents
 			
-			
-		else: # NORMAL RETURNS
-			if info == True:
-				return self.torrents, nextPage
-			else:
-				return self.torrents
+		if info == True:
+			#print ("RETURNING TORRENTS", len(self.torrents))
+			return self.torrents, nextPage
+		else:
+			return self.torrents
 
 
 	def torrentInfo(self, id):
@@ -780,10 +767,28 @@ class realdebrid:
 		
 
 	# #######  REALDEBRID SCRAPERS AND CLOUD CACHE ###############################################
+	
+	def torrentScrapePages(self):
+		self.page = 1
+		self.nextPage = False
+		self.scrapedTorrents = []		
+		results, self.nextPage = self.torrentList(page = self.page, info = True)
+		if results != None: self.scrapedTorrents = results
+		
+		while self.nextPage == True:
+			self.page += 1
+			#print ("SCRAPING MULTIPLE PAGES", self.page)
+			results, self.nextPage = self.torrentList(page = self.page, info = True)
+			if results != None: self.scrapedTorrents = results
+			
+		#print ("TOTAL TORRENTS", len(self.scrapedTorrents))
+		return self.scrapedTorrents
+
+			
 	def torrentScrape(self):
 		try:
 			threads = []
-			torrents = self.torrentList(scraper = True)
+			torrents = self.torrentScrapePages()
 			for item in torrents: 
 				threads.append(libThread.Thread(self.torrentScrapeInfo, item['id']))
 			[i.start() for i in threads]
@@ -804,7 +809,7 @@ class realdebrid:
 		except:
 			pass
 
-	def scraperList(self):
+	def scraperList(self, cache = False):
 		self.sources = []
 		try:
 			downloads = self.transferList()
@@ -822,8 +827,9 @@ class realdebrid:
 				self.sources.append(data)
 		except: pass
 
-		if len(self.sources) > 0: self.cloudJson(self.sources)
-		control.setSetting(id='first.start', value='false')
+		if cache == True: 
+			if len(self.sources) > 0: self.cloudJson(self.sources)
+			control.setSetting(id='first.start', value='false')
 		return self.sources
 		
         
