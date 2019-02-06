@@ -29,6 +29,7 @@
 		<setting id="movies.meta" type="bool" label="Use Movies Metadata in Cloud Folder" default="false" />		
 		<setting id="tvshows.meta" type="bool" label="Use Tvshows Metadata in Cloud Folder" default="false" />		
 		<setting type="lsep" label="Cosmetics" />		
+		<setting id="file.prefix"  type="bool"  label="Show Files Prefix in Cloud Browser" default="true" />		
 		<setting id="poster.type" type="enum" label="Poster Quality" values="SD|HD|Max Quality" default="1" />
 		<setting id="fanart.type" type="enum" label="Fanart Quality" values="SD|HD|Max Quality" default="2" />
 		

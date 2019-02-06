@@ -606,7 +606,11 @@ def getFolder(id, meta=None, list=False):
 			cm.append(('Delete from Cloud', 'RunPlugin(%s?action=premiumizeDeleteItem&id=%s&type=%s)' % (sysaddon, id, type)))
 			cm.append(('Rename Item', 'RunPlugin(%s?action=premiumizeRename&id=%s&type=%s&title=%s)' % (sysaddon, id, type, name)))
 			
-			label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
+			if control.setting('file.prefix') == 'true': 			
+				label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
+				
+			else: label = str(name)
+			
 			item = control.item(label=label)
 			
 			try:
