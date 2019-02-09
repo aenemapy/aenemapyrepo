@@ -57,6 +57,7 @@
 		<setting id="trakt.scrobbleTV" type="bool" label="Scrobble Episodes" default="true" />
 		<setting id="trakt.scrobbleMovies" type="bool" label="Scrobble Movies" default="true" />
 		<setting id="trakt.scrobblePlayback" type="bool" label="Scrobble Playback/Resume" default="false" />
+		<setting id="trakt.sortby" type="enum" label="Sort Trakt Lists by" values="Last Watched|Premiered|Title" default="0" />
 		<setting id="trakt.token" type="text" option="hidden" visible="false" label="" default="" />
 		<setting id="trakt.refresh" type="text" option="hidden" visible="false" label="" default="" />
 		<setting type="sep" />

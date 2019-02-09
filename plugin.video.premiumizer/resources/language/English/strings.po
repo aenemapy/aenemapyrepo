@@ -189,11 +189,11 @@ msgid "Discover"
 msgstr ""
 
 msgctxt "#32032"
-msgid "Collection"
+msgid "Trakt - Collection"
 msgstr ""
 
 msgctxt "#32033"
-msgid "Watchlist"
+msgid "Trakt - Watchlist"
 msgstr ""
 
 msgctxt "#32034"
@@ -201,19 +201,19 @@ msgid "IMDb"
 msgstr ""
 
 msgctxt "#32035"
-msgid "Featured"
+msgid "Trakt - Featured"
 msgstr ""
 
 msgctxt "#32036"
-msgid "History"
+msgid "Trakt - History"
 msgstr ""
 
 msgctxt "#32037"
-msgid "Progress"
+msgid "Trakt - Progress"
 msgstr ""
 
 msgctxt "#32038"
-msgid "Episodes"
+msgid "Trakt - New Episodes"
 msgstr ""
 
 msgctxt "#32039"
