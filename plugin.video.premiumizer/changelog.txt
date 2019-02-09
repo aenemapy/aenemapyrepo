@@ -1,3 +1,4 @@
+[B]2019.02.09[/B] - Added sort options for Trakt Lists
 [B]2019.02.06[/B] - (SETTINGS) Added ability to see and play non  video files.
 [B]2018.11.28[/B] - Hotfixes and changed NextUp skin
 [B]2018.08.06[/B] - Fixed missing tv shows seasons while browsing content
