@@ -51,8 +51,9 @@ class player(xbmc.Player):
             self.seekStatus = False
             infoMeta = False
             self.filetype = 'unknown'
+            self.watched          = False
 			
-            self.totalTime = 0 ; self.currentTime = 0
+            self.totalTime = 0 ; self.currentTime = 0; self.lastProgress = 0
             self.original_meta = meta
             self.content = 'movie' if season == None or episode == None else 'episode'
 			
@@ -246,9 +247,13 @@ class player(xbmc.Player):
 		
 		
     def keepPlaybackAlive(self):
-        self.playedOverlay    = False
         self.nextupDialog     = False	
         self.playNext		  = False
+        self.statusPlayed     = False
+        self.inProgress       = False
+		
+        pname = '%s.player.overlay' % control.addonInfo('id')
+        control.window.clearProperty(pname)
 		
         for i in range(0, 240):
             if self.isPlayingVideo(): break
@@ -258,67 +263,87 @@ class player(xbmc.Player):
             try:
 				self.totalTime = self.getTotalTime()
 				self.currentTime = self.getTime()
-				setWatched =  self.currentTime / self.totalTime >= .85
+				
+				#self.pause()
 				self.inWatching  =  (self.currentTime >= 60) # 1 MINUTE or More
 				
-				if setWatched and not self.playedOverlay == True and self.inWatching == True:
-					self.playedOverlay = True
-					self.setPlayingOverlay()
+				if self.inWatching == True and self.inProgress != True:
+					self.inProgress = True
+					if self.content == 'movie'    : self.add_progress_movies(self.original_meta)
+					elif self.content == 'episode': self.add_progress_episodes(self.original_meta)
+					
+				self.statusWatched  = (self.currentTime / self.totalTime >= .85)
 
 				# NEXTUP MODE
-				self.time_remaining  = (self.totalTime - self.currentTime) + 15  # ADDING SECONDS TO SCRAPE FOR NEXT EPISODE
-				if int(self.nextup_timeout) >= int(self.time_remaining) and self.inWatching == True and self.nextup_service == 'true' and self.content != 'movie' and self.nextupDialog == False:
-				#if self.nextup_service == 'true' and self.content != 'movie' and self.nextupDialog == False: #TEST MODE
-					self.nextupDialog = True
-					t = libThread.Thread(self.nextup_routine, 'on')
-					t.start()
+				self.time_remaining  = (self.totalTime - self.currentTime) - 10# ADDING SECONDS TO SCRAPE FOR NEXT EPISODE
+				
+				# NEXTUP SERVICE
+				if self.nextup_service == 'true' and self.content != 'movie' and self.nextupDialog == False:
+				
+					if int(self.nextup_timeout) >= int(self.time_remaining) and self.inWatching == True: # POPUP MODE
+						self.nextupDialog = True
+						t = libThread.Thread(self.smartplay, 'nextup')
+						t.start()
 					
+				#SETTING WATCHED STATUS WHILE STILL INPLAY
+				if self.statusWatched == True and self.statusPlayed != True:
+					self.statusPlayed = True
+					self.setPlaybackWatched()
+
             except:
 				pass
             xbmc.sleep(2000)
 			
-    def nextup_routine(self, mode):
-			try:
-				self.next_episode = self.smartplay(mode='next_episode')	
-				self.playNext = nextup.nextup(self.next_episode)
-			except:
-				pass		
-		
+        control.window.clearProperty(pname)
+			
+			
     def smartplay(self, mode='next'):
         if mode == 'scrape_next_episode':
 			try:
 				if self.content == 'movie': raise Exception()
 				from resources.lib.modules import smartplay
-				t = libThread.Thread(smartplay.scrape_next_episode, self.tvshowtitle, self.year, self.imdb, self.tvdb, 'en', season=self.season, episode=self.episode)
-				t.start()
+				smartplay.scrape_next_episode(self.tvshowtitle, self.year, self.imdb, self.tvdb, 'en', season=self.season, episode=self.episode)
 			except:
 				pass
-        elif mode == 'next_episode':
+				
+        elif mode == 'nextup':
 			try:
 				if self.content == 'movie': raise Exception()
 				from resources.lib.modules import smartplay
-				if len(self.next_episode) > 0: raise Exception()
 				self.next_episode = smartplay.next_episode(self.tvshowtitle, self.year, self.imdb, self.tvdb, 'en', season=self.season, episode=self.episode)
-				return self.next_episode
+				self.playNext = nextup.nextup(self.next_episode)	
 			except:
 				pass	
 				
-        elif mode == 'play_next':
+        elif mode == 'next_episode':
 			try:
 				from resources.lib.modules import smartplay
 				self.next_episode = smartplay.next_episode(self.tvshowtitle, self.year, self.imdb, self.tvdb, 'en', season=self.season, episode=self.episode)
-				smartplay.play_next_episode(self.next_episode)
 			except:
 				pass
-				
 			
-    def setPlayingOverlay(self):
-	
+        elif mode == 'inprogress_next_episode':
+			try:
+				from resources.lib.modules import smartplay
+				if len(self.next_episode) < 1:
+					self.next_episode = smartplay.next_episode(self.tvshowtitle, self.year, self.imdb, self.tvdb, 'en', season=self.season, episode=self.episode)
+					self.add_nextup_episode(self.next_episode)
+			except:
+				pass				
+			
+    def setPlaybackWatched(self):
+        try:
+			bookmarks().delete(self.bookMarkName)
+			if self.content == 'movie': self.remove_progress_movies(self.original_meta)
+        except:
+            pass
+			
         try:
             if self.content == 'movie': playcount.markMovieDuringPlayback(self.imdb, '7')
             elif self.content == 'episode':playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '7')
         except:
             pass
+			
         try:
             if self.DBID == None: raise Exception()
 
@@ -326,10 +351,11 @@ class player(xbmc.Player):
                 rpc = '{"jsonrpc": "2.0", "method": "VideoLibrary.SetMovieDetails", "params": {"movieid" : %s, "playcount" : 1 }, "id": 1 }' % str(self.DBID)
             elif self.content == 'episode':
                 rpc = '{"jsonrpc": "2.0", "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid" : %s, "playcount" : 1 }, "id": 1 }' % str(self.DBID)
-               
             control.jsonrpc(rpc)
         except:
             pass
+        self.watched = True
+       			
 			
     def setPlayed(self):
         try: # DIALOG DELETE
@@ -351,7 +377,10 @@ class player(xbmc.Player):
 	
         control.refresh()
 			
-			
+    def debridClear(self):
+		threads = []
+		threads.append(libThread.Thread(self.setPlayed))
+		[i.start() for i in threads]			
 			
     def libraryProgrees(self, content, currentTime, totalTime, DBID):
         try:
@@ -368,11 +397,6 @@ class player(xbmc.Player):
             control.sleep(100)
 
 			
-    def premiumizeClear(self):
-		try: debrid.PremiumizeDelete(self.debridHandle)
-		except: pass
-
-		
     def resumePlayback(self):
         while True:
 			try: # KODI 18 LEIA CHANGES TO PLAYER NOW REQUIRES isPlayingVideo to make sure Video is Playing
@@ -456,38 +480,53 @@ class player(xbmc.Player):
         if control.setting('subtitles') == 'true': subtitles().get(self.bookMarkName, self.imdb, self.season, self.episode)
         self.idleForPlayback()
 	
-		
     def setProgress(self):
-		threads = []
-		if self.currentTime == None: 
-			try: self.currentTime = self.getTime()
-			except: self.currentTime = 0
-				
-		if self.totalTime   == None: 
-			try: self.totalTime = self.getTotalTime()
-			except: self.totalTime = 0		
+		try:
+			threads = []
+			if self.watched != True:
+				if self.currentTime == None: 
+					try: self.currentTime = self.getTime()
+					except: self.currentTime = 0
+						
+				if self.totalTime   == None: 
+					try: self.totalTime = self.getTotalTime()
+					except: self.totalTime = 0		
 
-		try: self.watched  = (self.currentTime / self.totalTime >= .85)
-		except: self.watched = False
-		if self.watched == True: # SET 
-			threads.append(libThread.Thread(self.setPlayed))
-			threads.append(libThread.Thread(self.remove_progress_movies, self.original_meta))
-			threads.append(libThread.Thread(bookmarks().delete, self.bookMarkName))			
-		else: 
-			threads.append(libThread.Thread(bookmarks().reset, self.currentTime, self.totalTime, self.bookMarkName))
-			threads.append(libThread.Thread(self.add_progress_movies, self.original_meta))
+				try: self.watched  = (self.currentTime / self.totalTime >= .85)
+				except: self.watched = False
+
+				threads.append(libThread.Thread(bookmarks().reset, self.currentTime, self.totalTime, self.bookMarkName))
+			else: threads.append(libThread.Thread(self.setPlayed))
+
+			threads.append(libThread.Thread(self.traktSetPlayback, 'stop'))		
+			[i.start() for i in threads]
+		except:pass
 		
-		threads.append(libThread.Thread(self.traktSetPlayback, 'stop'))
-		[i.start() for i in threads]
-
+    def onPlayBackPaused(self):
+		#print ("PLAYBACK PAUSED")
+        try:
+			cTime = self.getTime()
+			tTime = self.getTotalTime()
+			allow = True
+			allow = (cTime - self.lastProgress) > 60 # CHECKING IF LAST PROGRESS IS BIGGER THAN 60 TO AVOID MULTIPLE PROGRESS IF BUFFERING
+			if allow: bookmarks().reset(cTime, tTime, self.bookMarkName)
+			self.lastProgress = cTime
+        except:pass
+		
     def onPlayBackStopped(self):
+        # SET BOOKMARKS AND RESUME POINTS AND CLEAR FILE
         self.setProgress()
-        if self.playNext == True: 
-			from resources.lib.modules import smartplay
-			smartplay.play_next_episode(self.next_episode)
+		# NEXTUP MODE
+        if self.nextup_service == 'true' and self.content != 'movie':
+			if self.playNext == True: 
+				print ("PLAYER NEXT EPISODE")
+				from resources.lib.modules import smartplay
+				smartplay.play_next_episode(self.next_episode)
+
 		
     def onPlayBackEnded(self):
-        self.onPlayBackStopped()
+        self.onPlayBackStopped()	
+		
 		
 class bookmarks:
     def get(self, name, dialog=True):

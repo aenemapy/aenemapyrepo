@@ -25,7 +25,6 @@ def next_episode(tvshowtitle, year, imdb, tvdb, lang, season=None, episode=None)
 	return next_episode[0]
 	
 def play_next_episode(episode):
-	print ("PLAY NEXT EPISODE", episode)
 	time.sleep(3)
 	while xbmc.getCondVisibility("Window.IsVisible(yesnodialog)") or xbmc.getCondVisibility("Window.IsVisible(busydialog)") or xbmc.getCondVisibility("Window.IsVisible(okdialog)"):
 		time.sleep(1)
@@ -55,6 +54,7 @@ def play_next_episode(episode):
 	sysaddon = sys.argv[0]
 	
 	control.infoDialog('Playing Next Episode...', tvshowtitle, icon=icon, time=3000)
+	time.sleep(2)
 	url = 'RunPlugin(%s?action=play&title=%s&year=%s&imdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&premiered=%s&meta=%s)' % (sysaddon, systitle, year, imdb, tvdb, season, episode, systvshowtitle, syspremiered, sysmeta)
 	control.execute(url)
 	#sources().play(title, year, imdb, tvdb, '0', season, episode, tvshowtitle, premiered, item, select)
