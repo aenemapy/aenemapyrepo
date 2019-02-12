@@ -252,7 +252,7 @@ class seasons:
 			
 
             threadSeason = []		
-
+            seasonList = []
             if limit == '':  episodes = []
             else:
 				if limit == 'nextepisode':
@@ -1090,14 +1090,14 @@ class episodes:
                 try: itemList = [x for x in self.blist if x['tvdb'] == i['tvdb'] and x['season'] == str(nextSs) and x['episode'] == '1'][0]
                 except:pass
                 item  = itemList
-                if int(len(item)) < 1: raise Exception()
+                if not 'tvshowtitle' in item and len(item) < 1: raise Exception()
                 item['action'] = 'episodes'
                 item['last_watched_at'] = i['last_watched_at']			
                 self.list.append(item)
                 return
             except:
                 pass
-				
+				    
             try:
                 tvdbList = cache.get(seasons().tvdb_list, 24, i['tvshowtitle'], i['year'], i['imdb'], i['tvdb'], self.lang, 'nextepisode', i['snum'],  i['enum'])
                 item = tvdbList[0]
