@@ -1084,8 +1084,7 @@ class episodes:
                 nextEp = int(i['enum']) + 1
                 nextSs = int(i['snum']) + 1
                 itemList = []
-                try: itemList = [x for x in self.blist if x['tvdb'] == i['tvdb'] and x['season'] == i['snum'] and x['episode'] == i['enum']][0]
-                except:pass
+
                 try:itemList = [x for x in self.blist if x['tvdb'] == i['tvdb'] and x['season'] == i['snum'] and x['episode'] == str(nextEp)][0]
                 except:pass
                 try: itemList = [x for x in self.blist if x['tvdb'] == i['tvdb'] and x['season'] == str(nextSs) and x['episode'] == '1'][0]
@@ -1093,6 +1092,7 @@ class episodes:
                 item  = itemList
                 if int(len(item)) < 1: raise Exception()
                 item['action'] = 'episodes'
+                item['last_watched_at'] = i['last_watched_at']			
                 self.list.append(item)
                 return
             except:
@@ -1102,6 +1102,7 @@ class episodes:
                 tvdbList = cache.get(seasons().tvdb_list, 24, i['tvshowtitle'], i['year'], i['imdb'], i['tvdb'], self.lang, 'nextepisode', i['snum'],  i['enum'])
                 item = tvdbList[0]
                 item['action'] = 'episodes'
+                item['last_watched_at'] = i['last_watched_at']					
                 self.list.append(item)
                 # print self.list
                 return
@@ -1111,22 +1112,22 @@ class episodes:
 
         items = items[:100]
 		
-        if self.trakt_sortby == 0:
-			try: items = sorted(items, key=lambda x: x['last_watched_at'], reverse=True)
-			except: pass
-		
         threads = []
         for i in items: threads.append(libThread.Thread(items_list, i))
         [i.start() for i in threads]
         [i.join() for i in threads]
 
 		
+        try: self.list = sorted(self.list, key=lambda x: x['last_watched_at'], reverse=True)
+        except: pass
+		
         if self.trakt_sortby == 1:
 			try: self.list = sorted(self.list, key=lambda k: k['premiered'], reverse=True)
 			except: pass
         elif self.trakt_sortby == 2: 
 			try: self.list = sorted(self.list, key=lambda k: utils.title_key(k['tvshowtitle']))
-			except: pass		
+			except: pass
+			
         return self.list
 
 
