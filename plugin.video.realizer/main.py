@@ -559,8 +559,8 @@ elif action == 'authTrakt':
     trakt.authTrakt()
 
 elif action == 'download':
-    from resources.lib.api import premiumize
-    premiumize.downloadItem(name, url, id)
+    from resources.lib.api import debrid
+    debrid.downloadItem(name, url, id)
 	
 elif action == 'download_manager':
     from resources.lib.indexers import navigator
