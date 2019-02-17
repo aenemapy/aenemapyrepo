@@ -54,6 +54,12 @@ if action == None:
     from resources.lib.indexers import navigator
     navigator.navigator().root()
 	
+elif action == 'authPremiumize':
+	from resources.lib.modules import control
+	from resources.lib.api import premiumize
+	token = premiumize.auth()
+	control.openSettings('0.0')	
+	
 elif action == 'browse_nav':
     from resources.lib.indexers import navigator
     navigator.navigator().browse_nav()

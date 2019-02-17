@@ -39,8 +39,9 @@ queueMenu = control.lang(32065).encode('utf-8')
 __addon__ = xbmcaddon.Addon("plugin.video.premiumizer")
 class navigator:
     def root(self):
-
-        if control.setting('premiumize.customer_id') == '' or control.setting('premiumize.customer_id') == None: 
+        from resources.lib.api import premiumize
+        validAccount = premiumize.validAccount()
+        if not validAccount: 
 			authDialog = deviceAuthDialog.DeviceAuthDialog('script-DeviceAuthDialog.xml', __addon__.getAddonInfo('path'), code='', url='http://premiumize.me')
 			authDialog.doModal()
 			del authDialog			
@@ -114,11 +115,14 @@ class navigator:
 			accountStatus = premiumize.info()
 			self.addDirectoryItem(accountStatus, '0', 'search.png', 'DefaultMovies.png')
         except:pass
-        if control.setting('premiumize.customer_id') == '' or control.setting('premiumize.customer_id') == None: 
-				authDialog = deviceAuthDialog.DeviceAuthDialog('script-DeviceAuthDialog.xml', __addon__.getAddonInfo('path'), code='test code', url='http://premiumize.me')
-				authDialog.doModal()
-				del authDialog			
-				control.openSettings('0.0')
+		
+        from resources.lib.api import premiumize
+        validAccount = premiumize.validAccount()
+        if not validAccount: 
+			authDialog = deviceAuthDialog.DeviceAuthDialog('script-DeviceAuthDialog.xml', __addon__.getAddonInfo('path'), code='', url='http://premiumize.me')
+			authDialog.doModal()
+			del authDialog			
+			sys.exit()	
 			
         else:
 			self.addDirectoryItem(50002, 'premiumizerootFolder', 'cloud.png', 'DefaultMovies.png')

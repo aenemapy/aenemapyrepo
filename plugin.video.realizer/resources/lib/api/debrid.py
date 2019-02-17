@@ -524,20 +524,29 @@ class realdebrid:
 		result = requests.get(self.RD_OAUTH, timeout=requestTimeout).json()
 		line1 = "1) Visit:[B][COLOR skyblue] %s [/COLOR][/B]"
 		line2 = "2) Input Code:[B][COLOR skyblue] %s [/COLOR][/B]"
+		line3 = "Note: Your code has been copied to the clipboard"
 		verification_url = (line1 % result['verification_url']).encode('utf-8')
 		user_code = (line2 % result['user_code']).encode('utf-8')
 		expires_in = result['expires_in']
 		device_code = result['device_code']
 		interval = result['interval']
 
+		try:
+			from resources.lib.modules import clipboard
+			clipboard.Clipboard.copy(result['user_code'])
+		except:pass
+		
 		progressDialog = control.progressDialog
-		progressDialog.create('Real Debrid', verification_url, user_code)
+		progressDialog.create('Real Debrid', verification_url, user_code, line3)
 
 		for i in range(0, int(expires_in)):
 			try:
 				if progressDialog.iscanceled(): break
 				time.sleep(1)
 				if not float(i) % interval == 0: raise Exception()
+				
+				percent = (i * 100) / int(expires_in)
+				progressDialog.update(percent, verification_url, user_code, line3)
 				
 				credentials = self.getCredentials(device_code)
 				if not "client_secret" in str(credentials): raise Exception()
@@ -551,10 +560,16 @@ class realdebrid:
 					refresh_token = r['refresh_token']		
 					self.saveJson(token=token, client_id=client_id, client_secret=client_secret, refresh_token=refresh_token)
 					control.infoDialog('RealDebrid Authorized')
+					
+					try: progressDialog.close()
+					except: pass 
+					
 					return token
 					break
 			except:
 				pass
+		try: progressDialog.close()
+		except: pass
 				
 	def getCredentials(self, device_code): 
 		url = self.RD_CREDENTIALS_AUTH % (self.RD_CLIENTID, device_code)

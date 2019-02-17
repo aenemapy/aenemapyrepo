@@ -3,19 +3,19 @@ from resources.lib.modules import control, cleantitle, client
 import requests
 import os,sys,re,json,urllib,urlparse
 import xbmc, xbmcaddon, xbmcgui, xbmcvfs
+import time
 from difflib import SequenceMatcher
 params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
 action = params.get('action')
 sysaddon = sys.argv[0]
 syshandle = int(sys.argv[1])
-premiumizeCustomerID = control.setting('premiumize.customer_id')
-premiumizePIN = control.setting('premiumize.pin')
 
 addonInfo     = xbmcaddon.Addon().getAddonInfo
 profilePath   = xbmc.translatePath(addonInfo('profile')).decode('utf-8')
 libraryPath   = xbmc.translatePath(control.setting('library.path'))
 manualLibrary = xbmc.translatePath(control.setting('library.manual'))
 libPathMeta   = control.setting('library.path')
+pmSettings = xbmc.translatePath(os.path.join(profilePath, 'auth.json'))
 
 if control.setting('premiumize.tls') == 'true': premiumize_Api = 'https://www.premiumize.me'
 else: premiumize_Api = 'http://www.premiumize.me'
@@ -28,6 +28,9 @@ premiumizeFolder = '/api/folder/list?id='
 premiumizeDeleteItem = '/api/item/delete'
 premiumizeRenameItem = '/api/item/rename'
 premiumizeItemDetails = '/api/item/details'
+OAUTH = premiumize_Api + '/token'		
+CLIENTID = '978629017'
+
 USER_AGENT = 'Premiumize Addon for Kodi'
 BOUNDARY = 'X-X-X'
 data = {}
@@ -35,33 +38,100 @@ params = {}
 
 VALID_EXT = ['mkv', 'avi', 'mp4' ,'divx', 'mpeg', 'mov', 'wmv', 'avc', 'mk3d', 'xvid', 'mpg']
 
+
+def auth():
+		data = {'client_id': CLIENTID, 'response_type': 'device_code'}
+		result = requests.post(OAUTH, data=data, timeout=10).json()
+
+		line1 = "1) Visit:[B][COLOR skyblue] %s [/COLOR][/B]"
+		line2 = "2) Input Code:[B][COLOR skyblue] %s [/COLOR][/B]"
+		line3 = "Note: Your code has been copied to the clipboard"
+		verification_url = (line1 % result['verification_uri']).encode('utf-8')
+		user_code = (line2 % result['user_code']).encode('utf-8')
+		expires_in = result['expires_in']
+		device_code = result['device_code']
+		interval = result['interval']
+		
+		try:
+			from resources.lib.modules import clipboard
+			clipboard.Clipboard.copy(result['user_code'])
+		except:pass
+
+		progressDialog = control.progressDialog
+		progressDialog.create('Premiumize Auth', verification_url, user_code, line3)
+
+		for i in range(0, int(expires_in)):
+			try:
+				if progressDialog.iscanceled(): break
+				time.sleep(1)
+				if not float(i) % interval == 0: raise Exception()
+
+				percent = (i * 100) / int(expires_in)
+				progressDialog.update(percent, verification_url, user_code, line3)
+				
+				r = getAuth(OAUTH , device_code)
+				print ("PREMIUMIZE AUTH", r)
+				if 'access_token' in str(r): 
+					token = r['access_token']
+					refresh_token = r['expires_in']				
+					control.infoDialog('Premiumize Authorized')	
+					control.setSetting(id='premiumize.status', value='Authorized')
+					control.setSetting(id='premiumize.token', value=str(token))		
+					control.setSetting(id='premiumize.refresh', value=str(refresh_token))							
+					try: progressDialog.close()
+					except: pass  					
+				
+					return token
+					break
+			except:
+				pass
+				
+		try: progressDialog.close()
+		except: pass
+					
+				
+def validAccount(): 
+		token = getToken()
+		if token != '' and token != '0' and token != None: return True
+		else: return False
+				
+def getAuth(url, device_code): 
+	data = {'client_id': CLIENTID, 'code': device_code, 'grant_type': 'device_code'}
+	result = requests.post(url, data=data, timeout=10).json()
+	return result
+
+def saveJson(token=None, refresh_token=None, expires_in=None):
+		from datetime import datetime
+		timeNow = datetime.now().strftime('%Y%m%d%H%M')
+		dirCheck = xbmc.translatePath(profilePath)
+		if not os.path.exists(dirCheck): os.makedirs(xbmc.translatePath(dirCheck))
+		if token != None: data = {'client_id': CLIENTID, 'token': token, 'refresh_token': refresh_token , 'added':timeNow}
+		else: data = {'client_id': CLIENTID, 'token':'0', 'refresh_token': '0' , 'added': timeNow}
+		with open(pmSettings, 'w') as outfile: json.dump(data, outfile, indent=2)
+		
+		
+	# REAL DEBRID TOKEN #######################################		
+def getToken(refresh=False):
+	token = '0'
+	token = control.setting('premiumize.token')
+	if token == '' or token == None or token =='0': control.infoDialog('Premiumize is not Authorized','Please authorize in the settings')
+	else: return token
+
 def reqJson(url, params=None, data=None, multipart_data=None):
     if data == None: data = {}
-    data['customer_id'] = premiumizeCustomerID
-    data['pin'] = premiumizePIN
+    token = getToken()
+    headers = {'Authorization': 'Bearer %s' % token, 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11'}
     if multipart_data != None: 
-		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11'}
 		headers['Content-Type'] = 'multipart/form-data; boundary=%s' % (BOUNDARY)
 		try: result = requests.post(url, data=multipart_data, headers=headers, timeout=30).json()
 		except requests.Timeout as err: control.infoDialog('PREMIUMIZE API is Down...', time=3000)
     else:
-		try: result = requests.post(url, params=params, data=data, timeout=30).json()
+		try: result = requests.post(url, params=params, headers=headers, data=data, timeout=30).json()
 		except requests.Timeout as err: control.infoDialog('PREMIUMIZE API is Down...', time=3000)	
+		if "bad_token" in result: control.infoDialog('Premiumize is not Authorized', 'Please authorize in the settings')
     return result
-	
-def req(url, params=None, data=None, multipart_data=None):
-    if data == None: data = {}
-    data['customer_id'] = premiumizeCustomerID
-    data['pin'] = premiumizePIN
-    if multipart_data != None: 
-		headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11'}
-		headers['Content-Type'] = 'multipart/form-data; boundary=%s' % (BOUNDARY)
-		try: result = requests.post(url, data=multipart_data, headers=headers, timeout=30).content
-		except requests.Timeout as err: control.infoDialog('PREMIUMIZE API is Down...', time=3000)
-    else:
-		try: result = requests.post(url, params=params, data=data, timeout=30).content
-		except requests.Timeout as err: control.infoDialog('PREMIUMIZE API is Down...', time=3000)	
-    return result
+
+		
 	
 def info():
     label = 'CANNOT GET ACCOUNT INFO'
@@ -70,10 +140,16 @@ def info():
     status = r['status']
     if status == 'success':
 		expire = r['premium_until']
+		import datetime
+		expirationDate = datetime.datetime.fromtimestamp(expire)
+		expirationDate = expirationDate.strftime('%Y-%m-%d')
+		
+		print ("PREMIUMIZE PREMIUM UNTIL", expire)
 		limits = r['limit_used']
 		numb = str(limits)
 		perc = "{:.0%}".format(float(numb))
-		label = 'ACCOUNT: PREMIUM - LIMITS USED:  ' + str(perc)
+		label = 'STATUS: PREMIUM  [USED: %s]  [EXPIRE: %s]'
+		label = label % (perc, expirationDate)
     else: label = 'CANNOT GET ACCOUNT INFO: '
     return label
 	
@@ -994,7 +1070,6 @@ def add_file():
 def add_download(download, path):
     if download:
         try:
-	
             file_name = os.path.basename(path)
             download_type = 'nzb' if path.lower().endswith('nzb') else 'torrent'
             CloudDownload(download, download_type)
@@ -1024,7 +1099,7 @@ def CloudDownload(download, download_type, folder_id=None, file_name=None):
             multipart_data += download
             multipart_data += '\n--%s--\n' % (BOUNDARY)
 			
-            data = {'type': 'torrent', "customer_id": premiumizeCustomerID, "pin": premiumizePIN}
+            data = {'type': 'torrent'}
 
             uri = '/api/transfer/create?'
             url = premiumize_Api + uri + urllib.urlencode(data) 

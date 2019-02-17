@@ -60,8 +60,8 @@ class DeviceAuthDialog(xbmcgui.WindowXMLDialog):
             webbrowser.open(link, autoraise = True, new = 2)			
 
         if control == NEVER_BUTTON:
-			from resources.lib.modules import control
-			control.openSettings('0.0')
+			from resources.lib.modules import control as AddonControl
+			AddonControl.openSettings('0.0')
 
         if control in [LATER_BUTTON, NEVER_BUTTON]:
             self.close()
