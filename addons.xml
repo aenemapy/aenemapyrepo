@@ -165,21 +165,7 @@
 	</extension>
 </addon>
 
-<addon id="script.module.metalib" name="Meta Library" version="2018.08.08.2" provider-name="aenema">
-	<requires>
-		<import addon="xbmc.python" version="2.1.0" />
-	</requires>
-	<extension point="xbmc.python.module" library="lib" />
-	<extension point="xbmc.python.pluginsource" library="lib/default.py" />
-	<extension point="xbmc.addon.metadata">
-		<platform>all</platform>
-		<summary lang="en">Metadata database for fast Artwork in Kodi</summary>
-		<description lang="en">Metadata database for fast Artwork in Kodi</description>
-        <source>unknown</source>
-	</extension>
-</addon>
-
-<addon id="script.module.metalibrary" name="Meta Library" version="2018.10.16" provider-name="aenema">
+<addon id="script.module.metalibrary" name="Meta Library" version="2019.02.20" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0" />
 	</requires>

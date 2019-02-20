@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.metalibrary" name="Meta Library" version="2018.10.16" provider-name="aenema">
+<addon id="script.module.metalibrary" name="Meta Library" version="2019.02.20" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0" />
 	</requires>
