@@ -613,19 +613,15 @@ class tvshows:
                 else: imdb = 'tt' + re.sub('[^0-9]', '', str(imdb))
 
                 self.remotedbMeta = self.remotedb_meta(imdb=imdb)
-                if len(self.remotedbMeta) > 0: 
-					meta = self.remotedbMeta
-					meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': meta['title'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
-					self.list.append(meta)
-					raise Exception()
+                if self.remotedbMeta != None:
+					if len(self.remotedbMeta) > 0: 
+						meta = self.remotedbMeta
+						meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': meta['title'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
+						self.list.append(meta)
+						raise Exception()
 						
 				
-                self.remotedbMeta = self.remotedb_meta(imdb=imdb)
-                if len(self.remotedbMeta) > 0: 
-					meta = self.remotedbMeta
-					meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': meta['title'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
-					self.list.append(meta)
-					raise Exception()
+
 					
 
                 tvdb = item['ids']['tvdb']
@@ -754,11 +750,12 @@ class tvshows:
 				
 				# METALIBRARY
                 self.remotedbMeta = self.remotedb_meta(imdb=imdb)
-                if len(self.remotedbMeta) > 0: 
-					meta = self.remotedbMeta
-					meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': meta['title'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
-					self.list.append(meta)
-					raise Exception()
+                if self.remotedbMeta != None:
+					if len(self.remotedbMeta) > 0: 
+						meta = self.remotedbMeta
+						meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': meta['title'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
+						self.list.append(meta)
+						raise Exception()
 					
 					
                 title = client.parseDOM(item, 'a')[1]
@@ -1097,11 +1094,12 @@ class tvshows:
 			
             try: 
                 self.remotedbMeta = self.remotedb_meta(imdb=imdb, tvdb=tvdb)
-                if len(self.remotedbMeta) > 0: 
-					meta = self.remotedbMeta
-					meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': meta['title'], 'originaltitle': meta['title'], 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
-					self.list[i].update(meta)
-					return
+                if self.remotedbMeta != None:
+					if len(self.remotedbMeta) > 0: 
+						meta = self.remotedbMeta
+						meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': meta['title'], 'originaltitle': meta['title'], 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
+						self.list[i].update(meta)
+						return
             except: pass
 			
             metaDB = False	

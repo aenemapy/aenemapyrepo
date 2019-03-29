@@ -451,11 +451,12 @@ class movies:
 				
 				# METALIBRARY
                 self.remotedbMeta = self.remotedb_meta(imdb=imdb)
-                if len(self.remotedbMeta) > 0: 
-					meta = self.remotedbMeta
-					meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
-					self.list.append(meta)
-					raise Exception()
+                if self.remotedbMeta != None:
+					if len(self.remotedbMeta) > 0: 
+						meta = self.remotedbMeta
+						meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
+						self.list.append(meta)
+						raise Exception()
 
                 try: premiered = item['released']
                 except: premiered = '0'
@@ -556,11 +557,12 @@ class movies:
 				
 				# METALIBRARY
                 self.remotedbMeta = self.remotedb_meta(tmdb=tmdb)
-                if len(self.remotedbMeta) > 0: 
-					meta = self.remotedbMeta
-					meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
-					self.list.append(meta)
-					raise Exception()
+                if self.remotedbMeta != None:
+					if len(self.remotedbMeta) > 0: 
+						meta = self.remotedbMeta
+						meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
+						self.list.append(meta)
+						raise Exception()
 					
 				
                 self.list.append({'title': title, 'originaltitle': title, 'year': year, 'tmdb': tmdb, 'tvdb': '0', 'next': next})
@@ -621,11 +623,12 @@ class movies:
 				
 				# METALIBRARY
                 self.remotedbMeta = self.remotedb_meta(imdb=imdb)
-                if len(self.remotedbMeta) > 0: 
-					meta = self.remotedbMeta
-					meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
-					self.list.append(meta)
-					raise Exception()
+                if self.remotedbMeta != None:
+					if len(self.remotedbMeta) > 0: 
+						meta = self.remotedbMeta
+						meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
+						self.list.append(meta)
+						raise Exception()
 					
                 title = client.parseDOM(item, 'a')[1]
                 title = client.replaceHTMLCodes(title)
@@ -747,11 +750,12 @@ class movies:
 				
 				# METALIBRARY
                 self.remotedbMeta = self.remotedb_meta(imdb=imdb)
-                if len(self.remotedbMeta) > 0: 
-					meta = self.remotedbMeta
-					meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
-					self.list.append(meta)
-					raise Exception()
+                if self.remotedbMeta != None:
+					if len(self.remotedbMeta) > 0: 
+						meta = self.remotedbMeta
+						meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
+						self.list.append(meta)
+						raise Exception()
 					
                 title = client.parseDOM(item, 'a')[1]
                 title = client.replaceHTMLCodes(title)
