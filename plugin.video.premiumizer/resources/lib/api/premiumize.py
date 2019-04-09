@@ -731,171 +731,171 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
 	progress = control.progressDialogBG
 	filesOnly = control.setting('scraper.filesonly')
 	cachedSession = control.setting('cachecloud.remember')
-	cached_time, cached_results = cloudCache(mode='get')
-	
-	if cached_time != '0' and cached_time != None:
-		if cachedSession == 'true': 
-			if control.setting('first.start') == 'true':
-				control.setSetting(id='first.start', value='false')
-				progress.create('Scraping Your Cloud','Please Wait...')
-				progress.update(100,'Scraping Your Cloud','Please Wait...')
-				r = PremiumizeScraper().sources()
-				cloudCache(mode='write', data=r)
-			else:
-				r = cached_results
-		else:
-			cachedLabel = "Cached Cloud: %s" % cached_time
-			results = [cachedLabel, 'New Cloud Scrape', '[AUTO] Cached Cloud']
-			select = control.selectDialog(results)
-			if select == 0: r = cached_results
-			elif select == 1: 
-				progress.create('Scraping Your Cloud','Please Wait...')
-				progress.update(100,'Scraping Your Cloud','Please Wait...')
-				r = PremiumizeScraper().sources()
-				cloudCache(mode='write', data=r)
-			elif select == 2: # FORCE NEW CACHE AND AUTO CACHE MODE
-				control.setSetting(id='cachecloud.remember', value='true')
-				control.setSetting(id='first.start', value='false')
-				progress.create('Scraping Your Cloud','Please Wait...')
-				progress.update(100,'Scraping Your Cloud','Please Wait...')
-				r = PremiumizeScraper().sources()
-				cloudCache(mode='write', data=r)
-	else:
-		if cachedSession == 'true': 
-			control.setSetting(id='first.start', value='false')
-			progress.create('Scraping Your Cloud','Please Wait...')
-			progress.update(100,'Scraping Your Cloud','Please Wait...')
-			r = PremiumizeScraper().sources()
-			cloudCache(mode='write', data=r)
-		else:
-			r = PremiumizeScraper().sources()
-			cloudCache(mode='write', data=r)
-
-		
+	try:
+		cached_time, cached_results = cloudCache(mode='get')
 		progress.create('Scraping Your Cloud','Please Wait...')
-		progress.update(100,'Scraping Your Cloud','Please Wait...')
 		
-		r = PremiumizeScraper().sources()
-		cloudCache(mode='write', data=r)
-
-	labels = []
-	sources = []
-	types = []
-	IDs = []
-	
-	normalSources = []
-	exactSources  = []
-	
-	titleCheck = cleantitle.get(title)
-	exactPlay = False
-	if season != None:
-		epcheck    = "s%02de%02d" % (int(season), int(episode))
-		epcheck_2  = "%02dx%02d"  % (int(season), int(episode))
-		
-		dd_season  = "%02d" % int(season)
-		dd_episode = "%02d" % int(episode)
-		
-		exactCheck_1 = titleCheck + epcheck
-		exactCheck_2 = titleCheck + epcheck_2
-
-	else:
-		if year == '' or year == None or year == '0': year = ''
-		exactCheck_1 = titleCheck + year
-		exactCheck_2 = titleCheck + year
-	
-
-	for x in r:
-		try:
-			cm = []
-			type = x['type']
-			if filesOnly == 'true':
-				if type.lower() != 'file': raise Exception()
-			fileLabel = type
-			id = x['id']
-			name = x['name'].encode('utf-8')
-			name = normalize(name)
-
-			
-			if not titleCheck in cleantitle.get(name): raise Exception()
-
-			normalSources.append(x)
-			
-			if exactCheck_1 in cleantitle.get(name) or exactCheck_2 in cleantitle.get(name):
-				exactSources.append(x)
+		if cached_time != '0' and cached_time != None:
+			if cachedSession == 'true': 
+				if control.setting('first.start') == 'true':
+					control.setSetting(id='first.start', value='false')
+					progress.update(100,'Scraping Your Cloud','Please Wait...')
+					r = PremiumizeScraper().sources()
+					cloudCache(mode='write', data=r)
+				else:
+					r = cached_results
 			else:
-				epmixed = re.findall('[._ -]s?(\d+)[e|x](\d+)[._ -]', name.lower())[0]
-				s = epmixed[0]
-				e = epmixed[1]
-				if s == dd_season or s == season:
-					if e == dd_episode or e == episode: exactSources.append(x)
+				cachedLabel = "Cached Cloud: %s" % cached_time
+				results = [cachedLabel, 'New Cloud Scrape', '[AUTO] Cached Cloud']
+				select = control.selectDialog(results)
+				if select == 0: r = cached_results
+				elif select == 1: 
+					progress.update(100,'Scraping Your Cloud','Please Wait...')
+					r = PremiumizeScraper().sources()
+					cloudCache(mode='write', data=r)
+				elif select == 2: # FORCE NEW CACHE AND AUTO CACHE MODE
+					control.setSetting(id='cachecloud.remember', value='true')
+					control.setSetting(id='first.start', value='false')
+					progress.update(100,'Scraping Your Cloud','Please Wait...')
+					r = PremiumizeScraper().sources()
+					cloudCache(mode='write', data=r)
+		else:
+			if cachedSession == 'true': 
+				control.setSetting(id='first.start', value='false')
+				progress.update(100,'Scraping Your Cloud','Please Wait...')
+				r = PremiumizeScraper().sources()
+				cloudCache(mode='write', data=r)
+			else:
+				r = PremiumizeScraper().sources()
+				cloudCache(mode='write', data=r)
+
+			progress.update(100,'Scraping Your Cloud','Please Wait...')
+			
+			r = PremiumizeScraper().sources()
+			cloudCache(mode='write', data=r)
+			
+		labels = []
+		sources = []
+		types = []
+		IDs = []
+		
+		normalSources = []
+		exactSources  = []
+		
+		titleCheck = cleantitle.get(title)
+		exactPlay = False
+		if season != None:
+			epcheck    = "s%02de%02d" % (int(season), int(episode))
+			epcheck_2  = "%02dx%02d"  % (int(season), int(episode))
+			
+			dd_season  = "%02d" % int(season)
+			dd_episode = "%02d" % int(episode)
+			
+			exactCheck_1 = titleCheck + epcheck
+			exactCheck_2 = titleCheck + epcheck_2
+
+		else:
+			if year == '' or year == None or year == '0': year = ''
+			exactCheck_1 = titleCheck + year
+			exactCheck_2 = titleCheck + year
+		
+
+		for x in r:
+			try:
+				cm = []
+				type = x['type']
+				if filesOnly == 'true':
+					if type.lower() != 'file': raise Exception()
+				fileLabel = type
+				id = x['id']
+				name = x['name'].encode('utf-8')
+				name = normalize(name)
+
+				
+				if not titleCheck in cleantitle.get(name): raise Exception()
+
+				normalSources.append(x)
+				
+				if exactCheck_1 in cleantitle.get(name) or exactCheck_2 in cleantitle.get(name):
+					exactSources.append(x)
+				else:
+					epmixed = re.findall('[._ -]s?(\d+)[e|x](\d+)[._ -]', name.lower())[0]
+					s = epmixed[0]
+					e = epmixed[1]
+					if s == dd_season or s == season:
+						if e == dd_episode or e == episode: exactSources.append(x)
+			except:pass
+			
+				
+		if len(exactSources) > 0: 
+			content = exactSources
+			exactPlay = True
+				
+		else: content = normalSources
+		
+		for result in content:
+			cm = []
+			type = result['type']
+			fileLabel = type
+			id = result['id']
+			name = result['name'].encode('utf-8')
+			name = normalize(name)
+			
+			playLink = '0'
+			isFolder = True
+			isPlayable = 'false'
+			url = '0'
+			if type == 'file':
+				if control.setting('transcoded.play') == 'true':
+					try:
+						playLink = result['stream_link']
+						if not "http" in playLink: playLink = result['link']
+						type = 'TRANSCODED'
+					except: playLink = result['link']
+				else:
+					playLink = result['link']
+				ext = playLink.split('.')[-1]
+				if not ext.lower() in VALID_EXT: continue
+				fileLabel = type + " " + str(ext)
+				try: 
+					size = result['size']
+					size = getSize(size)
+				except: size = ''
+				if size != '': fileLabel = fileLabel + " | " + str(size)
+				isFolder = False
+				isPlayable = 'true'
+				url = playLink
+				#AUTOPLAY
+				if exactPlay == True and control.setting('scraper.autoplay') == 'true': return url, id
+				
+			label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
+			labels.append(label)
+			sources.append(url)
+			types.append(type)
+			IDs.append(id)
+		
+		try: progress.close()
+		except:pass
+		try: progress.close()
 		except:pass
 		
-			
-	if len(exactSources) > 0: 
-		content = exactSources
-		exactPlay = True
-			
-	else: content = normalSources
-	
-	for result in content:
-		cm = []
-		type = result['type']
-		fileLabel = type
-		id = result['id']
-		name = result['name'].encode('utf-8')
-		name = normalize(name)
+		if len(sources) < 1: return '0'
+		select = control.selectDialog(labels)
+		if select == -1: return '0'
+		selected_type = types[select]
 		
-		playLink = '0'
-		isFolder = True
-		isPlayable = 'false'
-		url = '0'
-		if type == 'file':
-			if control.setting('transcoded.play') == 'true':
-				try:
-					playLink = result['stream_link']
-					if not "http" in playLink: playLink = result['link']
-					type = 'TRANSCODED'
-				except: playLink = result['link']
-			else:
-				playLink = result['link']
-			ext = playLink.split('.')[-1]
-			if not ext.lower() in VALID_EXT: continue
-			fileLabel = type + " " + str(ext)
-			try: 
-				size = result['size']
-				size = getSize(size)
-			except: size = ''
-			if size != '': fileLabel = fileLabel + " | " + str(size)
-			isFolder = False
-			isPlayable = 'true'
-			url = playLink
-			#AUTOPLAY
-			if exactPlay == True and control.setting('scraper.autoplay') == 'true': return url, id
-			
-		label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
-		labels.append(label)
-		sources.append(url)
-		types.append(type)
-		IDs.append(id)
-	
-	try: progress.close()
-	except:pass
-	try: progress.close()
-	except:pass
-	
-	if len(sources) < 1: return '0'
-	select = control.selectDialog(labels)
-	if select == -1: return '0'
-	selected_type = types[select]
-	
-	selected_url = sources[select]
+		selected_url = sources[select]
 
-	selected_id = IDs[select]
-	
-	if selected_type != 'file': 
-		selected_url = dialogselect_folder(selected_id)
-	return selected_url	, selected_id
-	
+		selected_id = IDs[select]
+		
+		if selected_type != 'file': 
+			selected_url = dialogselect_folder(selected_id)
+		return selected_url	, selected_id
+	except:
+		try: progress.close()
+		except:pass
+		try: progress.close()
+		except:pass		
 
 def dialogselect_folder(id):
 	folder = premiumizeFolder + id
