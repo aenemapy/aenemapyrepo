@@ -744,6 +744,12 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
 					cloudCache(mode='write', data=r)
 				else:
 					r = cached_results
+					
+				try: progress.close()
+				except:pass
+				try: progress.close()
+				except:pass
+				
 			else:
 				cachedLabel = "Cached Cloud: %s" % cached_time
 				results = [cachedLabel, 'New Cloud Scrape', '[AUTO] Cached Cloud']
@@ -759,20 +765,30 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
 					progress.update(100,'Scraping Your Cloud','Please Wait...')
 					r = PremiumizeScraper().sources()
 					cloudCache(mode='write', data=r)
+				try: progress.close()
+				except:pass
+				try: progress.close()
+				except:pass
+		
 		else:
 			if cachedSession == 'true': 
 				control.setSetting(id='first.start', value='false')
 				progress.update(100,'Scraping Your Cloud','Please Wait...')
 				r = PremiumizeScraper().sources()
 				cloudCache(mode='write', data=r)
+				try: progress.close()
+				except:pass
+				try: progress.close()
+				except:pass
+				
 			else:
+				progress.update(100,'Scraping Your Cloud','Please Wait...')
 				r = PremiumizeScraper().sources()
 				cloudCache(mode='write', data=r)
-
-			progress.update(100,'Scraping Your Cloud','Please Wait...')
-			
-			r = PremiumizeScraper().sources()
-			cloudCache(mode='write', data=r)
+				try: progress.close()
+				except:pass
+				try: progress.close()
+				except:pass				
 			
 		labels = []
 		sources = []
@@ -882,6 +898,7 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
 		if len(sources) < 1: return '0'
 		select = control.selectDialog(labels)
 		if select == -1: return '0'
+		
 		selected_type = types[select]
 		
 		selected_url = sources[select]
