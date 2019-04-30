@@ -4,6 +4,7 @@ import datetime
 import feedparser
 import sys
 import os
+import urllib
 from time import mktime
 from resources.lib.modules import control, cleantitle
 from resources.lib.api import debrid
@@ -31,6 +32,11 @@ rss_3 = control.setting('rss.link.3')
 rss_3_offset = control.setting('rss.link.3.offset')
 rss_4 = control.setting('rss.link.4')
 rss_4_offset = control.setting('rss.link.4.offset')
+
+rss_1_mode = control.setting('rss.1.mode')
+rss_2_mode = control.setting('rss.2.mode')
+rss_3_mode = control.setting('rss.3.mode')
+rss_4_mode = control.setting('rss.4.mode')
 
 def rssDB(data=None, mode='write', link=None, title=None):
 	timeNow = datetime.datetime.utcnow()
@@ -83,25 +89,34 @@ def rssList():
 	rssList = []
 	if rss_1_status == 'true':
 		if "http" in rss_1:
-			item = {'rss': rss_1, 'offset': str(rss_1_offset)}
+			if int(rss_1_mode) == 0: mode = 'cloud'
+			else: mode = 'read'
+			item = {'rss': rss_1, 'offset': str(rss_1_offset), 'mode': mode}
 			rssList.append(item)
 	if rss_2_status == 'true':			
 		if "http" in rss_2:
-			item = {'rss': rss_2, 'offset': str(rss_2_offset)}
+			if int(rss_2_mode) == 0: mode = 'cloud'
+			else: mode = 'read'
+			item = {'rss': rss_2, 'offset': str(rss_2_offset), 'mode': mode}
 			rssList.append(item)
 	if rss_3_status == 'true':
 		if "http" in rss_3:
-			item = {'rss': rss_3, 'offset': str(rss_3_offset)}
+			if int(rss_3_mode) == 0: mode = 'cloud'
+			else: mode = 'read'
+			item = {'rss': rss_3, 'offset': str(rss_3_offset), 'mode': mode}
 			rssList.append(item)	
 	if rss_4_status == 'true':
 		if "http" in rss_4:
-			item = {'rss': rss_4, 'offset': str(rss_4_offset)}
+			if int(rss_4_mode) == 0: mode = 'cloud'
+			else: mode = 'read'
+			item = {'rss': rss_4, 'offset': str(rss_4_offset), 'mode': mode}
 			rssList.append(item)
 	return rssList
 		
 def update():
 	VALID_EXT = debrid.VALID_EXT
 	rsslist = rssList()
+	rsslist = [i for i in rsslist if i['mode'] != 'read']
 	sourceList = []
 	if len(rsslist) > 0: control.infoDialog('Checking RSS Lists...')
 	for x in rsslist:
@@ -158,6 +173,63 @@ def update():
 	control.infoDialog('RSS Lists check completed')
 	rssDB(data=sourceList)
 
+def reader_cat():
+	sysaddon = sys.argv[0]
+	syshandle = int(sys.argv[1])
+	VALID_EXT = debrid.VALID_EXT
+	rsslist = rssList()
+	rsslist = [i for i in rsslist if i['mode'] == 'read']
+	try:
+		for x in rsslist:
+			link = x['rss']
+			u = link.split("//")[-1].split("/")[0].split('?')[0]
+			title = u
+
+			label = title
+			item = control.item(label=label)					
+			item.setArt({'icon': control.addonIcon()})
+			item.setProperty('Fanart_Image', control.addonFanart())
+			infolabel = {"Title": label}
+			url = '%s?action=%s&id=%s' % (sysaddon, 'rss_reader', link) 
+			control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)	
+	except:pass
+				
+	control.directory(syshandle, cacheToDisc=True)	
+
+	
+def reader(url):
+	sysaddon = sys.argv[0]
+	syshandle = int(sys.argv[1])
+	VALID_EXT = debrid.VALID_EXT
+
+	try:
+			html = requests.get(url).content
+			r = BeautifulSoup(html, "html.parser")
+
+			soup = r.find_all('channel')[0]
+			soup = soup.find_all('item')
+
+			for item in soup:
+				try:
+					title = item.find_all('title')[0].getText().strip()
+					link  = item.find_all('link')[0].getText().strip()
+					
+					label = title
+					item = control.item(label=label)					
+					item.setArt({'icon': control.addonIcon()})
+					item.setProperty('Fanart_Image', control.addonFanart())
+					infolabel = {"Title": label}
+					url = '%s?action=%s&id=%s' % (sysaddon, 'rdAddTorrent', urllib.quote_plus(link)) 
+					control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)	
+
+				except:pass
+	except:pass
+				
+	control.directory(syshandle, cacheToDisc=True)
+
+	
+
+	
 def manager():
 	sysaddon = sys.argv[0]
 	syshandle = int(sys.argv[1])

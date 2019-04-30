@@ -102,14 +102,6 @@ elif action == 'rdNavigator':
     from resources.lib.indexers import navigator
     navigator.navigator().rdNav()
 	
-elif action == 'premiumizeAdd':
-    from resources.lib.api import premiumize
-    premiumize.add()
-	
-elif action == 'premiumizeAdd':
-    from resources.lib.api import premiumize
-    premiumize.add()
-
 elif action == 'rdTransfers':
     from resources.lib.api import debrid
     debrid.transferList(page=page)	
@@ -125,6 +117,12 @@ elif action == 'playtorrentItem':
 elif action == 'rdTorrentInfo':
     from resources.lib.api import debrid
     debrid.torrentInfo(id)
+	
+elif action == 'rdAddTorrent':
+	from resources.lib.api import debrid
+	import urllib
+	id = urllib.unquote_plus(id)
+	debrid.addTorrent(id)
 	
 elif action == 'rdDeleteAll':
 	from resources.lib.modules import control
@@ -142,6 +140,18 @@ elif action == 'rss_manager':
 	from resources.lib.modules import rss
 	rss.manager()
 	
+elif action == 'rss_manager_nav':
+	from resources.lib.indexers import navigator
+	navigator.navigator().rss_manager_nav()	
+	
+elif action == 'rss_reader_cat':
+	from resources.lib.modules import rss
+	rss.reader_cat()	
+	
+elif action == 'rss_reader':
+	from resources.lib.modules import rss
+	rss.reader(id)
+	
 elif action == 'rss_update':
 	from resources.lib.modules import rss
 	rss.update()
@@ -154,24 +164,10 @@ elif action == 'rss_clear':
 	try: os.remove(control.rssDb)
 	except:pass	
 	control.refresh()
-	
-	
-elif action == 'premiumizeClearFinished':
-    from resources.lib.api import premiumize
-    premiumize.clearfinished()	
 
 elif action == 'realizerootFolder':
     from resources.lib.api import premiumize
     premiumize.getFolder('root')	
-
-elif action == 'premiumizeOpenFolder':
-    from resources.lib.api import premiumize
-	
-    premiumize.getFolder(id, meta=meta)	
-	
-elif action == 'premiumizeDeleteItem':
-    from resources.lib.api import premiumize
-    premiumize.deleteItem(id, type)	
 
 elif action == 'downloadFolder':
     from resources.lib.api import premiumize
@@ -204,12 +200,7 @@ elif action == 'service':
 		from resources.lib.modules import rss
 		rss.update()
 		
-elif action == 'clearPremiumize':
-    from resources.lib.resolvers import debrid
-    debrid.PremiumizeClear()
-	
 elif action == 'play_library':	
-	print ("PREMIUMIZE LIBRARY", name, id)
 	from resources.lib.api import premiumize
 	premiumize.library_play().play(name, id)
 
@@ -220,37 +211,6 @@ elif action == 'selectivelibrary_nav':
 elif action == 'selectiveLibraryManager':	
 	from resources.lib.api import premiumize
 	premiumize.selectiveLibraryManager(id, name)
-	
-	
-
-elif action == 'premiumizeLibrary':
-	import shutil, os, time, xbmc
-	from resources.lib.modules import control
-	from resources.lib.api import premiumize
-	yes = control.yesnoDialog('This will Create Strm Files based on your Cloud Folder' ,'Are you sure you want to continue?', '')
-	#print ("PREMIUMIZE SELECTION", yes)
-	if yes == 1: 
-		try:
-			libraryPath = xbmc.translatePath(control.setting('library.path'))
-			if control.setting('library.deleteold') != 'true': raise Exception()
-			try: shutil.rmtree(libraryPath)
-			except:pass
-			for root, dirs, files in os.walk(libraryPath , topdown=True):
-				dirs[:] = [d for d in dirs]
-				for name in files:
-					try:
-						os.remove(os.path.join(root,name))
-						os.rmdir(os.path.join(root,name))
-					except: pass
-							
-				for name in dirs:
-					try: os.rmdir(os.path.join(root,name)); os.rmdir(root)
-					except: pass
-			time.sleep(3)
-		except: pass
-	
-	
-		premiumize.library_service()	
 	
 	
 elif action == 'tvdbFav':

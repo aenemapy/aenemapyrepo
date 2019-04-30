@@ -36,6 +36,27 @@ data = {}
 # ################################ REAL DEBRID #######################################
 # ####################################################################################
 
+def addTorrent(torrent):
+	r = realdebrid().addtorrent(torrent)
+	id = r['id']
+	page = '1'
+	r, isNext = realdebrid().torrentList(page=int(page), info=True)
+	item = [i for i in r if i['id'] == id][0]
+	id = item['id']
+	name = item['filename']
+	cm = []
+	status = item['status']
+	label = status.upper() + " | " + name
+	item = control.item(label=label)
+	item.setArt({'icon': control.addonIcon()})
+	item.setProperty('Fanart_Image', control.addonFanart())
+	infolabel = {"Title": label}
+	cm.append(('Delete Torrent Item', 'RunPlugin(%s?action=rdDeleteItem&id=%s&type=torrents)' % (sysaddon, id)))
+	url = '%s?action=%s&id=%s' % (sysaddon, 'rdTorrentInfo', id) 
+	item.addContextMenuItems(cm)
+	control.addItem(handle=syshandle, url=url, listitem=item, isFolder=True)	
+	control.directory(syshandle, cacheToDisc=True)	
+		
 def transferList(page='1'):
 	clearAll = '%s?action=%s' % (sysaddon, 'rdDeleteAll')
 	item = control.item(label='[Delete All Downloads]')
@@ -752,6 +773,7 @@ class realdebrid:
 
 		
 	def addtorrent(self, torrent):
+		print ("ADDING TORRENT", torrent)
 		url = self.RealDebridApi + '/torrents/addMagnet'
 		data = {'magnet': torrent}
 		result = self.rdRequest(url, method='post', data=data).json()

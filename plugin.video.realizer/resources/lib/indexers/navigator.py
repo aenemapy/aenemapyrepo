@@ -51,7 +51,7 @@ class navigator:
         self.addDirectoryItem(50001, 'rdNavigator', 'cloud.png', 'DefaultAddonProgram.png')
         self.addDirectoryItem('Lists', 'browse_nav', 'cloud.png', 'DefaultAddonProgram.png')
         self.addDirectoryItem('Download Manager', 'download_manager', 'cloud.png', 'DefaultAddonProgram.png')   
-        self.addDirectoryItem('RSS Manager', 'rss_manager', 'cloud.png', 'DefaultAddonProgram.png')		
+        self.addDirectoryItem('RSS Manager', 'rss_manager_nav', 'cloud.png', 'DefaultAddonProgram.png')		
         self.addDirectoryItem(32008, 'toolNavigator', 'settings.png', 'DefaultAddonProgram.png')
         self.endDirectory()
 		
@@ -65,7 +65,10 @@ class navigator:
 				self.addDirectoryItem(32009, dest, 'cloud.png', 'DefaultFolder.png', isAction=False)	
         self.endDirectory()
 		
-
+    def rss_manager_nav(self):
+        self.addDirectoryItem('RSS Manager', 'rss_manager', 'cloud.png', 'DefaultAddonProgram.png')	
+        self.addDirectoryItem('RSS Reader', 'rss_reader_cat', 'cloud.png', 'DefaultAddonProgram.png')			
+        self.endDirectory()
 		
 
     def browse_nav(self, lite=False):

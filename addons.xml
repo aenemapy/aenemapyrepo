@@ -80,7 +80,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.realizer" version="2019.03.29" name="Realizer" provider-name="aenema">
+<addon id="plugin.video.realizer" version="2019.05.01" name="Realizer" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.beautifulsoup4" />
