@@ -36,10 +36,9 @@ class DeviceAuthDialog(xbmcgui.WindowXMLDialog):
         instuction = self.getControl(INSTRUCTION_LABEL)
         authcode = self.getControl(AUTHCODE_LABEL)
         warning = self.getControl(WARNING_LABEL)
-        instuction.setLabel(
-            getString(32159).format("[COLOR red]" + self.url + "[/COLOR]"))
+        instuction.setLabel("Click on Visit Website or use the QR code to support this addon when signing up")
         authcode.setLabel(self.code)
-        warning.setLabel(getString(32162))
+        warning.setLabel('The addon cannot be used without an account')
 
     def onAction(self, action):
         if action == ACTION_PREVIOUS_MENU or action == ACTION_BACK:
