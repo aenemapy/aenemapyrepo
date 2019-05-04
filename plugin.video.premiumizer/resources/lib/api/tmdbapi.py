@@ -6,6 +6,7 @@ import os,sys,re,json,urllib,urlparse,base64,datetime,time,json
 params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
 action = params.get('action')
 tmdbApi = control.setting('tmdb.api')
+if tmdbApi == '' or tmdbApi == None: tmdbApi = 'e899af1690e0b4590783a9374869b4d5'
 tmdb_image = 'https://image.tmdb.org/t/p/original'
 tmdb_poster = 'https://image.tmdb.org/t/p/w500'
 tmdb_by_query_imdb = 'https://api.themoviedb.org/3/find/%s?api_key=%s&external_source=imdb_id&append_to_response=external_ids' % ("%s", tmdbApi)	
