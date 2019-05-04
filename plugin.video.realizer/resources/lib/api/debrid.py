@@ -822,7 +822,24 @@ class realdebrid:
 		#print ("TOTAL TORRENTS", len(self.scrapedTorrents))
 		return self.scrapedTorrents
 
+	def downloadsScrapePages(self):
+		try:
+			self.page = 1
+			self.nextPage = False
+			self.scrapedDownloads = []		
+			results, self.nextPage = self.transferList(page = self.page, info = True)
+			if results != None: self.scrapedDownloads = results
 			
+			while self.nextPage == True:
+				self.page += 1
+				#print ("SCRAPING MULTIPLE PAGES", self.page)
+				results, self.nextPage = self.transferList(page = self.page, info = True)
+				if results != None: self.scrapedDownloads = results
+				
+			#print ("TOTAL TORRENTS", len(self.scrapedTorrents))
+			return self.scrapedDownloads
+		except:pass
+		
 	def torrentScrape(self):
 		try:
 			threads = []
@@ -834,7 +851,7 @@ class realdebrid:
 			return self.torrentFiles
 		except:
 			pass
-
+			
 	def torrentScrapeInfo(self, id):
 		try:
 			torrentInfo = self.torrentInfo(id)
@@ -850,7 +867,7 @@ class realdebrid:
 	def scraperList(self, cache = False):
 		self.sources = []
 		try:
-			downloads = self.transferList()
+			downloads = self.downloadsScrapePages()
 			#print ("SCRAPERLIST downloads", downloads)
 			for down in downloads:
 				data = {'type': 'download', 'name': down['filename'], 'link': down['download'], 'id': down['id']}
