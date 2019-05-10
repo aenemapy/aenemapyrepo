@@ -81,13 +81,13 @@ def transferList(page='1'):
 				if ext in VALID_EXT: isPlayable = True	
 				else: isPlayable = False
 					
-				label = name
+				label = ext.upper() + " | " + name
 				
 				item = control.item(label=label)
 				item.setArt({'icon': icon, 'thumb': icon})
 				item.setProperty('Fanart_Image', control.addonFanart())
 
-				infolabel = {"Title": label}
+				infolabel = {"Title": name}
 				item.setInfo(type='Video', infoLabels = infolabel)
 				item.setProperty('IsPlayable', 'true')
 							
@@ -169,7 +169,7 @@ def torrentInfo(id):
 			if not ext.lower() in VALID_EXT: raise Exception()
 			
 			
-			label = name
+			label = ext.upper() + " | " + name
 			
 			item = control.item(label=label)
 			item.setArt({'icon': control.addonIcon()})
@@ -179,7 +179,7 @@ def torrentInfo(id):
 			# playlink = links[count]
 			# count += 1
 			
-			infolabel = {"Title": label}
+			infolabel = {"Title": name}
 			item.setInfo(type='Video', infoLabels = infolabel)
 			item.setProperty('IsPlayable', 'true')
 					
