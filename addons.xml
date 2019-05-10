@@ -124,7 +124,7 @@
     </extension>
 </addon>
 
-<addon id="script.ezmaintenanceplus" name="EZ Maintenance+" version="2019.03.20" provider-name="aenema">
+<addon id="script.ezmaintenanceplus" name="EZ Maintenance+" version="2019.05.10.2" provider-name="aenema">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
     <import addon="script.module.requests" version="1.0.0" />
