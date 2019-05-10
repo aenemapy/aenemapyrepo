@@ -36,7 +36,7 @@
 		<setting id="url5" type="text" label="Zip Url" default="http://" enable="!eq(-2,false)"/>
 		<setting id="img5" type="text" label="Image" default="special://home/addons/script.ezmaintenanceplus/fanart.jpg" enable="!eq(-3,false)"/>
     </category>     	
-	<category label="Backup/Restore">
+	<category label="Backup/Resore">
 		<setting id="download.path" type="folder" label="Backup Location" visible="True" />
 		<setting id="restore.path" type="folder" label="Restore from Zip Location (folder)" visible="True" />
     </category>  
