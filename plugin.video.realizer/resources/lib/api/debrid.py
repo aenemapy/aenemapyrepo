@@ -81,7 +81,7 @@ def transferList(page='1'):
 				if ext in VALID_EXT: isPlayable = True	
 				else: isPlayable = False
 					
-				label = ext.upper() + " | " + name
+				label = name
 				
 				item = control.item(label=label)
 				item.setArt({'icon': icon, 'thumb': icon})
@@ -169,7 +169,7 @@ def torrentInfo(id):
 			if not ext.lower() in VALID_EXT: raise Exception()
 			
 			
-			label = ext.upper() + " | " + name
+			label = name
 			
 			item = control.item(label=label)
 			item.setArt({'icon': control.addonIcon()})
