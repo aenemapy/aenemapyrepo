@@ -107,7 +107,7 @@ class player(xbmc.Player):
             item = control.item(path=url)
             self.infolabels = {"Title": title, "Plot": plot, "year": self.year}
 #            if self.content == 'episode' and infoMeta == True: self.infolabels.update({"season": meta['season'], "episode": meta['episode'], "tvshowtitle": meta['tvshowtitle'], "showtitle": meta['tvshowtitle'], "tvdb": self.tvdb})
-            if self.content == 'episode' and infoMeta == True: self.infolabels.update({"season": meta['season'], "episode": meta['episode'], "tvshowtitle": meta['tvshowtitle'], "showtitle": meta['tvshowtitle'], "tvdb": self.tvdb, "mediatype": "episode", "Title": meta['title'], "genre": meta['genre'], "rating": meta['rating'], "status": meta['status'], "studio": meta['studio'], "mpaa": meta['mpaa']})
+            if self.content == 'episode' and infoMeta == True: self.infolabels.update({"season": meta['season'], "episode": meta['episode'], "tvshowtitle": meta['tvshowtitle'], "premiered": meta['premiered'], "tvdb": self.tvdb, "mediatype": "episode", "Title": meta['title'], "genre": meta['genre'], "rating": meta['rating'], "mpaa": meta['mpaa']})		
             self.original_meta = meta
 
             if self.content == 'episode': item.setArt({'icon': thumb, 'thumb': fanart, 'poster': poster, 'fanart':fanart, 'tvshow.poster': poster, 'season.poster': thumb , 'tvshow.landscape':thumb})
