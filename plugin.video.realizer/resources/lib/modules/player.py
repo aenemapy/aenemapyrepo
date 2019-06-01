@@ -112,6 +112,19 @@ class player(xbmc.Player):
             if self.content == 'episode': item.setArt({'icon': thumb, 'thumb': fanart, 'poster': poster, 'fanart':fanart, 'tvshow.poster': poster, 'season.poster': thumb , 'tvshow.landscape':thumb})
             else: item.setArt({'icon': thumb, 'thumb': thumb, 'poster': thumb, 'fanart':thumb})
 
+#fix where movies played from openmeta have infoMeta set to FALSE
+            if 'movie' in str(meta):
+                infoMeta = True
+
+#Send additional meta data which shows up on OSD when mediatype = movie
+            if self.content == 'movie' and infoMeta == True:
+                self.infolabels.update({"mediatype": "movie", "premiered": meta['premiered'],  "Title": meta['title'], "genre": meta['genre'], "rating": meta['rating'], "mpaa": meta['mpaa']})
+                try:
+                    item.setArt({'icon': thumb, 'thumb': fanart, 'poster': poster, 'fanart':fanart})
+                    item.setArt({'clearart': clearart})
+                except:
+                    pass
+
             item.setInfo(type='Video', infoLabels = self.infolabels)
 
             control.player.play(url, item)
