@@ -53,6 +53,7 @@ class navigator:
         self.addDirectoryItem('Download Manager', 'download_manager', 'cloud.png', 'DefaultAddonProgram.png')   
         self.addDirectoryItem('RSS Manager', 'rss_manager_nav', 'cloud.png', 'DefaultAddonProgram.png')		
         self.addDirectoryItem(32008, 'toolNavigator', 'settings.png', 'DefaultAddonProgram.png')
+        self.addDirectoryItem('[I]Support and Donations[/I]', 'donations', 'support.png', 'DefaultAddonProgram.png', isFolder=False)
         self.endDirectory()
 		
     def download_manager(self):

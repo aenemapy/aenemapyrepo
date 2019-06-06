@@ -8,6 +8,7 @@ import sys,pkgutil,re,json,urllib,urlparse,random,datetime,time,os,xbmc
 from resources.lib.modules import control
 from resources.lib.modules.log_utils import debug
 from resources.lib.api import premiumize
+control.moderator()
 class sources:
     def __init__(self):
         self.sources = []

@@ -106,11 +106,7 @@ class player(xbmc.Player):
 			
             item = control.item(path=url)
             self.infolabels = {"Title": title, "Plot": plot, "year": self.year}
-#            if self.content == 'episode' and infoMeta == True: self.infolabels.update({"season": meta['season'], "episode": meta['episode'], "tvshowtitle": meta['tvshowtitle'], "showtitle": meta['tvshowtitle'], "tvdb": self.tvdb})
-            if infoMeta == True: 
-				self.infolabels.update(meta)
-				if self.content   == 'movie'  : self.infolabels.update({"mediatype": "movie", "imdb": self.imdb})
-				elif self.content == 'episode': self.infolabels.update({"season": self.season, "episode": self.episode, "tvshowtitle": meta['tvshowtitle'], "showtitle": meta['tvshowtitle'], "tvdb": self.tvdb, "mediatype": "episode", "Title": meta['title']})		
+            if self.content == 'episode' and infoMeta == True: self.infolabels.update({"season": meta['season'], "episode": meta['episode'], "tvshowtitle": meta['tvshowtitle'], "showtitle": meta['tvshowtitle'], "tvdb": self.tvdb})
             self.original_meta = meta
 
             if self.content == 'episode': item.setArt({'icon': thumb, 'thumb': fanart, 'poster': poster, 'fanart':fanart, 'tvshow.poster': poster, 'season.poster': thumb , 'tvshow.landscape':thumb})

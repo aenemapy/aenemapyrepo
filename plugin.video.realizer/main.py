@@ -55,7 +55,14 @@ if action == None:
 	
     from resources.lib.indexers import navigator
     navigator.navigator().root()
-	
+
+elif action == 'donations':
+	import xbmcaddon
+	from resources.lib.modules import deviceAuthDialog
+	authDialog = deviceAuthDialog.DonationDialog('donations.xml', xbmcaddon.Addon().getAddonInfo('path'), code='', url='')
+	authDialog.doModal()
+	del authDialog			
+		
 elif action == 'browse_nav':
     from resources.lib.indexers import navigator
     navigator.navigator().browse_nav()

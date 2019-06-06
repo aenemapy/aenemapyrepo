@@ -65,3 +65,33 @@ class DeviceAuthDialog(xbmcgui.WindowXMLDialog):
 
         if control in [LATER_BUTTON, NEVER_BUTTON]:
             self.close()
+			
+class DonationDialog(xbmcgui.WindowXMLDialog):
+
+    def __init__(self, xmlFile, resourcePath, code, url):
+        self.code = code
+        self.url = url
+
+    def onInit(self):
+        warning = self.getControl(WARNING_LABEL)
+
+    def onAction(self, action):
+        if action == ACTION_PREVIOUS_MENU or action == ACTION_BACK:
+            self.close()
+
+    def onControl(self, control):
+        pass
+
+    def onFocus(self, control):
+        pass
+
+    def onClick(self, control):
+        logger.debug('onClick: %s' % (control))
+
+        if control == LATER_BUTTON:
+            import webbrowser
+            link = 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ERQGTGH35NREL&source=url'
+            webbrowser.open(link, autoraise = True, new = 2)			
+
+        if control in [LATER_BUTTON, NEVER_BUTTON]:
+            self.close()

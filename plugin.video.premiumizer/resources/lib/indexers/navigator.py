@@ -55,6 +55,7 @@ class navigator:
         if downloads == True:
 			self.addDirectoryItem('Download Manager', 'download_manager', 'cloud.png', 'DefaultTVShows.png')
         self.addDirectoryItem(32008, 'toolNavigator', 'settings.png', 'DefaultAddonProgram.png')
+        self.addDirectoryItem('[I]Support and Donations[/I]', 'donations', 'support.png', 'DefaultAddonProgram.png', isFolder=False)
         self.endDirectory()
 		
     def download_manager(self):
