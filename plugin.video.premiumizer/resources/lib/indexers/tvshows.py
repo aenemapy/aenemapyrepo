@@ -212,7 +212,7 @@ class tvshows:
 						except: title = ''
 						if title == '': title = '0'
 						title = client.replaceHTMLCodes(title)
-						title = title.encode('utf-8')
+						title = cleantitle.normalize_string(title)
 						if "series not permitted" in title.lower(): raise Exception()
 						try: year = item['firstAired'].encode('utf-8')
 						except: year = ''
@@ -266,7 +266,7 @@ class tvshows:
 					except: title = ''
 					if title == '': title = '0'
 					title = client.replaceHTMLCodes(title)
-					title = title.encode('utf-8')
+					title = cleantitle.normalize_string(title)
 					if "series not permitted" in title.lower(): raise Exception()
 					try: year = item['firstAired'].encode('utf-8')
 					except: year = ''
@@ -602,7 +602,7 @@ class tvshows:
                 title = item['title']
                 title = re.sub('\s(|[(])(UK|US|AU|\d{4})(|[)])$', '', title)
                 title = client.replaceHTMLCodes(title)
-
+                title = cleantitle.normalize_string(title)
                 year = item['year']
                 year = re.sub('[^0-9]', '', str(year))
 
@@ -616,7 +616,7 @@ class tvshows:
                 if self.remotedbMeta != None:
 					if len(self.remotedbMeta) > 0: 
 						meta = self.remotedbMeta
-						meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': meta['title'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
+						meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': title, 'originaltitle': title, 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
 						self.list.append(meta)
 						raise Exception()
 			
@@ -744,20 +744,20 @@ class tvshows:
                 imdb = client.parseDOM(item, 'a', ret='href')[0]
                 imdb = re.findall('(tt\d*)', imdb)[0]
                 imdb = imdb.encode('utf-8')
-				
+					
+                title = client.parseDOM(item, 'a')[1]
+                title = client.replaceHTMLCodes(title)
+                title = cleantitle.normalize_string(title)					
 				# METALIBRARY
                 self.remotedbMeta = self.remotedb_meta(imdb=imdb)
                 if self.remotedbMeta != None:
 					if len(self.remotedbMeta) > 0: 
 						meta = self.remotedbMeta
-						meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': meta['title'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
+						meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': title, 'originaltitle': title, 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
 						self.list.append(meta)
 						raise Exception()
 					
-					
-                title = client.parseDOM(item, 'a')[1]
-                title = client.replaceHTMLCodes(title)
-                title = title.encode('utf-8')
+
 
                 year = client.parseDOM(item, 'span', attrs = {'class': 'lister-item-year.+?'})
                 year += client.parseDOM(item, 'span', attrs = {'class': 'year_type'})

@@ -21,7 +21,13 @@
 import re
 import unicodedata
 
-
+def normalize_string(text):
+	try:
+		norm_text = u'%s' % text
+		norm_text = ''.join(c for c in unicodedata.normalize('NFD', norm_text) if unicodedata.category(c) != 'Mn')
+		return norm_text
+	except: return text
+	
 def normalizeLibrary(title):
 	title = re.sub('(\d{4})', '', title)
 	title = re.sub('&#(\d+);', '', title)

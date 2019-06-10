@@ -437,6 +437,7 @@ class movies:
             try:
                 title = item['title']
                 title = client.replaceHTMLCodes(title)
+                title = cleantitle.normalize_string(title)
 
                 year = item['year']
                 year = re.sub('[^0-9]', '', str(year))
@@ -454,7 +455,7 @@ class movies:
                 if self.remotedbMeta != None:
 					if len(self.remotedbMeta) > 0: 
 						meta = self.remotedbMeta
-						meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
+						meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': title, 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
 						self.list.append(meta)
 						raise Exception()
 
@@ -545,8 +546,7 @@ class movies:
                 next = url.replace('page=%s' % currPage, nextPage)
 				
                 title = item['title']
-                title = title.encode('utf-8')
-
+                title = cleantitle.normalize_string(title)
                 year = item['release_date']
                 try: year = re.compile('(\d{4})').findall(str(year))[0]
                 except: year = '0'
@@ -617,6 +617,9 @@ class movies:
         for item in items:
             try:
 
+                title = client.parseDOM(item, 'a')[1]
+                title = client.replaceHTMLCodes(title)
+                title = cleantitle.normalize_string(title)
 
                 imdb = client.parseDOM(item, 'a', ret='href')[0]
                 imdb = re.findall('(tt\d*)', imdb)[0]
@@ -627,13 +630,10 @@ class movies:
                 if self.remotedbMeta != None:
 					if len(self.remotedbMeta) > 0: 
 						meta = self.remotedbMeta
-						meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
+						meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': title, 'title': title, 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
 						self.list.append(meta)
 						raise Exception()
 					
-                title = client.parseDOM(item, 'a')[1]
-                title = client.replaceHTMLCodes(title)
-                title = title.encode('utf-8')
 
                 year = client.parseDOM(item, 'span', attrs = {'class': 'lister-item-year.+?'})
 
@@ -748,19 +748,19 @@ class movies:
                 imdb = re.findall('data-tconst="(tt\d*)"', item)[0]
                 imdb = imdb.encode('utf-8')
 				
-				
+                title = client.parseDOM(item, 'a')[1]
+                title = client.replaceHTMLCodes(title)
+                title = cleantitle.normalize_string(title)				
 				# METALIBRARY
                 self.remotedbMeta = self.remotedb_meta(imdb=imdb)
                 if self.remotedbMeta != None:
 					if len(self.remotedbMeta) > 0: 
 						meta = self.remotedbMeta
-						meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
+						meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': title, 'title': title, 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
 						self.list.append(meta)
 						raise Exception()
 					
-                title = client.parseDOM(item, 'a')[1]
-                title = client.replaceHTMLCodes(title)
-                title = title.encode('utf-8')
+
 
                 year = client.parseDOM(item, 'span', attrs = {'class': 'lister-item-year.+?'})
 
@@ -879,7 +879,7 @@ class movies:
             try:
                 name = client.parseDOM(item, 'a')[0]
                 name = client.replaceHTMLCodes(name)
-                name = name.encode('utf-8')
+                name = cleantitle.normalize_string(name)	
 
                 url = client.parseDOM(item, 'a', ret='href')[0]
                 url = url.split('/list/', 1)[-1].replace('/', '')
@@ -1097,7 +1097,7 @@ class movies:
             if self.list[i]['metacache'] == True: raise Exception()
 			
             if 'metalibrary' in self.list[i]:
-				print ("USING REMOTEDB META MOVIES")
+				print ("USING REMOTEDB META MOVIES", self.list[i]['title'])
 				metaDict = {'imdb': self.list[i]['imdb'], 'tmdb': self.list[i]['tmdb'], 'tvdb': '0', 'lang': self.lang, 'user': self.user, 'item': self.list[i]}
 				self.meta.append(metaDict)
 				if self.list[i]['metalibrary'] == True: raise Exception()
