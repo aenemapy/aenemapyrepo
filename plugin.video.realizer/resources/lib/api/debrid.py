@@ -182,8 +182,8 @@ def torrentInfo(id):
 			infolabel = {"Title": name}
 			item.setInfo(type='Video', infoLabels = infolabel)
 			item.setProperty('IsPlayable', 'true')
-					
-			url = url = '%s?action=%s&name=%s&id=%s' % (sysaddon, 'playtorrentItem', name, id) 
+			systitle = urllib.quote_plus(name)					
+			url = url = '%s?action=%s&name=%s&id=%s' % (sysaddon, 'playtorrentItem', systitle, id) 
 			#item.addContextMenuItems(cm)
 			control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
 		except: pass
