@@ -71,6 +71,14 @@ elif action == 'browse_nav':
     from resources.lib.indexers import navigator
     navigator.navigator().browse_nav()
 	
+elif action == 'meta_folder':
+	from resources.lib.api import premiumize
+	premiumize.meta_folder(content=content)
+	
+elif action == 'meta_cloud':
+    from resources.lib.indexers import navigator
+    navigator.navigator().meta_cloud()
+	
 elif action == 'play':
 	from resources.lib.sources import sources	
 	sources().play(title, year, imdb, tvdb, season, episode, tvshowtitle, premiered, meta, select=select)
@@ -175,6 +183,7 @@ elif action == 'service':
 	if control.setting('cachecloud.startup') == 'true':
 		from resources.lib.api import premiumize
 		premiumize.cloudCache(mode='new')
+
 	from resources.lib.modules import updater
 	updater.updatelibrary()		
 		

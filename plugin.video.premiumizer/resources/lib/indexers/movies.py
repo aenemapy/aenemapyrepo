@@ -126,16 +126,16 @@ class movies:
         self.imdbsearch_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&title=%s&start=1'
 		
 		
-    def getSearch(self, title=None):
+    def searchTMDB(self, title=None, year=None, create_directory=False):
         try:
             if (title == None or title == ''): return
-            url = self.imdbsearch_link % title
-            self.list = cache.get(self.imdb_list, 720, url)
-            self.list = [i for i in self.list if cleantitle.get(title) == cleantitle.get(i['title'])]
-            self.worker()
+            title = cleantitle.query(title)
+            url = 'https://api.themoviedb.org/3/search/movie?api_key=%s&query=%s&page=1' % ("%s", title)
+            self.list = cache.get(self.tmdb_list, 720, url, title, year)
+
+            self.workerTMDB()
             return self.list
-        except:
-            pass
+        except: return []
 			
     def traktOnDeck(self):
         from resources.lib.api import trakt
@@ -531,7 +531,7 @@ class movies:
 
 		
 		
-    def tmdb_list(self, url):
+    def tmdb_list(self, url, matchTitle=None, matchYear=None):
         result = tmdbapi.request(url)
         result = json.loads(result)
         items = result['results']
@@ -547,11 +547,20 @@ class movies:
 				
                 title = item['title']
                 title = cleantitle.normalize_string(title)
+
                 year = item['release_date']
                 try: year = re.compile('(\d{4})').findall(str(year))[0]
                 except: year = '0'
                 year = year.encode('utf-8')
-				
+                if matchTitle != None and matchTitle != '':
+
+					matchTitle = cleantitle.normalize_string(title)
+					#print ("2. TMDB MATCHING TITLE", cleantitle.get(title), cleantitle.get(matchTitle))
+					
+					if cleantitle.get(title) != cleantitle.get(matchTitle): raise Exception()
+					#print ("3. TMDB MATCHING YEAR", year, matchYear)
+					if str(year) != str(matchYear): raise Exception()
+                #print ("4. TMDB MATCHED TITLE", matchTitle, title)					
                 tmdb = item.get('id')
                 tmdb = str(tmdb)
 				

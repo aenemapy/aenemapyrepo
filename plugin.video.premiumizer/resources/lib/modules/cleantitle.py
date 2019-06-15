@@ -50,6 +50,18 @@ def get(title):
     title = re.sub('\n|([[].+?[]])|([(].+?[)])|\s(vs|v[.])\s|(:|;|-|"|,|\'|\_|\.|\?)|\(|\)|\[|\]|\{|\}|\s', '', title)
     title = re.sub('[^A-z0-9]', '', title)
     return title
+	
+def get_year(title):
+   # #### KEEPS ROUND PARENTHESES CONTENT #####
+    if title == None: return
+    title = title.lower()
+    title = re.sub('&#(\d+);', '', title)
+    title = re.sub('(&#[0-9]+)([^;^0-9]+)', '\\1;\\2', title)
+    title = title.replace('&quot;', '\"').replace('&amp;', '&')
+    title = re.sub(r'\<[^>]*\>','', title)
+    title = re.sub('\n|([[].+?[]])|\s(vs|v[.])\s|(:|;|-|"|,|\'|\_|\.|\?)|\(|\)|\[|\]|\{|\}|\s', '', title)
+    title = re.sub('[^A-z0-9]', '', title)
+    return title
 
 
 def geturl(title):
@@ -74,12 +86,14 @@ def get_simple(title):
 
 
 def getsearch(title):
-    if title is None: return
+    if title == None: return
     title = title.lower()
     title = re.sub('&#(\d+);', '', title)
     title = re.sub('(&#[0-9]+)([^;^0-9]+)', '\\1;\\2', title)
     title = title.replace('&quot;', '\"').replace('&amp;', '&')
-    title = re.sub('\\\|/|-|–|:|;|\*|\?|"|\'|<|>|\|', '', title).lower()
+    title = re.sub(r'\<[^>]*\>','', title)
+    title = re.sub('\n|([[].+?[]])|\s(vs|v[.])\s|(:|;|-|"|,|\'|\_|\.|\?)|\(|\)|\[|\]|\{|\}|\s', '', title)
+    title = re.sub('[^A-z0-9]', '', title)
     return title
 
 

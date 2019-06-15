@@ -118,9 +118,10 @@ class tvshows:
     def getSearch(self, title = None):
         try:
             if (title == None or title == ''): return
-            url = 'https://api.thetvdb.com/search/series?name=%s'  % (urllib.quote_plus(title))
+            query = cleantitle.query(title)
+            url = 'https://api.thetvdb.com/search/series?name=%s'  % (urllib.quote_plus(query))
             self.list = cache.get(self.getTvdb, 720, url, False)
-            self.list = [i for i in self.list if cleantitle.get(title) == cleantitle.get(i['tvshowtitle'])]
+            self.list = [i for i in self.list if cleantitle.get_year(title.lower()) == cleantitle.get_year(i['title'].lower())]
             return self.list
         except:
             return			

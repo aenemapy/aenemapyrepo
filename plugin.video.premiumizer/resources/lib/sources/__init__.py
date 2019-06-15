@@ -50,6 +50,10 @@ class sources:
             if url == None or url =='' or url == '0':
                 return self.errorForSources()
 				
+            elif url == 'resolve':
+				url = premiumize.getIDLink(id)
+				if url == None: return self.errorForSources()
+				
             try: meta = json.loads(meta)
             except: pass
 

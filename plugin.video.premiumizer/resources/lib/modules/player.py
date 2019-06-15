@@ -41,7 +41,7 @@ class player(xbmc.Player):
         xbmc.Player.__init__(self)
 
 
-    def run(self, title, year, season, episode, imdb, tvdb, url, meta, id):
+    def run(self, title, year, season, episode, imdb, tvdb, url, meta, id, directPlay = False):
         try:
             control.sleep(200)
             self.autoResume       = control.setting('bookmarks.autoresume')
@@ -113,10 +113,10 @@ class player(xbmc.Player):
             else: item.setArt({'icon': thumb, 'thumb': thumb, 'poster': thumb, 'fanart':thumb})
 
             item.setInfo(type='Video', infoLabels = self.infolabels)
-
+		
             control.player.play(url, item)
-            
-            #control.resolve(int(sys.argv[1]), True, item)
+
+            control.resolve(int(sys.argv[1]), True, item)
 
             control.window.setProperty('script.trakt.ids', json.dumps(self.ids))
 			

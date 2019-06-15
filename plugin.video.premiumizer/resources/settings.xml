@@ -27,10 +27,7 @@
 		<setting id="cloud.autodelete.movies" type="bool" label="Autodelete Movie File" default="true" visible="eq(-1,1)"/>
 		<setting id="cloud.autodelete.tv" type="bool" label="Autodelete TV File" default="true" visible="eq(-2,1)"/>
 		<setting id="cloud.autodelete.unknown" type="bool" label="Autodelete Unknown Type File" default="true" visible="eq(-3,1)"/>
-
-		<setting type="lsep" label="Meta Settings (experimental - slower)" />		
-		<setting id="movies.meta" type="bool" label="Use Movies Metadata in Cloud Folder" default="false" />		
-		<setting id="tvshows.meta" type="bool" label="Use Tvshows Metadata in Cloud Folder" default="false" />		
+	
 		<setting type="lsep" label="Cosmetics" />		
 		<setting id="file.prefix"  type="bool"  label="Show Files Prefix in Cloud Browser" default="true" />		
 		<setting id="poster.type" type="enum" label="Poster Quality" values="SD|HD|Max Quality" default="1" />

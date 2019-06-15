@@ -213,11 +213,21 @@ def libPlayer(title, url, xbmc_id, content):
 		
 		
 def getIDLink(id):
-	req = urlparse.urljoin(premiumize_Api, premiumizeItemDetails)
-	data = {'id': id}
-	r = reqJson(req, data=data)
-	file = r['link']
-	return file
+	try:
+
+		req = urlparse.urljoin(premiumize_Api, premiumizeItemDetails)
+		data = {'id': id}
+		result = reqJson(req, data=data)
+		if control.setting('transcoded.play') == 'true':
+			try:
+				playLink = result['stream_link']
+				if not "http" in playLink: playLink = result['link']
+			except: playLink = result['link']
+		else:
+			playLink = result['link']
+
+		return playLink
+	except: return None
 
 def downloadFolder(name, id):
 	data = {'folders[]': id}
@@ -546,92 +556,10 @@ def getFolder(id, meta=None, list=False):
 				lists.append(name) 
 				continue
 			# ##################################
-
-			try:
-				if meta != None and meta != '': raise Exception()
-				try:
-					if control.setting('tvshows.meta') != 'true': raise Exception()
-					sxe_pattern = '(.+?)[._ -]season[._ -]([0-9]+)'
-					sxe_pattern2 = '(.*?)[._ -]s(\d{1,2})[._ -ex]'
-					sxe_pattern3 = '{._ -\[}TV{._ -\]}(.*?)\((\d{4})\)'
-					matchSeason = re.search(sxe_pattern, name.lower())
-					matchSeason2 = re.search(sxe_pattern2, name.lower())
-					matchShow = re.compile('\[TV\]\s*(.*?)\((\d{4})\)').findall(name)
-					if matchShow:
-						isFullShow = True
-						title = matchShow[0][0]
-						year = matchShow[0][1]
-						isMovie = False
-					elif matchSeason:
-						title, season = matchSeason.groups()
-						isMovie = False
-					elif matchSeason2:
-						title, season = matchSeason2.groups()
-						isMovie = False
-
-				except: pass
-				
-				try:
-					if control.setting('movies.meta') != 'true': raise Exception()
-					if isMovie == True:
-						cleanName = cleantitle_get(name)
-						patternFull        = '(.*?)[._ -](\d{4})?(?:[._ -]\d+[pP])'
-						pattern            = '(.*?)(\d{4}).*'
-						match = re.search(patternFull, cleanName, re.I)
-						match2 = re.search(pattern, cleanName)
-											
-						if match:
-							isMovie = True
-							title, year = match.groups()
-						elif match2:
-							isMovie = True
-							title, year = match2.groups()
-				except: pass
-				
-				title = cleantitle.query(title.encode('utf-8'))
-				
-				systitle = urllib.quote_plus(title)
-				
-				if isMovie == True:	
-					getSearch =	movies.movies().getSearch(title=systitle)
-					metaData = [i for i in getSearch if cleantitle.get(title) == cleantitle.get(i['title']) and i['year'] == year]
-
-				else:
-					if isFullShow == True:
-						getSearch = tvshows.tvshows().getSearch(title=systitle)
-						metaData = [i for i in getSearch if cleantitle.get(title) == cleantitle.get(i['title']) and year == i['year']]
-					else:
-						getSearch = tvshows.tvshows().getSearch(title=systitle)
-						metaData = [i for i in getSearch if cleantitle.get(name).startswith(cleantitle.get(i['title']))]
-						
-				metaData = metaData[0]
-				metarating = metaData['rating'] if 'rating' in metaData else '0'
-				metavotes = metaData['votes'] if 'votes' in metaData else '0'	
-				metatitle = metaData['title'] if 'title' in metaData else '0'
-				metayear = metaData['year'] if 'year' in metaData else '0'
-				metaposter = metaData['poster'] if 'poster' in metaData else '0'
-				metaplot = metaData['plot'] if 'plot' in metaData else '0'
-				metafanart = metaData['fanart'] if 'fanart' in metaData else '0'
-				if metaposter == '0' or metaposter == None: metaposter = control.icon
-				if metafanart == '0' or metafanart == None: metafanart = control.fanart
-				metagenre = metaData['genre'] if 'genre' in metaData else '0'
-				metaimdb = metaData['imdb'] if 'imdb' in metaData else '0'
-				metatvdb = metaData['tvdb'] if 'tvdb' in metaData else '0'				
-				metaduration = metaData['duration'] if 'duration' in metaData else '0'	
-				superInfo = {'title': metaData['title'], 'genre': metagenre, 'year': metayear, 'poster': metaposter, 'tvdb': metatvdb, 'imdb': metaimdb, 'fanart': metafanart, 'plot': metaplot, 'rating':metarating, 'duration':metaduration}
-				artMeta = True
-			
-			except: pass
-			
-			#print ("PREMIUMIZER FOLDER 1", superInfo)			
+		
 			playLink = '0'
 			isFolder = True
 			isPlayable = 'false'
-					
-			if meta != None and meta != '':
-				artMeta = True
-				items = json.loads(str(meta))
-				superInfo = {'title': items['title'], 'genre': items['genre'], 'year': items['year'], 'poster': items['poster'], 'imdb': items['imdb'], 'fanart': items['fanart'], 'plot':items['plot'], 'rating':items['rating'], 'duration':items['duration']}
 
 			url = '%s?action=%s&id=%s' % (sysaddon, 'premiumizeOpenFolder', id)
 			
@@ -639,12 +567,7 @@ def getFolder(id, meta=None, list=False):
 			year = superInfo['year']
 			imdb = superInfo['imdb']
 			systitle = urllib.quote_plus(superInfo['title'])
-		
-			if artMeta == True: 
-				if isMovie == False: 
-					cm.append(('Browse Cloud Folder', 'Container.Update(%s)' % (url)))
-					url = '%s?action=episodes&tvshowtitle=%s&year=%s&imdb=%s&tvdb=%s&season=%s' % (sysaddon, superInfo['title'], superInfo['year'], superInfo['imdb'], superInfo['tvdb'], season)
-								
+			
 			links = []
 			if type == 'file':
 				if control.setting('transcoded.play') == 'true':
@@ -670,11 +593,8 @@ def getFolder(id, meta=None, list=False):
 
 				isFolder = False
 				isPlayable = 'true'
-				
-				try: sysPlay = urllib.quote_plus(playLink)
-				except: sysPlay = playLink					
-				
-				url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, sysPlay, systitle , year, imdb, sysmeta, id)
+
+				url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, 'resolve', systitle , year, imdb, sysmeta, id)
 				cm.append(('Queue Item', 'RunPlugin(%s?action=queueItem)' % sysaddon))					
 				if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s&id=%s)' % (sysaddon, name, url, id)))
 			else: cm.append(('Download Folder (Zip)', 'RunPlugin(%s?action=downloadZip&name=%s&id=%s)' % (sysaddon, name, id)))
@@ -688,7 +608,7 @@ def getFolder(id, meta=None, list=False):
 			else: label = str(name)
 			
 			item = control.item(label=label)
-			
+			item.setProperty('IsPlayable', isPlayable)				
 			try:
 				if ext.lower() == 'mp3' or ext.lower() == 'flac': 
 					item.setProperty('IsPlayable', isPlayable)	
@@ -697,12 +617,9 @@ def getFolder(id, meta=None, list=False):
 				
 			cm.append(('Add To Library', 'RunPlugin(%s?action=addToLibrary&id=%s&type=%s&name=%s)' % (sysaddon, id, type, name)))
 			
-			if artMeta == True:
-				item.setProperty('Fanart_Image', superInfo['fanart'])
-				item.setArt({'icon': superInfo['poster'], 'thumb': superInfo['poster']})
-			else:
-				item.setArt({'icon': control.icon, 'thumb': control.icon})
-				item.setProperty('Fanart_Image', control.addonFanart())
+
+			item.setArt({'icon': control.icon, 'thumb': control.icon})
+			item.setProperty('Fanart_Image', control.addonFanart())
 				
 			item.setInfo(type='Video', infoLabels = superInfo)
 			item.addContextMenuItems(cm)
@@ -713,10 +630,194 @@ def getFolder(id, meta=None, list=False):
 		control.directory(syshandle, cacheToDisc=False)
 	except: pass
 
+def meta_folder(create_directory=True, content='all'):
+	from resources.lib.indexers import movies, tvshows, episodes
+	from resources.lib.modules import cache
+	epRegex = '(.+?)[._\s-]?(?:s|season)?(\d{1,2})(?:e|x|-|episode)(\d{1,2})[._\s\(\[-]'
+	movieRegex = '(.+?)(\d{4})[._ -\)\[]'
+
+	cached_time, cached_results = cloudCache(mode='get')
+
+	if cached_time != '0' and cached_time != None:
+		if control.setting('first.start') == 'true':
+			control.setSetting(id='first.start', value='false')
+			r = PremiumizeScraper().sources()
+			cloudCache(mode='write', data=r)
+		else:
+			r = cached_results
+			
+	r = [i for i in r if i['type'] == 'file']
+	r = [i for i in r if i['name'].split('.')[-1] in VALID_EXT]
+	r =  sorted(r, key=lambda k: int(k['created_at']), reverse=True)
+	progressDialog = control.progressDialog
+	progressDialog.create('Creating Meta DB', '')
+	progressDialog.update(0,'Checking your Cloud...')
+	total = len(r)
+	count = 0
+	for result in r:
+		count += 1
+		isMovie = False
+		isTv    = False
+		name = result['name']
+		prog = (count * 100) / int(total)
+		progressDialog.update(prog,'This process will run just for items in your cloud not already in the database...', name)	
+		season = None
+		episode = None
+		imdb = None
+		tvdb = None
+		tmdb = None
+		tvshowtitle = None		
+		match = re.search(epRegex, name.lower(), re.I)
+		if match: 
+			isTv = True
+			match = match.groups()
+			tvTitle    = match[0]
+			season     = match[1]	
+			episode    = match[2]				
+		if isTv == False:
+			match2 = re.search(movieRegex, name.lower(), re.I)
+			if match2: 
+				match2 = match2.groups()
+
+				isMovie = True
+				movieTitle = match2[0]
+				movieYear  = match2[1]
+				
+		cm = []	
+
+		id = result['id']
+		cacheID = "premiumize-%s" % (id)
+		name = result['name'].encode('utf-8')
+		name = normalize(name)
+		superInfo = {'title': name, 'year':'0', 'imdb':'0'}
+		try:
+			if progressDialog.iscanceled(): break
+		except:
+			pass
+		try:
+			meta = []
+			metaData = []
+
+			
+			if isMovie == True:
+				if content != 'movie' and content != 'all': raise Exception()
+				getCache  = cache.get_from_string(cacheID, 2000, None)
+				if getCache == None: 
+					getSearch =	movies.movies().searchTMDB(title=movieTitle, year=movieYear)
+					getSearch = getSearch[0]
+					if len(getSearch) > 0: cache.get_from_string(cacheID, 2000, getSearch)
+				else: getSearch = getCache
+				meta = getSearch
+				
+			elif isTv == True: 
+
+				if content != 'tv' and content != 'all': raise Exception()
+	
+				getCache  = cache.get_from_string(cacheID, 2000, None)
+				if getCache == None: 
+					getSearch = tvshows.tvshows().getSearch(title=tvTitle)
+					getSearch = getSearch[0]
+					if len(getSearch) > 0: cache.get_from_string(cacheID, 2000, getSearch)
+				else: getSearch = getCache
+				
+				tvdb = getSearch['tvdb']
+				imdb = getSearch['imdb']
+				year = getSearch['year']
+				tvshowtitle = getSearch['title']
+				episode = "%02d" % int(episode)
+				ss      = "%02d" % int(season)
+				
+				cacheIDEpisode = 'premiumize-%s-tvdb-%s-season-%s-episode-%s' % (id, tvdb ,ss, episode)
+				getCacheEp  = cache.get_from_string(cacheIDEpisode, 720, None)
+				if getCacheEp == None: 
+					episodeMeta = episodes.episodes().get(tvshowtitle, year, imdb, tvdb, season = season, create_directory = False)
+					episodeMeta = [i for i in episodeMeta if "%02d" % int(i['episode']) == episode]
+					episodeMeta = episodeMeta[0]
+					if len(episodeMeta) > 0: cache.get_from_string(cacheIDEpisode, 720, episodeMeta)
+				else: episodeMeta = getCacheEp
+				meta = episodeMeta
+
+
+			if create_directory != True: raise Exception()			
+			metaData = meta
+			metatitle = metaData['title'] if 'title' in metaData else name
+			metaposter = metaData['poster'] if 'poster' in metaData else '0'
+			metafanart = metaData['fanart'] if 'fanart' in metaData else '0'
+			if metaposter == '0' or metaposter == None: metaposter = control.icon
+			if metafanart == '0' or metafanart == None: metafanart = control.fanart
+			imdb = metaData['imdb'] if 'imdb' in metaData else None
+			tvdb = metaData['tvdb'] if 'tvdb' in metaData else None			
+			tmdb      = metaData['tmdb'] if 'tmdb' in metaData else None	
+			tvshowtitle = metaData['tvshowtitle'] if 'tvshowtitle' in metaData else None
+			superInfo = metaData
+			systitle = urllib.quote_plus(metatitle)			
+
+			if isTv == True:
+				label = "%s - S:%02dE%02d - %s" % (tvshowtitle, int(season), int(episode), metatitle)
+				systitle = urllib.quote_plus(superInfo['title'])	
+			else: 
+				label = metatitle
+
+			sysmeta = urllib.quote_plus(json.dumps(superInfo))				
+			year = superInfo['year']
+				
+			if isTv == True: url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&meta=%s&id=%s' % (sysaddon, 'resolve', systitle, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, sysmeta, id)
+			else: url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, 'resolve', systitle , year, imdb, sysmeta, id)
+	
+			item = control.item(label=label)	
+			art = {}
+			art.update({'icon': metaposter, 'thumb': metaposter, 'poster': metaposter})
+			if 'thumb' in metaData and not metaData['thumb'] == '0': art.update({'icon': metaData['thumb'], 'thumb': metaData['thumb']})
+			if 'banner' in metaData and not metaData['banner'] == '0': art.update({'banner': metaData['banner']})
+			if 'clearlogo' in metaData and not metaData['clearlogo'] == '0': art.update({'clearlogo': metaData['clearlogo']})
+			if 'clearart' in metaData and not metaData['clearart'] == '0': art.update({'clearart': metaData['clearart']})
+
+			superInfo.update({'code': imdb, 'imdbnumber': imdb, 'imdb_id': imdb})
+			superInfo.update({'tmdb_id': tmdb})
+			superInfo.update({'mediatype': 'movie'})
+			if isTv == True: superInfo.update({'mediatype': 'episode'})
+			if "cast" in superInfo: del superInfo['cast']
+			superInfo.update({'trailer': '%s?action=trailer&name=%s' % (sysaddon, urllib.quote_plus(metatitle))})
+			try:
+				superInfo.update({'duration': str(int(superInfo['duration']) * 60)})
+			except:
+				pass		
+			superInfo = dict((k, v) for k, v in superInfo.iteritems() if not v == '0')				
+			item.setProperty('Fanart_Image', metafanart)
+			item.setInfo(type='Video', infoLabels = superInfo)
+			item.setArt(art)
+			item.setProperty('IsPlayable', 'true')
+			control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)				
+		except: pass
+		
+	try: progressDialog.close()
+	except:	pass
+			
+	if create_directory == True: 
+		contentDir = 'movies'
+		if content == 'tv': contentDir = 'episodes'
+		control.content(syshandle, contentDir)	
+	
+		control.directory(syshandle, cacheToDisc=False)		
+
+def getSearch_movie(movieTitle, movieYear):
+	from resources.lib.indexers import movies
+	movie = movies.movies().searchTMDB(title=movieTitle, year=movieYear)	
+	return movie
+	
+def getSearch_tv(tvTitle):
+	from resources.lib.indexers import tvshows
+	tv = tvshows.tvshows().getSearch(title=tvTitle)	
+	return tv	
+	
+def getSearch_episode(tvshowtitle, year, imdb, tvdb, season):
+	from resources.lib.indexers import episodes
+	episode = episodes.episodes().get(tvshowtitle, year, imdb, tvdb, season = season, create_directory = False)
+	return episode
+
 	
 def direct_downlaod(id):
 	return
-
 
 def check_cloud(title): 
 	inCloud = False

@@ -48,6 +48,7 @@ class navigator:
 			sys.exit()	
 		
         #self.addDirectoryItem('TEST', 'testItem', 'movies.png', 'DefaultMovies.png')
+        self.addDirectoryItem('Meta Cloud', 'meta_cloud', 'cloud.png', 'DefaultTVShows.png')
         self.addDirectoryItem(50001, 'premiumizeNavigator', 'cloud.png', 'DefaultTVShows.png')
         self.addDirectoryItem('Lists', 'browse_nav', 'cloud.png', 'DefaultTVShows.png')
         
@@ -74,6 +75,10 @@ class navigator:
         self.addDirectoryItem(32002, 'tvNavigator', 'tv.png', 'DefaultTVShows.png')	
         self.endDirectory()		
 		
+    def meta_cloud(self):
+        self.addDirectoryItem('Movies', 'meta_folder&content=movie', 'movies.png', 'DefaultMovies.png')
+        self.addDirectoryItem('Tv', 'meta_folder&content=tv', 'tv.png', 'DefaultTVShows.png')	
+        self.endDirectory()		
 		
     def movies(self, lite=False):
         self.addDirectoryItem(40000, 'moviesInProgress', 'movies.png', 'DefaultRecentlyAddedMovies.png')
