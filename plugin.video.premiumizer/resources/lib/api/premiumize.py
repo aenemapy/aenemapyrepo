@@ -805,7 +805,7 @@ def meta_folder(create_directory=True, content='all'):
 		if content == 'tv': contentDir = 'episodes'
 		control.content(syshandle, contentDir)	
 	
-		control.directory(syshandle, cacheToDisc=False)		
+		control.directory(syshandle, cacheToDisc=True)		
 
 def getSearch_movie(movieTitle, movieYear):
 	from resources.lib.indexers import movies
