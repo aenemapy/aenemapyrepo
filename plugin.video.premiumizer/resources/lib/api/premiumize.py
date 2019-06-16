@@ -722,6 +722,9 @@ def meta_folder(create_directory=True, content='all'):
 				
 				tvdb = getSearch['tvdb']
 				imdb = getSearch['imdb']
+				clearlogo = getSearch['clearlogo'] if 'clearlogo' in getSearch else '0'
+				banner = getSearch['banner'] if 'banner' in getSearch else '0'
+
 				year = getSearch['year']
 				tvshowtitle = getSearch['title']
 				episode = "%02d" % int(episode)
@@ -736,6 +739,7 @@ def meta_folder(create_directory=True, content='all'):
 					if len(episodeMeta) > 0: cache.get_from_string(cacheIDEpisode, 720, episodeMeta)
 				else: episodeMeta = getCacheEp
 				meta = episodeMeta
+				meta.update({'title': tvshowtitle, 'clearlogo': clearlogo, 'banner': banner})
 
 
 			if create_directory != True: raise Exception()			
@@ -749,6 +753,7 @@ def meta_folder(create_directory=True, content='all'):
 			tvdb = metaData['tvdb'] if 'tvdb' in metaData else None			
 			tmdb      = metaData['tmdb'] if 'tmdb' in metaData else None	
 			tvshowtitle = metaData['tvshowtitle'] if 'tvshowtitle' in metaData else None
+			if isTv == True: metaData.update({'season.poster': metaposter, 'tvshow.poster': metaposter})
 			superInfo = metaData
 			systitle = urllib.quote_plus(metatitle)			
 
@@ -771,6 +776,8 @@ def meta_folder(create_directory=True, content='all'):
 			if 'banner' in metaData and not metaData['banner'] == '0': art.update({'banner': metaData['banner']})
 			if 'clearlogo' in metaData and not metaData['clearlogo'] == '0': art.update({'clearlogo': metaData['clearlogo']})
 			if 'clearart' in metaData and not metaData['clearart'] == '0': art.update({'clearart': metaData['clearart']})
+			if 'season.poster' in metaData and not metaData['season.poster'] == '0': art.update({'season.poster': metaposter})
+			item.setArt(art)
 
 			superInfo.update({'code': imdb, 'imdbnumber': imdb, 'imdb_id': imdb})
 			superInfo.update({'tmdb_id': tmdb})
@@ -785,7 +792,7 @@ def meta_folder(create_directory=True, content='all'):
 			superInfo = dict((k, v) for k, v in superInfo.iteritems() if not v == '0')				
 			item.setProperty('Fanart_Image', metafanart)
 			item.setInfo(type='Video', infoLabels = superInfo)
-			item.setArt(art)
+
 			item.setProperty('IsPlayable', 'true')
 			control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)				
 		except: pass

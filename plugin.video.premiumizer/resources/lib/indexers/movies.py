@@ -129,11 +129,12 @@ class movies:
     def searchTMDB(self, title=None, year=None, create_directory=False):
         try:
             if (title == None or title == ''): return
-            title = cleantitle.query(title)
-            url = 'https://api.themoviedb.org/3/search/movie?api_key=%s&query=%s&page=1' % ("%s", title)
+            query = cleantitle.query(title)
+            url = 'https://api.themoviedb.org/3/search/movie?api_key=%s&query=%s&page=1' % ("%s", query)
             self.list = cache.get(self.tmdb_list, 720, url, title, year)
-
             self.workerTMDB()
+            self.list = [i for i in self.list if cleantitle.get_year(title.lower()) == cleantitle.get_year(i['title'].lower())]
+            self.list = [i for i in self.list if str(i['year']) == year]
             return self.list
         except: return []
 			
@@ -570,7 +571,7 @@ class movies:
 
 					if len(self.remotedbMeta) > 0: 
 						meta = self.remotedbMeta
-						meta.update({'metalibrary': True, 'year': meta['premiered'], 'originaltitle': meta['title'], 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
+						meta.update({'metalibrary': True, 'year': year, 'title': title, 'originaltitle': title, 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image +  meta['fanart']})
 						self.list.append(meta)
 						raise Exception()
 					
@@ -993,21 +994,14 @@ class movies:
 
             if self.meta: metacache.insert(self.meta)
 
-        self.list = [i for i in self.list if not i['imdb'] == '0']
-
-        # self.list = metacache.local(self.list, self.tm_img_link, 'poster3', 'fanart2')
-
-        if self.fanart_tv_user == '':
-            for i in self.list: i.update({'clearlogo': '0', 'clearart': '0'})
+        self.list = [i for i in self.list if not i['tmdb'] == '0']
 			
-
     def super_infoTMDB(self, i):
         try:
 
             if self.list[i]['metacache'] == True: raise Exception()
 			
             if 'metalibrary' in self.list[i]:
-				print ("USING REMOTEDB META MOVIES")
 				metaDict = {'imdb': self.list[i]['imdb'], 'tmdb': self.list[i]['tmdb'], 'tvdb': '0', 'lang': self.lang, 'user': self.user, 'item': self.list[i]}
 				self.meta.append(metaDict)
 				if self.list[i]['metalibrary'] == True: raise Exception()
@@ -1084,7 +1078,16 @@ class movies:
             if tagline == '' or tagline == tagline: tagline = '0'
             tagline = tagline.encode('utf-8')
 			
-	
+            if fanart == '0' or fanart == '' or fanart == None or poster == '' or poster == None or poster == '0' or clearlogo == None or clearlogo == '0': 
+				ftvmeta = fanarttv.get(imdb, 'movies')
+				poster3 = ftvmeta['poster']
+				if poster == '' or poster == '0' or poster == None: poster = poster3
+				if fanart == '' or fanart == '0' or fanart == None: fanart = ftvmeta['fanart']
+				banner = ftvmeta['banner']
+				banner = ftvmeta['banner']
+				clearlogo = ftvmeta['clearlogo']
+				clearart   = ftvmeta['clearart']
+				
             item = {'title': title, 'originaltitle': title, 'year': year, 'imdb': imdb, 'tmdb': tmdb, 'poster': poster, 'poster2': poster, 'poster3': poster, 'banner': banner, 'fanart': fanart, 'fanart2': fanart, 'clearlogo': clearlogo, 'clearart': clearart, 'premiered': premiered, 'genre': genre, 'duration': duration, 'rating': rating, 'votes': votes, 'mpaa': mpaa, 'director': director, 'writer': writer, 'plot': plot, 'tagline': tagline}
             item = dict((k,v) for k, v in item.iteritems() if not v == '0')
             self.list[i].update(item)
@@ -1140,9 +1143,7 @@ class movies:
             poster2 = '0'
             poster3 = '0'
             fanart2 = '0'
-            clearlogo = '0'
-            clearart = '0'
-            banner = '0'
+
 			
             metaDB = False	
 			
@@ -1180,13 +1181,15 @@ class movies:
 				except:
 					fanart = '0'	
 
-            if fanart == '0' or fanart == '' or fanart == None or poster == '' or poster == None or poster == '0': 
+            if fanart == '0' or fanart == '' or fanart == None or poster == '' or poster == None or poster == '0' or clearlogo == None or clearlogo == '0': 
 				ftvmeta = fanarttv.get(imdb, 'movies')
 				poster3 = ftvmeta['poster']
 				if poster == '' or poster == '0' or poster == None: poster = poster3
-				fanart = ftvmeta['fanart']
+				if fanart == '' or fanart == '0' or fanart == None: fanart = ftvmeta['fanart']
 				banner = ftvmeta['banner']
-
+				banner = ftvmeta['banner']
+				clearlogo = ftvmeta['clearlogo']
+				clearart   = ftvmeta['clearart']
             try:
                 
                 if self.lang == 'en': raise Exception()
