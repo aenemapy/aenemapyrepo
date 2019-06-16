@@ -739,7 +739,7 @@ def meta_folder(create_directory=True, content='all'):
 					if len(episodeMeta) > 0: cache.get_from_string(cacheIDEpisode, 720, episodeMeta)
 				else: episodeMeta = getCacheEp
 				meta = episodeMeta
-				meta.update({'title': tvshowtitle, 'clearlogo': clearlogo, 'banner': banner})
+				meta.update({'clearlogo': clearlogo, 'banner': banner})
 
 
 			if create_directory != True: raise Exception()			
