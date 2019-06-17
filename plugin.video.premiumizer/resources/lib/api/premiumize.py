@@ -5,6 +5,8 @@ import os,sys,re,json,urllib,urlparse
 import xbmc, xbmcaddon, xbmcgui, xbmcvfs
 import time
 from difflib import SequenceMatcher
+from resources.lib.modules import cache
+from resources.lib.api import trakt	
 params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
 action = params.get('action')
 sysaddon = sys.argv[0]
@@ -146,10 +148,14 @@ def info():
 		
 		print ("PREMIUMIZE PREMIUM UNTIL", expire)
 		limits = r['limit_used']
+		try:
+			size   = r['space_used']
+			size   = getSize(size)
+		except: size = '0'
 		numb = str(limits)
 		perc = "{:.0%}".format(float(numb))
-		label = 'STATUS: PREMIUM  [USED: %s]  [EXPIRE: %s]'
-		label = label % (perc, expirationDate)
+		label = '[FAIR USE: %s] [CLOUD SIZE: %s] [EXPIRE: %s]'
+		label = label % (perc, size, expirationDate)
     else: label = 'CANNOT GET ACCOUNT INFO: '
     return label
 	
@@ -578,7 +584,7 @@ def getFolder(id, meta=None, list=False):
 					except: playLink = result['link']
 				else:
 					playLink = result['link']
-
+				playLink = urllib.quote_plus(playLink)
 				ext = playLink.split('.')[-1]
 				
 				if control.setting('filter.files') == 'true':
@@ -596,7 +602,7 @@ def getFolder(id, meta=None, list=False):
 
 				url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, 'resolve', systitle , year, imdb, sysmeta, id)
 				cm.append(('Queue Item', 'RunPlugin(%s?action=queueItem)' % sysaddon))					
-				if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s&id=%s)' % (sysaddon, name, url, id)))
+				if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s&id=%s)' % (sysaddon, name, playLink, id)))
 			else: cm.append(('Download Folder (Zip)', 'RunPlugin(%s?action=downloadZip&name=%s&id=%s)' % (sysaddon, name, id)))
 			
 			cm.append(('Delete from Cloud', 'RunPlugin(%s?action=premiumizeDeleteItem&id=%s&type=%s)' % (sysaddon, id, type)))
@@ -632,7 +638,8 @@ def getFolder(id, meta=None, list=False):
 
 def meta_folder(create_directory=True, content='all'):
 	from resources.lib.indexers import movies, tvshows, episodes
-	from resources.lib.modules import cache
+
+	traktCredentials = trakt.getTraktCredentialsInfo()
 	epRegex = '(.+?)[._\s-]?(?:s|season)?(\d{1,2})(?:e|x|-|episode)(\d{1,2})[._\s\(\[-]'
 	movieRegex = '(.+?)(\d{4})[._ -\)\[]'
 
@@ -762,13 +769,23 @@ def meta_folder(create_directory=True, content='all'):
 				systitle = urllib.quote_plus(superInfo['title'])	
 			else: 
 				label = metatitle
-
+			playLink = '0'
 			sysmeta = urllib.quote_plus(json.dumps(superInfo))				
 			year = superInfo['year']
-				
+			if control.setting('transcoded.play') == 'true':
+				try:
+					playLink = result['stream_link']
+					if not "http" in playLink: playLink = result['link']
+
+				except: playLink = result['link']
+			else:
+				playLink = result['link']
+				playLink = urllib.quote_plus(playLink)
+			
+			cm = []
 			if isTv == True: url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&meta=%s&id=%s' % (sysaddon, 'resolve', systitle, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, sysmeta, id)
 			else: url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, 'resolve', systitle , year, imdb, sysmeta, id)
-	
+			if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s&id=%s)' % (sysaddon, name, playLink, id)))	
 			item = control.item(label=label)	
 			art = {}
 			art.update({'icon': metaposter, 'thumb': metaposter, 'poster': metaposter})
@@ -777,8 +794,33 @@ def meta_folder(create_directory=True, content='all'):
 			if 'clearlogo' in metaData and not metaData['clearlogo'] == '0': art.update({'clearlogo': metaData['clearlogo']})
 			if 'clearart' in metaData and not metaData['clearart'] == '0': art.update({'clearart': metaData['clearart']})
 			if 'season.poster' in metaData and not metaData['season.poster'] == '0': art.update({'season.poster': metaposter})
-			item.setArt(art)
 
+			if traktCredentials == True:
+				try:
+					if isTv == True: raise Exception()
+					indicators = playcount.getMovieIndicators(refresh=True)
+					overlay = int(playcount.getMovieOverlay(indicators, imdb))
+					if overlay == 7:
+						cm.append((unwatchedMenu, 'RunPlugin(%s?action=moviePlaycount&imdb=%s&query=6)' % (sysaddon, imdb)))
+						meta.update({'playcount': 1, 'overlay': 7})
+					else:
+						cm.append((watchedMenu, 'RunPlugin(%s?action=moviePlaycount&imdb=%s&query=7)' % (sysaddon, imdb)))
+						meta.update({'playcount': 0, 'overlay': 6})
+				except:
+					pass	
+
+				try:
+					if isTv != True: raise Exception()
+					indicators = playcount.getTVShowIndicators(refresh=True)
+					overlay = int(playcount.getEpisodeOverlay(indicators, imdb, tvdb, season, episode))
+					if overlay == 7:
+						cm.append((unwatchedMenu, 'RunPlugin(%s?action=episodePlaycount&imdb=%s&tvdb=%s&season=%s&episode=%s&query=6)' % (sysaddon, imdb, tvdb, season, episode)))
+						meta.update({'playcount': 1, 'overlay': 7})
+					else:
+						cm.append((watchedMenu, 'RunPlugin(%s?action=episodePlaycount&imdb=%s&tvdb=%s&season=%s&episode=%s&query=7)' % (sysaddon, imdb, tvdb, season, episode)))
+						meta.update({'playcount': 0, 'overlay': 6})
+				except:
+					pass					
 			superInfo.update({'code': imdb, 'imdbnumber': imdb, 'imdb_id': imdb})
 			superInfo.update({'tmdb_id': tmdb})
 			superInfo.update({'mediatype': 'movie'})
@@ -792,7 +834,8 @@ def meta_folder(create_directory=True, content='all'):
 			superInfo = dict((k, v) for k, v in superInfo.iteritems() if not v == '0')				
 			item.setProperty('Fanart_Image', metafanart)
 			item.setInfo(type='Video', infoLabels = superInfo)
-
+			item.setArt(art)
+			item.addContextMenuItems(cm)
 			item.setProperty('IsPlayable', 'true')
 			control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)				
 		except: pass
