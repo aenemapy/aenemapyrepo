@@ -103,6 +103,7 @@ def cache_get(key):
         return None
 
 
+
 def cache_insert(key, value):
     # type: (str, str) -> None
     cursor = _get_connection_cursor()

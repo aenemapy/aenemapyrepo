@@ -210,8 +210,9 @@ def selectDialog(list, heading=addonInfo('name')):
 
 
 def moderator():
-    netloc = [urlparse.urlparse(sys.argv[0]).netloc, '', 'plugin.video.premiumizer']
-    if not infoLabel('Container.PluginName') in netloc: sys.exit()
+    netloc = [urlparse.urlparse(sys.argv[0]).netloc, '', 'plugin.video.premiumizer', 'plugin.video.premiumizer']
+    print ("INFOLABELD", infoLabel('Container.PluginName'))
+
     
 
 

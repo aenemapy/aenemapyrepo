@@ -79,6 +79,10 @@ elif action == 'meta_cloud':
     from resources.lib.indexers import navigator
     navigator.navigator().meta_cloud()
 	
+elif action == 'meta_episodes':
+	from resources.lib.api import premiumize
+	premiumize.meta_episodes(imdb=imdb, tvdb=tvdb, tmdb=tmdb)
+	
 elif action == 'play':
 	from resources.lib.sources import sources	
 	sources().play(title, year, imdb, tvdb, season, episode, tvshowtitle, premiered, meta, select=select)
