@@ -655,9 +655,10 @@ def meta_folder(create_directory=True, content='all'):
 	r = [i for i in r if i['type'] == 'file']
 	r = [i for i in r if i['name'].split('.')[-1] in VALID_EXT]
 	r =  sorted(r, key=lambda k: int(k['created_at']), reverse=True)
-	progressDialog = control.progressDialog
-	progressDialog.create('Creating Meta DB', '')
-	progressDialog.update(0,'Checking your Cloud...')
+	if control.setting('metacloud.dialog') == 'true':
+		progressDialog = control.progressDialog
+		progressDialog.create('Creating Meta DB', '')
+		progressDialog.update(0,'Checking your Cloud...')
 	total = len(r)
 	count = 0
 	
@@ -669,7 +670,7 @@ def meta_folder(create_directory=True, content='all'):
 		isTv    = False
 		name = result['name']
 		prog = (count * 100) / int(total)
-		progressDialog.update(prog,'This process will run just for items in your cloud not already in the database...', name)	
+		if control.setting('metacloud.dialog') == 'true': progressDialog.update(prog,'This process will run just for items in your cloud not already in the database...', name)	
 		season = None
 		episode = None
 		imdb = None
@@ -960,7 +961,11 @@ def meta_episodes(imdb=None, tvdb=None, tmdb = None, create_directory=True):
 	
 		control.directory(syshandle, cacheToDisc=True)		
 
-		
+def new_cloud_cache():
+	control.infoDialog('Scraping your Cloud...')	
+	r = PremiumizeScraper().sources()
+	cloudCache(mode='write', data=r)
+	control.infoDialog('New Cache Created...')	
 		
 def getSearch_movie(movieTitle, movieYear):
 	from resources.lib.indexers import movies

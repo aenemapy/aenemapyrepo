@@ -49,7 +49,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.premiumizer" version="2019.07.05.2" name="Premiumizer" provider-name="aenema">
+<addon id="plugin.video.premiumizer" version="2019.07.06.2" name="Premiumizer" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.beautifulsoup4" />
@@ -62,6 +62,23 @@
 		<provides>video</provides>
 	</extension>
 	<extension point="xbmc.service" library="service.py" start="startup" />
+	<extension point="kodi.context.item">
+		<menu id="kodi.core.main">
+			<menu>
+
+				<label>[COLOR red]Premiumizer[/COLOR]</label>
+				<item library="context/updatecache.py">
+					<label>New Cloud Cache</label>
+					<visible>System.HasAddon(plugin.video.premiumizer)</visible>
+				</item>
+				<item library="context/contextTools.py">
+					<label>Settings</label>
+					<visible>System.HasAddon(plugin.video.premiumizer)</visible>
+				</item>
+			</menu>
+		</menu>
+	</extension>
+
 	<extension point="xbmc.addon.metadata">
         <description>Premiumize Cloud Addon with a twist!
 		This addon is inteded for use with content that you currently own! The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the content provider.

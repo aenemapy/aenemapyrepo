@@ -60,6 +60,14 @@ elif action == 'authPremiumize':
 	token = premiumize.auth()
 	control.openSettings('0.0')	
 	
+elif action == 'updatecache':
+	from resources.lib.api import premiumize	
+	premiumize.new_cloud_cache()
+	
+elif action == 'openSettings':
+    from resources.lib.modules import control
+    control.openSettings('0.0')
+	
 elif action == 'donations':
 	import xbmcaddon
 	from resources.lib.modules import deviceAuthDialog

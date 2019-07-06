@@ -11,7 +11,8 @@
 		<setting id="premiumize.tls" type="bool" label="Use HTTPS protocol" default="true" />
 		<setting id="cachecloud.startup" type="bool" label="Cache Cloud content at Startup" default="false" />
 		<setting id="cachecloud.remember" type="bool" label="Auto Select Cached Files" default="false"/>
-		
+		<setting id="metacloud.dialog" type="bool" label="Shoe Meta Cloud scraping Dialogs" default="true"/>
+				
 		<setting type="lsep" label="Playback Settings" />			
 		<setting id="transcoded.play" type="bool" label="Play Transcoded Files if avaialable" default="false" />
 		<setting id="filter.files" type="bool" label="Filter Non Video Files" default="true" />
