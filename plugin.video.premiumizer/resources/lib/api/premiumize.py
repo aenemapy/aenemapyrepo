@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from resources.lib.modules import control, cleantitle, client
+from resources.lib.modules import control, cleantitle, client, utils
 import requests
 import os,sys,re,json,urllib,urlparse
 import xbmc, xbmcaddon, xbmcgui, xbmcvfs
@@ -654,7 +654,17 @@ def meta_folder(create_directory=True, content='all'):
 			
 	r = [i for i in r if i['type'] == 'file']
 	r = [i for i in r if i['name'].split('.')[-1] in VALID_EXT]
-	r =  sorted(r, key=lambda k: int(k['created_at']), reverse=True)
+	
+	if control.setting('metacloud.sort') == '1': 
+	
+		try:r =  sorted(r, key=lambda k: utils.title_key(k['name'].replace('.',' ')))
+		except: pass
+		
+	else:
+	
+		try:r =  sorted(r, key=lambda k: int(k['created_at']), reverse=True)
+		except: pass	
+	
 	if control.setting('metacloud.dialog') == 'true':
 		progressDialog = control.progressDialog
 		progressDialog.create('Creating Meta DB', '')
