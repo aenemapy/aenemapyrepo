@@ -49,15 +49,17 @@ class navigator:
 		
         #self.addDirectoryItem('TEST', 'testItem', 'movies.png', 'DefaultMovies.png')
         self.addDirectoryItem('Meta Cloud', 'meta_cloud', 'cloud.png', 'DefaultTVShows.png')
+        self.addDirectoryItem('Meta Library', 'libraryNavigator', 'cloud.png', 'DefaultMovies.png', isFolder=True)   
         self.addDirectoryItem(50001, 'premiumizeNavigator', 'cloud.png', 'DefaultTVShows.png')
         self.addDirectoryItem('Lists', 'browse_nav', 'cloud.png', 'DefaultTVShows.png')
-        
+     
         downloads = True if control.setting('downloads') == 'true' else False
         if downloads == True:
 			self.addDirectoryItem('Download Manager', 'download_manager', 'cloud.png', 'DefaultTVShows.png')
         self.addDirectoryItem(32008, 'toolNavigator', 'settings.png', 'DefaultAddonProgram.png')
         self.addDirectoryItem('[I]Support and Donations[/I]', 'donations', 'support.png', 'DefaultAddonProgram.png', isFolder=False)
         self.endDirectory()
+
 		
     def download_manager(self):
         self.addDirectoryItem('Downloading', 'download_manager_list', 'cloud.png', 'DefaultFolder.png')
@@ -77,7 +79,7 @@ class navigator:
 		
     def meta_cloud(self):
         self.addDirectoryItem('Movies', 'meta_folder&content=movie', 'movies.png', 'DefaultMovies.png')
-        self.addDirectoryItem('Tv', 'meta_folder&content=tv', 'tv.png', 'DefaultTVShows.png')	
+        self.addDirectoryItem('Tv', 'meta_folder&content=tv', 'tv.png', 'DefaultTVShows.png')
         self.endDirectory()		
 		
     def movies(self, lite=False):
@@ -134,13 +136,15 @@ class navigator:
 			self.addDirectoryItem(50002, 'premiumizerootFolder', 'cloud.png', 'DefaultMovies.png')
 			self.addDirectoryItem(50003, 'premiumizeTransfers', 'cloud.png', 'DefaultMovies.png')
 			self.addDirectoryItem(50004, 'premiumizeAdd', 'cloud.png', 'DefaultMovies.png')
-			self.addDirectoryItem('Library', 'libraryNavigator', 'cloud.png', 'DefaultMovies.png', isFolder=True)
-			
         self.endDirectory()
 
     def library(self):
-        self.addDirectoryItem('Force Cloud Sync', 'forcecloudsync', 'cloud.png', 'DefaultMovies.png', isFolder=False)
-        self.addDirectoryItem('Selective Cloud to Library Manager', 'selectivelibrary_nav', 'cloud.png', 'DefaultMovies.png', isFolder=True)
+        self.addDirectoryItem('[B]LIBRARY[/B]: Update Library', 'update_meta_library', 'cloud.png', 'DefaultAddonProgram.png')
+        self.addDirectoryItem('[B]LIBRARY[/B]: Movies Library Path', control.setting('meta.library.movies'), 'movies.png', 'DefaultMovies.png', isAction=False)
+        self.addDirectoryItem('[B]LIBRARY[/B]: TV Library Path', control.setting('meta.library.tv'), 'tvshows.png', 'DefaultTVShows.png', isAction=False)
+        self.addDirectoryItem('[B]LIBRARY[/B]: Auto Setup Library Paths', 'setup_library_paths', 'cloud.png', 'DefaultAddonProgram.png')
+				
+		
         self.endDirectory()
 		
     def mymovies(self, lite=False):

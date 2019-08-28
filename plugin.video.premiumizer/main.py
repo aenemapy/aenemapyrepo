@@ -87,6 +87,14 @@ elif action == 'meta_cloud':
     from resources.lib.indexers import navigator
     navigator.navigator().meta_cloud()
 	
+elif action == 'update_meta_library':
+	from resources.lib.api import premiumize
+	premiumize.meta_library()
+
+elif action == 'setup_library_paths':
+	from resources.lib.modules import setuptools
+	setuptools.FirstStart()	
+	
 elif action == 'meta_episodes':
 	from resources.lib.api import premiumize
 	premiumize.meta_episodes(imdb=imdb, tvdb=tvdb, tmdb=tmdb)
@@ -181,73 +189,24 @@ elif action == 'getSearchMovie':
     from resources.lib.indexers import movies
     movies.movies().getSearch(create_directory=True)
 
-elif action == 'addToLibrary':
-	from resources.lib.api import premiumize
-	premiumize.addtolibrary_service(id=id, type=type, name=name)
-	
-
-elif action == 'forcecloudsync':
-	from resources.lib.modules import updater
-	updater.updatelibrary()	
-	
 elif action == 'service':
 	from resources.lib.modules import control	
 	if control.setting('cachecloud.startup') == 'true':
 		from resources.lib.api import premiumize
 		premiumize.cloudCache(mode='new')
 
-	from resources.lib.modules import updater
-	updater.updatelibrary()		
+	if control.setting('meta.library.update') == 'true':
+		from resources.lib.api import premiumize
+		premiumize.updateMetaLibrary()		
 		
 elif action == 'clearPremiumize':
     from resources.lib.resolvers import debrid
     debrid.PremiumizeClear()
 	
 elif action == 'play_library':	
-	print ("PREMIUMIZE LIBRARY", name, id)
 	from resources.lib.api import premiumize
 	premiumize.library_play().play(name, id)
 
-elif action == 'selectivelibrary_nav':	
-	from resources.lib.api import premiumize
-	premiumize.selectivelibrary_nav()
-
-elif action == 'selectiveLibraryManager':	
-	from resources.lib.api import premiumize
-	premiumize.selectiveLibraryManager(id, name)
-	
-	
-
-elif action == 'premiumizeLibrary':
-	import shutil, os, time, xbmc
-	from resources.lib.modules import control
-	from resources.lib.api import premiumize
-	yes = control.yesnoDialog('This will Create Strm Files based on your Cloud Folder' ,'Are you sure you want to continue?', '')
-	#print ("PREMIUMIZE SELECTION", yes)
-	if yes == 1: 
-		try:
-			libraryPath = xbmc.translatePath(control.setting('library.path'))
-			if control.setting('library.deleteold') != 'true': raise Exception()
-			try: shutil.rmtree(libraryPath)
-			except:pass
-			for root, dirs, files in os.walk(libraryPath , topdown=True):
-				dirs[:] = [d for d in dirs]
-				for name in files:
-					try:
-						os.remove(os.path.join(root,name))
-						os.rmdir(os.path.join(root,name))
-					except: pass
-							
-				for name in dirs:
-					try: os.rmdir(os.path.join(root,name)); os.rmdir(root)
-					except: pass
-			time.sleep(3)
-		except: pass
-	
-	
-		premiumize.library_service()	
-	
-	
 elif action == 'tvdbFav':
     from resources.lib.indexers import tvshows
     tvshows.tvshows().getTvdbFav()
@@ -358,8 +317,6 @@ elif action == 'downloadNavigator':
 elif action == 'libraryNavigator':
     from resources.lib.indexers import navigator
     navigator.navigator().library()
-	
-
 
 elif action == 'toolNavigator':
     from resources.lib.indexers import navigator

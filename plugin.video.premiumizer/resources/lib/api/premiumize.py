@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from resources.lib.modules import control, cleantitle, client, utils
+from resources.lib.modules import control, cleantitle, client
 import requests
 import os,sys,re,json,urllib,urlparse
 import xbmc, xbmcaddon, xbmcgui, xbmcvfs
 import time
+import datetime
 from difflib import SequenceMatcher
 from resources.lib.modules import cache
 from resources.lib.api import trakt	
@@ -14,9 +15,6 @@ syshandle = int(sys.argv[1])
 
 addonInfo     = xbmcaddon.Addon().getAddonInfo
 profilePath   = xbmc.translatePath(addonInfo('profile')).decode('utf-8')
-libraryPath   = xbmc.translatePath(control.setting('library.path'))
-manualLibrary = xbmc.translatePath(control.setting('library.manual'))
-libPathMeta   = control.setting('library.path')
 pmSettings = xbmc.translatePath(os.path.join(profilePath, 'auth.json'))
 
 if control.setting('premiumize.tls') == 'true': premiumize_Api = 'https://www.premiumize.me'
@@ -102,8 +100,7 @@ def getAuth(url, device_code):
 	return result
 
 def saveJson(token=None, refresh_token=None, expires_in=None):
-		from datetime import datetime
-		timeNow = datetime.now().strftime('%Y%m%d%H%M')
+		timeNow = datetime.datetime.now().strftime('%Y%m%d%H%M')
 		dirCheck = xbmc.translatePath(profilePath)
 		if not os.path.exists(dirCheck): os.makedirs(xbmc.translatePath(dirCheck))
 		if token != None: data = {'client_id': CLIENTID, 'token': token, 'refresh_token': refresh_token , 'added':timeNow}
@@ -141,7 +138,7 @@ def info():
     status = r['status']
     if status == 'success':
 		expire = r['premium_until']
-		import datetime
+
 		expirationDate = datetime.datetime.fromtimestamp(expire)
 		expirationDate = expirationDate.strftime('%Y-%m-%d')
 		
@@ -246,289 +243,8 @@ def downloadFolder(name, id):
 	dest = os.path.join(loc, name)
 	downloader.downloadZip(zipLink, dest, name)
 	
-def createLibFolder(path):
-    os.makedirs(path)
-	
-def createStrm(name, id, path):
-	content = '%s?action=play_library&name=%s&id=%s' % (sys.argv[0], name, str(id))
-	file = open(path, 'w')
-	file.write(content)
-	file.close() 
-
-def addtolibrary_service(id=None, path=None, selectivePath=None, pDialog=None, type=None, name=None):
-	modes = ['Normal Mode', 'Cloud Sync for this Folder']
-	if type.lower() != 'folder': 
-		type = 'file'
-		selectType = 0
-	else: selectType = control.selectDialog(modes)
-	
-	if selectType   == 1: # CLOUD SYNC
-		sType = ['Movies', 'Tv Shows', 'Mixed', 'None']
-		select = control.selectDialog(sType, heading='Put Item in SubFolder')
-		if select   == 0: selectivePath = 'Movies'
-		elif select == 1: selectivePath = 'Tvshows'
-		elif select == 2: selectivePath = 'Mixed'
-		elif select == 3: selectivePath = ''
-		if selectivePath == None: selectivePath = ''		
-		selective_update(id=id, name=name, selectivePath=selectivePath, mode='new')
-		control.infoDialog('Library Service Started... Please Wait')
-		r = library_setup(id=id, path=path, selectivePath=selectivePath, pDialog=pDialog, type=type, name=name)
-		control.infoDialog('Library Process Complete')
-		control.execute('UpdateLibrary(video)')
-		
-	elif selectType == 0: # NORMAL MODE
-		sType = ['Movies', 'Tv Shows', 'Mixed', 'None']
-		select = control.selectDialog(sType, heading='Put Item in SubFolder')
-		if select   == 0: selectivePath = 'Movies'
-		elif select == 1: selectivePath = 'Tvshows'
-		elif select == 2: selectivePath = 'Mixed'
-		elif select == 3: selectivePath = ''
-		if selectivePath == None: selectivePath = ''
-		control.infoDialog('Library Service Started... Please Wait')
-		r = library_setup(id=id, path=path, selectivePath=selectivePath, pDialog=pDialog, type=type, name=name)
-		control.infoDialog('Library Process Complete')
-		control.execute('UpdateLibrary(video)')	
-
-def selective_update(id=None, name=None, selectivePath=None, mode='update', deleteold=False):
-	control.makeFile(control.dataPath)
-	DBFile = control.selectiveLibrary
-	newData = []
-	dupes   = []
-	if mode == 'get':
-		try:
-			with open(DBFile, 'r') as file:	
-				data = json.load(file)
-				try: time = data['time']
-				except: time = ''
-				data = data['items']
-				return data, time
-		except: return '', ''
-
-	
-	if mode == 'delete':
-		try:
-			with open(DBFile, 'r') as file:	
-				data = json.load(file)
-				items = data['items']
-				
-				for y in items:
-					if y['type'] == 'library_selective_sync': 
-						if not y['id'] == id:
-							dupes.append(name)
-							newData.append(y)
-
-				import datetime
-				timeNow =  datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-				payload = {'time': timeNow}
-				payload['items'] = newData
-			
-				with open(DBFile, 'w') as file:	json.dump(payload, file, indent=2)
-				return time, items
-		except:pass
-		
-	elif mode == 'update':
-		try:
-			with open(DBFile, 'r') as file:	
-				data = json.load(file)
-				items = data['items']
-
-				for y in items:
-					if y['type'] == 'library_selective_sync': 
-						if not y['id'] in dupes:
-							dupes.append(name)
-							newData.append(y)
-							
-				time  = data['time']
-				
-				import datetime
-				timeNow =  datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-				payload = {'time': timeNow}
-				payload['items'] = newData
-	
-				for x in newData: library_setup(id=x['id'], name=x['name'], selectivePath=x['selectivePath'], type='folder', deleteold=deleteold)
-			
-			with open(DBFile, 'w') as file:	json.dump(payload, file, indent=2)
-									
-		except:
-			return '0', '0'
-	
-	elif mode == 'new':
-		try:
-		
-			import datetime
-			timeNow =  datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-			payload = {'time': timeNow}
-			data    = {'id': id, 'name': name , 'selectivePath': selectivePath, 'type': 'library_selective_sync'}
-			newData.append(data)
-			try: 
-				with open(DBFile, 'r') as file:	
-					x = json.load(file)
-					items = x['items']
-					for y in items:
-						if y['type'] == 'library_selective_sync': 
-							if not y['id'] == id:
-								dupes.append(name)
-								newData.append(y)
-			except:pass
-			
-			payload['items'] = newData
-			
-			with open(DBFile, 'w') as file:	json.dump(payload, file, indent=2)
-		except:
-			pass
-	
-def selectivelibrary_nav():
-	r , lastUpdate = selective_update(mode='get')
-	try:
-		label = 'Last Sync: ' + str(lastUpdate)
-		item = control.item(label=label)
-
-		item.setArt({'icon': control.icon, 'thumb': control.icon})
-		item.setProperty('Fanart_Image', control.addonFanart())
-		control.addItem(handle=syshandle, url='0', listitem=item, isFolder=False)
-	except:pass
-	
-	for item in r:
-		try:
-			id = item['id']
-			name = item['name']
-			label = name
-			url = '%s?action=%s&id=%s&name=%s' % (sysaddon, 'selectiveLibraryManager', id, name)
-			item = control.item(label=label)
-
-			item.setArt({'icon': control.icon, 'thumb': control.icon})
-			item.setProperty('Fanart_Image', control.addonFanart())
-			control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
-		except:pass
-	control.directory(syshandle, cacheToDisc=False)
-
-def selectiveLibraryManager(id, name):
-	modes = ['Delete From Auto Sync', 'Force Update']
-	select = control.selectDialog(modes)
-	if select   == 0: selective_update(id=id, name=name, mode='delete')
-	elif select == 1: selective_update(id=id, name=name, mode='update')
-	control.refresh()
-		
-def library_service(id=None, path=None, selectivePath=None, pDialog=None, type=None, name=None):
-	control.infoDialog('Library Service Started... Please Wait')
-	r = library_setup(id=id, path=path, selectivePath=selectivePath, pDialog=pDialog, type=type, name=name)
-	control.infoDialog('Library Process Complete')
-	control.execute('UpdateLibrary(video)')	
-	
-def lib_delete_folder(path):
-	import shutil
-	try: shutil.rmtree(path)
-	except:pass
-	for root, dirs, files in os.walk(path , topdown=True):
-		dirs[:] = [d for d in dirs]
-		for name in files:
-			try:
-				os.remove(os.path.join(root,name))
-				os.rmdir(os.path.join(root,name))
-			except: pass
-							
-		for name in dirs:
-			try: os.rmdir(os.path.join(root,name)); os.rmdir(root)
-			except: pass
-	
-def library_setup(id=None, path=None, selectivePath=None, pDialog=None, type=None, name=None, originalPath=None, deleteold=False):
-    data = None
-    CONTENT = []
-    #print ("LIBRARY SETUP", type, name)
-    if not os.path.exists(libraryPath): os.mkdir(libraryPath)	
-	
-    #if metaPath == None: metaPath = libPathMeta
-    if path == None: libPath = libraryPath
-    else: libPath = path
-    if selectivePath != None:
-		selectivePath = os.path.join(libraryPath, selectivePath)
-		libPath = selectivePath
-	
-    if id == None: url = urlparse.urljoin(premiumize_Api, premiumizeRootFolder)
-    else:
-		if type == 'file': 	# MANUAL ADD TO LIBRARY FILE
-			url = urlparse.urljoin(premiumize_Api, premiumizeItemDetails)
-			data = {'id': id}
-		else:
-			folderId = premiumizeFolder + id
-			url = urlparse.urljoin(premiumize_Api, folderId)
-			try: 
-				if name == None or name == '' or name == '0': raise Exception() 
-				if originalPath == 'none': originalPath = os.path.join(libPath, name)
-				libPath = os.path.join(libPath, name)
-					
-				if deleteold == True: lib_delete_folder(libPath)
-
-						
-				createLibFolder(libPath)
-			except:pass
-    
-    if originalPath == None: originalPath = libraryPath			
-    SUBS_PATH = os.path.join(originalPath, 'SUBS')
-    try: createLibFolder(SUBS_PATH)
-    except:pass
-
-    r = reqJson(url, data=data)
-    # if isinstance(r, list): CONTENT = r['content']
-	
-    if type == 'file': CONTENT.append(r)
-    else: CONTENT = r['content']
-
-    try:
-		for item in CONTENT:
-			#print ("ADDING ITEM", item)
-			try:
-				name = item['name'].encode('utf-8')
-				
-				if item['type'] == 'folder':
-					id = item['id']
-					try: # WORKAROUND FOR WINDOWS PATHS LONGHER THAN 260
-						if int(len(libPath)) < 250: raise Exception()
-						platform = get_platform()
-						if platform != 'win': raise Exception()
-						libPath = '\\\\?\\' + libPath
-					except: pass
-					library_setup(id=id, path=libPath, name=name, originalPath=originalPath)
-					# print path
-				else:
-					id = item['id']
-					link = item['link']
-					transname = os.path.splitext(name)[0].encode('utf-8')
-					#print ("PREMIUMIZE NAMES", transname)
-					ext       = name.split('.')[-1].encode('utf-8')
-					#print ("PREMIUMIZE NAMES EXTENSION >>>", ext)
-					if ext in VALID_EXT:
-						
-						filename = transname + '.strm'
-						#print ("PREMIUMIZE NAMES 3", filename, link)
-						path = os.path.join(libPath, filename)
-						path = os.path.normpath(path)
-						try:
-							if int(len(path)) < 250: raise Exception()
-							platform = get_platform()
-							if platform != 'win': raise Exception()
-							path = '\\\\?\\' + path
-
-						except: pass
-					
-						#print ("PREMIUMIZE NAMES 4", path)
-						try: createStrm(filename, id, path)
-						except: pass
-						
-					elif str(ext).lower() == 'srt': 
-						filename = name
-						path = os.path.join(SUBS_PATH, filename)
-						try: downloadFileToLoc(link, path)
-						except: pass
-				try: pDialog.close()
-				except:pass				
-			except:pass
 
 
-    except Exception as e:
-
-		print ("PREMIUMIZE ERROR:", str(e))
-		
 def downloadFileToLoc(link, path):
 	from resources.lib.modules import downloadzip
 	downloadzip.silent_download(link, path)
@@ -620,9 +336,6 @@ def getFolder(id, meta=None, list=False):
 					url = playLink
 			except:pass
 				
-			cm.append(('Add To Library', 'RunPlugin(%s?action=addToLibrary&id=%s&type=%s&name=%s)' % (sysaddon, id, type, name)))
-			
-
 			item.setArt({'icon': control.icon, 'thumb': control.icon})
 			item.setProperty('Fanart_Image', control.addonFanart())
 				
@@ -652,19 +365,14 @@ def meta_folder(create_directory=True, content='all'):
 		else:
 			r = cached_results
 			
+	elif cached_time == '0' or cached_time == None or cached_results == '0' or cached_results == None:
+		control.setSetting(id='first.start', value='false')
+		r = PremiumizeScraper().sources()
+		cloudCache(mode='write', data=r)
+		
 	r = [i for i in r if i['type'] == 'file']
 	r = [i for i in r if i['name'].split('.')[-1] in VALID_EXT]
-	
-	if control.setting('metacloud.sort') == '1': 
-	
-		try:r =  sorted(r, key=lambda k: utils.title_key(k['name'].replace('.',' ')))
-		except: pass
-		
-	else:
-	
-		try:r =  sorted(r, key=lambda k: int(k['created_at']), reverse=True)
-		except: pass	
-	
+	r =  sorted(r, key=lambda k: int(k['created_at']), reverse=True)
 	if control.setting('metacloud.dialog') == 'true':
 		progressDialog = control.progressDialog
 		progressDialog.create('Creating Meta DB', '')
@@ -882,7 +590,6 @@ def meta_folder(create_directory=True, content='all'):
 		control.content(syshandle, contentDir)	
 		control.directory(syshandle, cacheToDisc=True)		
 
-		
 def meta_episodes(imdb=None, tvdb=None, tmdb = None, create_directory=True):
 	traktCredentials = trakt.getTraktCredentialsInfo()
 	epRegex = '(.+?)[._\s-]?(?:s|season)?(\d{1,2})(?:e|x|-|episode)(\d{1,2})[._\s\(\[-]'
@@ -970,6 +677,273 @@ def meta_episodes(imdb=None, tvdb=None, tmdb = None, create_directory=True):
 		control.content(syshandle, contentDir)	
 	
 		control.directory(syshandle, cacheToDisc=True)		
+
+def meta_library():
+	from resources.lib.indexers import movies, tvshows, episodes
+
+	epRegex = '(.+?)[._\s-]?(?:s|season)?(\d{1,2})(?:e|x|-|episode)(\d{1,2})[._\s\(\[-]'
+	movieRegex = '(.+?)(\d{4})[._ -\)\[]'
+
+	cached_time, cached_results = cloudCache(mode='get')
+
+	if cached_time != '0' and cached_time != None:
+		if control.setting('first.start') == 'true':
+			control.setSetting(id='first.start', value='false')
+			r = PremiumizeScraper().sources()
+			cloudCache(mode='write', data=r)
+		else:
+			r = cached_results
+			
+	elif cached_time == '0' or cached_time == None or cached_results == '0' or cached_results == None:
+		control.setSetting(id='first.start', value='false')
+		r = PremiumizeScraper().sources()
+		cloudCache(mode='write', data=r)
+		
+	r = [i for i in r if i['type'] == 'file']
+	r = [i for i in r if i['name'].split('.')[-1] in VALID_EXT]
+	r =  sorted(r, key=lambda k: int(k['created_at']), reverse=True)
+
+	progressDialog = control.progressDialogBG
+	progressDialog.create('Updating Premiumize Library', '')
+	progressDialog.update(0,'Updating Premiumize Library...', 'Please Wait')
+	
+	total = len(r)
+	count = 0
+	
+	metaItems = []
+	metaEpisodes = []
+	for result in r:
+		count += 1
+		isMovie = False
+		isTv    = False
+		name = result['name']
+		prog = (count * 100) / int(total)
+		progressDialog.update(prog, 'Updating Premiumize Library', name)	
+		season = None
+		episode = None
+		imdb = None
+		tvdb = None
+		tmdb = None
+		tvshowtitle = None		
+		match = re.search(epRegex, name.lower(), re.I)
+		if match: 
+			isTv = True
+			match = match.groups()
+			tvTitle    = match[0]
+			season     = match[1]	
+			episode    = match[2]				
+		if isTv == False:
+			match2 = re.search(movieRegex, name.lower(), re.I)
+			if match2: 
+				match2 = match2.groups()
+
+				isMovie = True
+				movieTitle = match2[0]
+				movieYear  = match2[1]
+				
+		cm = []	
+
+		id = result['id']
+		cacheID = "premiumize-%s" % (id)
+		name = result['name'].encode('utf-8')
+		name = normalize(name)
+		superInfo = {'title': name, 'year':'0', 'imdb':'0'}
+		print superInfo
+		try:
+			if progressDialog.iscanceled(): break
+		except:
+			pass
+		try:
+			meta = []
+			metaData = []
+			
+			if isMovie == True:
+				cacheID = cacheID + "-movie"
+				getCache  = cache.get_from_string(cacheID, 2000, None)
+				if getCache == None: 
+					getSearch =	movies.movies().searchTMDB(title=movieTitle, year=movieYear)
+					getSearch = getSearch[0]
+					if len(getSearch) > 0: cache.get_from_string(cacheID, 2000, getSearch)
+				else: getSearch = getCache
+				meta = getSearch
+				
+				
+				
+			elif isTv == True: 
+				getCache  = cache.get_from_string(cacheID, 2000, None)
+				if getCache == None: 
+					getSearch = tvshows.tvshows().getSearch(title=tvTitle)
+					getSearch = getSearch[0]
+
+					if len(getSearch) > 0: cache.get_from_string(cacheID, 2000, getSearch)
+				else: getSearch = getCache
+				
+				tvdb = getSearch['tvdb']
+				imdb = getSearch['imdb']
+				tvplot = getSearch['plot']
+				fanart = getSearch['fanart']
+				clearlogo = getSearch['clearlogo'] if 'clearlogo' in getSearch else '0'
+				banner = getSearch['banner'] if 'banner' in getSearch else '0'
+
+				year = getSearch['year']
+				tvshowtitle = getSearch['title']
+				episode = "%02d" % int(episode)
+				ss      = "%02d" % int(season)
+				
+				cacheIDEpisode = cacheID + '-episode-tvdb-%s-season-%s-episode-%s' % (tvdb, ss, episode)
+				getCacheEp  = cache.get_from_string(cacheIDEpisode, 720, None)
+				if getCacheEp == None: 
+					episodeMeta = episodes.episodes().get(tvshowtitle, year, imdb, tvdb, season = season, create_directory = False)
+					episodeMeta = [i for i in episodeMeta if "%02d" % int(i['episode']) == episode]
+					episodeMeta = episodeMeta[0]
+					if len(episodeMeta) > 0: cache.get_from_string(cacheIDEpisode, 720, episodeMeta)
+				else: episodeMeta = getCacheEp
+				meta = episodeMeta
+				meta.update({'premiumizeid': id, 'tvshowimdb': imdb, 'tvshowtvdb': tvdb, 'clearlogo': clearlogo, 'banner': banner})
+				metaEpisodes.append(meta)
+				
+			metaData = meta
+			metatitle = metaData['title'] if 'title' in metaData else name
+			metaposter = metaData['poster'] if 'poster' in metaData else '0'
+			metafanart = metaData['fanart'] if 'fanart' in metaData else '0'
+			if metaposter == '0' or metaposter == None: metaposter = control.icon
+			if metafanart == '0' or metafanart == None: metafanart = control.fanart
+			imdb = metaData['imdb'] if 'imdb' in metaData else None
+			tvdb = metaData['tvdb'] if 'tvdb' in metaData else None			
+			tmdb      = metaData['tmdb'] if 'tmdb' in metaData else None	
+			tvshowtitle = metaData['tvshowtitle'] if 'tvshowtitle' in metaData else None
+			if isTv == True: metaData.update({'season.poster': metaposter, 'tvshow.poster': metaposter})
+			superInfo = metaData
+			if isMovie == True: type = 'Movie'
+			elif isTv  == True: type = 'Tv'
+			else: type = None
+			if type != None: library_setup(id, type, superInfo)
+		except: pass
+
+	try: progressDialog.close()
+	except:	pass
+		
+	if len(metaEpisodes) > 0:
+		premiumizeCacheID = 'premiumize-tvshows-meta-scrape'
+		cache.get_from_string(premiumizeCacheID, 720, metaEpisodes)
+
+	control.execute('XBMC.UpdateLibrary(video)')
+		
+def createLibFolder(path):
+    os.makedirs(path)
+	
+def createStrm(name, id, path):
+	systitle = urllib.quote_plus(name)
+	content = '%s?action=play_library&name=%s&id=%s' % (sys.argv[0], systitle, str(id))
+	file = open(path, 'w')
+	file.write(content)
+	file.close() 
+	
+def createNfo(content, type, path):
+	if type == 'movie': type = 'movie.nfo'
+	else: type = 'tvshow.nfo'
+	nfo_path = os.path.join(path, type)
+	file = open(nfo_path, 'w')
+	file.write(content)
+	file.close() 
+
+def nfo_url(type, id):
+    tvdb_url = 'http://thetvdb.com/?tab=series&id=%s'
+    tmdb_url = 'https://www.themoviedb.org/%s/%s'
+    imdb_url = 'http://www.imdb.com/title/%s/'
+
+    if type == 'tvdb':
+            return tvdb_url % (str(id))
+    elif type == 'tmdb':
+            return tmdb_url % (str(id))
+    elif type == 'imdb':
+            return imdb_url % (str(id))
+    else:
+            return ''
+			
+def updateMetaLibrary(force=False):
+	timeNow =  str(datetime.datetime.now().strftime('%Y%m%d'))
+	lastUpdate = str(control.setting('meta.library.refresh'))
+	if int(timeNow) != int(lastUpdate): 
+		meta_library()
+		control.setSetting(id='meta.library.refresh', value=timeNow)
+		
+def lib_delete_folder(path):
+	import shutil
+	try: shutil.rmtree(path)
+	except:pass
+	for root, dirs, files in os.walk(path , topdown=True):
+		dirs[:] = [d for d in dirs]
+		for name in files:
+			try:
+				os.remove(os.path.join(root,name))
+				os.rmdir(os.path.join(root,name))
+			except: pass
+							
+		for name in dirs:
+			try: os.rmdir(os.path.join(root,name)); os.rmdir(root)
+			except: pass
+	
+def library_setup(id=None, type=None, meta=None):
+    movielibraryPath   = xbmc.translatePath(control.setting('meta.library.movies'))
+    tvlibraryPath		= xbmc.translatePath(control.setting('meta.library.tv'))
+	
+    print movielibraryPath
+    print tvlibraryPath
+	
+    if not os.path.exists(movielibraryPath): os.mkdir(movielibraryPath)	
+    if not os.path.exists(tvlibraryPath): os.mkdir(tvlibraryPath)	
+
+    imdb = meta['imdb'] if 'imdb' in meta else None
+    tvdb = meta['tvdb'] if 'tvdb' in meta else None			
+    tmdb = meta['tmdb'] if 'tmdb' in meta else None		
+    #if metaPath == None: metaPath = libPathMeta
+    if type == 'Movie': 
+		title = meta['title']
+		year = meta['year']
+		if year == '0': year = ''
+		transtitle = normalize(title)
+		transtitle = re.sub('[\?\!]', '', transtitle)
+		print title, transtitle, legal_filename(transtitle)
+		folder = make_path(movielibraryPath, transtitle, year)
+		create_folder(folder)
+		filePath = os.path.join(folder, legal_filename(transtitle) + '.strm')
+		print filePath
+		if imdb   != '0' and imdb != None: nfo_url_content = nfo_url('imdb', imdb)
+		elif tmdb != '0' and tmdb != None: nfo_url_content = nfo_url('tmdb', tmdb)
+		else: nfo_url_content = ''
+		createStrm(transtitle, id, filePath)
+		if nfo_url_content != '': createNfo(nfo_url_content, 'movie', folder)
+		
+    elif type == 'Tv': 
+		title = meta['title']
+		tvshowtitle = meta['tvshowtitle']
+		year = meta['year']
+		if year == '0': year = ''
+		season = meta['season']
+		episode = meta['episode']
+		season = "%02d" % int(season)
+		episode = "%02d" % int(episode)
+		
+		transtitle = normalize(tvshowtitle)
+		transtitle = re.sub('[\?\!]', '', transtitle)
+		# print title, transtitle, legal_filename(transtitle)
+		folder = make_path(tvlibraryPath, transtitle, year)
+		create_folder(folder)
+		epTitle = "%s S%sE%s" % (transtitle, season, episode)
+		filePath = os.path.join(folder, legal_filename(epTitle) + '.strm')
+
+		if tvdb   != '0' and tvdb != None: nfo_url_content = nfo_url('tvdb', tvdb)
+		elif imdb != '0' and imdb != None: nfo_url_content = nfo_url('imdb', imdb)
+		elif tmdb != '0' and tmdb != None: nfo_url_content = nfo_url('tmdb', tmdb)
+		else: nfo_url_content = ''
+		createStrm(epTitle, id, filePath)
+		if nfo_url_content != '': createNfo(nfo_url_content, 'tv', folder)
+		
+
+    # except Exception as e:
+
+		# print ("PREMIUMIZE ERROR:", str(e))		
 
 def new_cloud_cache():
 	control.infoDialog('Scraping your Cloud...')	
@@ -1414,7 +1388,6 @@ def cloudCache(mode='write', data=None):
 				
 	if mode == 'write':
 		try:
-			import datetime
 			timeNow =  datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 			payload = {'time': timeNow}
 			payload['items'] = data
@@ -1436,7 +1409,7 @@ def cloudCache(mode='write', data=None):
 	elif mode == 'new':
 		try:
 			data = PremiumizeScraper().sources()
-			import datetime
+
 			timeNow =  datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 			payload = {'time': timeNow}
 			payload['items'] = data
@@ -1462,7 +1435,58 @@ def normalize(txt):
     txt = re.sub(r'[^\x00-\x7f]',r'', txt)
     return txt
 	
-	
+def legal_filename(filename):
+        try:
+            filename = filename.strip()
+            filename = re.sub(r'(?!%s)[^\w\-_\.]', '.', filename)
+            filename = re.sub('\.+', '.', filename)
+            filename = re.sub(re.compile('(CON|PRN|AUX|NUL|COM\d|LPT\d)\.', re.I), '\\1_', filename)
+            xbmc.makeLegalFilename(filename)
+            return filename
+        except:
+            return filename
+			
+def create_folder(folder):
+        try:
+            folder = xbmc.makeLegalFilename(folder)
+            control.makeFile(folder)
+
+            try:
+                if not 'ftp://' in folder: raise Exception()
+                from ftplib import FTP
+                ftparg = re.compile('ftp://(.+?):(.+?)@(.+?):?(\d+)?/(.+/?)').findall(folder)
+                ftp = FTP(ftparg[0][2], ftparg[0][0], ftparg[0][1])
+                try:
+                    ftp.cwd(ftparg[0][4])
+                except:
+                    ftp.mkd(ftparg[0][4])
+                ftp.quit()
+            except:
+                pass
+        except:
+            pass
+
+def write_file(path, content):
+        try:
+            path = xbmc.makeLegalFilename(path)
+            if not isinstance(content, basestring):
+                content = str(content)
+
+            file = control.openFile(path, 'w')
+            file.write(str(content))
+            file.close()
+        except Exception as e:
+            pass
+
+def make_path(base_path, title, year='', season=''):
+        title = re.sub('[\:]', '', title)
+        show_folder = re.sub(r'[^\w\-_\. ]', '_', title)
+        show_folder = '%s (%s)' % (show_folder, year) if year else show_folder
+        path = os.path.join(base_path, show_folder)
+        if season:
+            path = os.path.join(path, 'Season %s' % season)
+        return path
+			
 def getSize(B):
    'Return the given bytes as a human friendly KB, MB, GB, or TB string'
    B = float(B)
@@ -1621,3 +1645,5 @@ class PremiumizeScraper:
         except:
             return
 		
+		
+

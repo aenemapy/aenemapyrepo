@@ -3,6 +3,7 @@
 	<category label="32310">
 		<setting type="lsep" label="Premiumize Settings" />
 		<setting id="first.start" type="bool" label="startup control" default="true" visible="false" />
+		<setting id="first.setup" type="bool" label="setup control" default="false" visible="false" />
 		<setting id="premiumize.authorization" type="action" label="Authorize Premiumize" option="close" action="RunPlugin(plugin://plugin.video.premiumizer/?action=authPremiumize)" />		
 		<setting id="premiumize.status" type="text" visible="true" label="Status" default="" />
 		<setting id="premiumize.token" type="text" option="hidden" visible="false" label="" default="" />
@@ -10,11 +11,9 @@
 		
 		<setting id="premiumize.tls" type="bool" label="Use HTTPS protocol" default="true" />
 		<setting id="cachecloud.startup" type="bool" label="Cache Cloud content at Startup" default="false" />
-		<setting id="cachecloud.remember" type="bool" label="Auto Select Cached Files" default="false"/>
-		<setting type="lsep" label="Meta Cloud" />
+		<setting id="cachecloud.remember" type="bool" label="Auto Select Cached Files" default="true"/>
 		<setting id="metacloud.dialog" type="bool" label="Shoe Meta Cloud scraping Dialogs" default="true"/>
-		<setting id="metacloud.sort" type="enum" label="Sort Meta Cloud by" values="Date|Title" default="0" />
-		
+				
 		<setting type="lsep" label="Playback Settings" />			
 		<setting id="transcoded.play" type="bool" label="Play Transcoded Files if avaialable" default="false" />
 		<setting id="filter.files" type="bool" label="Filter Non Video Files" default="true" />
@@ -82,13 +81,11 @@
 		<setting id="fanart.tv.project" type="text" visible="true" label="Project Api KEY" default="" />
 	</category>
 
-	<category id="general" label="Library">
-		<setting id="library.path" type="folder" label="Cloud Sync Library Path" default="special://userdata/addon_data/plugin.video.premiumizer/Library" />	
-	
-			
-		<setting id="library.update" type="bool" label="Sync Library at Startup" default="false" />	
-		<setting id="library.deleteold" type="bool" label="Delete Old Content and Folders before Updating" default="false" />	
-		<setting id="library.refresh" type="text" label="" default="0" visible="false" />	
+	<category id="general" label="Meta Library">
+		<setting id="meta.library.movies" type="folder" label="Movies Library Path" default="special://userdata/addon_data/plugin.video.premiumizer/Movies" />	
+		<setting id="meta.library.tv" type="folder" label="Tv Library Path" default="special://userdata/addon_data/plugin.video.premiumizer/Tv" />	
+		<setting id="meta.library.update" type="bool" label="Auto Update Meta Library" default="false" />	
+		<setting id="meta.library.refresh" type="text" label="" default="0" visible="false" />	
 	</category>	
 
 	

@@ -49,7 +49,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.premiumizer" version="2019.07.07" name="Premiumizer" provider-name="aenema">
+<addon id="plugin.video.premiumizer" version="2019.08.28" name="Premiumizer" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.beautifulsoup4" />
@@ -69,6 +69,10 @@
 				<label>[COLOR red]Premiumizer[/COLOR]</label>
 				<item library="context/updatecache.py">
 					<label>New Cloud Cache</label>
+					<visible>System.HasAddon(plugin.video.premiumizer)</visible>
+				</item>
+				<item library="context/updatelibrary.py">
+					<label>Update Library</label>
 					<visible>System.HasAddon(plugin.video.premiumizer)</visible>
 				</item>
 				<item library="context/contextTools.py">
