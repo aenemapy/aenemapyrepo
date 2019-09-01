@@ -50,7 +50,7 @@ class tvshows:
         self.fanart_tv_user = control.setting('fanart.tv.user')
 		
         
-        self.user = 'realizer'
+        self.user = 'realdebrid'
         self.lang = control.apiLanguage()['tvdb']
 
         self.search_link = 'http://api.trakt.tv/search/show?limit=20&page=1&query='
@@ -118,10 +118,24 @@ class tvshows:
     def getSearch(self, title = None):
         try:
             if (title == None or title == ''): return
-            url = 'https://api.thetvdb.com/search/series?name=%s'  % (urllib.quote_plus(title))
-            self.list = cache.get(self.getTvdb, 720, url, False)
-            self.list = [i for i in self.list if cleantitle.get(title) == cleantitle.get(i['tvshowtitle'])]
-            return self.list
+            query = cleantitle.query(title)
+            url = '%s/search/series?name=%s'  % (self.tvdb2_api, urllib.quote_plus(query))
+            self.list = cache.get(self.tvdb_list, 720, url, False)
+            self.list = [i for i in self.list if cleantitle.get_year(title.lower()) == cleantitle.get_year(i['title'].lower())]
+            if len(self.list) > 0: return self.list
+            trakt_search = trakt.SearchTVShow(query, None, False)
+            traktItems = []
+            for i in trakt_search:
+                try: traktItems.append(i['show'])
+                except: pass
+            if len(traktItems) > 0: 
+				self.list = []
+				traktItems = [i for i in traktItems if cleantitle.get_year(title.lower()) == cleantitle.get_year(i['title'].lower())][0]
+				tvdbID     = traktItems['ids']['tvdb']
+				url_2      = '%s/series/%s' % (self.tvdb2_api, str(tvdbID))
+				self.list  = self.getTvdb(url_2, idx=False)
+				if len(self.list) > 0: return self.list
+				return
         except:
             return			
 		
@@ -212,7 +226,7 @@ class tvshows:
 						except: title = ''
 						if title == '': title = '0'
 						title = client.replaceHTMLCodes(title)
-						title = cleantitle.normalize_string(title)	
+						title = cleantitle.normalize_string(title)
 						if "series not permitted" in title.lower(): raise Exception()
 						try: year = item['firstAired'].encode('utf-8')
 						except: year = ''
@@ -238,7 +252,6 @@ class tvshows:
 						# print ("SEARCH TVDB plot", plot)				
 						tmdb = '0'
 						imdb = '0'
-						
 						self.list.append({'title': title, 'originaltitle': title, 'year': year, 'premiered': premiered, 'studio': studio, 'genre': '0', 'duration': '0', 'rating': '0', 'votes': '0', 'mpaa': '0', 'director': '0', 'writer': '0', 'cast': '0', 'plot': plot, 'tagline': '0', 'code': imdb, 'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb, 'poster': '0', 'banner': '0', 'fanart': '0', 'next': ''})
 				except:
 						continue
@@ -251,22 +264,29 @@ class tvshows:
 			
 
 			
-    def getTvdb(self, url, idx=True):
+    def tvdb_list(self, url, idx = True):
 		self.list = []
 		try:
-
-			result = tvdbapi.getTvdb(url)
-			items = json.loads(result)
-			items = items['data']
+			results  = []
+			result   = tvdbapi.getTvdb(url)
+			items    = json.loads(result)
+			items    = items['data']
 
 			for item in items:
 				try:
-
+					try: 
+						tvdb = item['id']
+						tvdb = str(tvdb)
+					except: tvdb = '0'
+					try: imdb = item['imdbId']
+					except: imdb = '0'					
+					# print ("SEARCH TVDB tvdb", tvdb)
+					if tvdb == '': raise Exception()
 					try: title = item['seriesName']
 					except: title = ''
 					if title == '': title = '0'
 					title = client.replaceHTMLCodes(title)
-					title = cleantitle.normalize_string(title)	
+					title = cleantitle.normalize_string(title)
 					if "series not permitted" in title.lower(): raise Exception()
 					try: year = item['firstAired'].encode('utf-8')
 					except: year = ''
@@ -274,6 +294,16 @@ class tvshows:
 					except: year = ''
 					if year == '': year = '0'
 					year = year.encode('utf-8')
+					
+					self.remotedbMeta = self.remotedb_meta(imdb=imdb, tvdb=tvdb)
+					if self.remotedbMeta != None:
+						if len(self.remotedbMeta) > 0: 
+							meta = self.remotedbMeta
+							meta.update({'metalibrary': True, 'tvshowtitle': title, 'originaltitle': title, 'title': title, 'year': year, 'originaltitle': title, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
+							self.list.append(meta)
+							
+							raise Exception()
+							
 					try: premiered = item['firstAired'].encode('utf-8')
 					except: premiered = '0'
 					if premiered == '': premiered = '0'
@@ -284,22 +314,21 @@ class tvshows:
 					if studio == '': studio = '0'
 					studio = client.replaceHTMLCodes(studio)
 					studio = studio.encode('utf-8')
-					try: 
-						tvdb = item['id']
-						tvdb = str(tvdb)
-					except: tvdb = '0'
-					
-					# print ("SEARCH TVDB tvdb", tvdb)
-					if tvdb == '': raise Exception()
+
 					try: plot = item['overview']
 					except: plot = ''
 					if plot == '': plot = '0'
 					plot = plot.encode('utf-8')
 					# print ("SEARCH TVDB plot", plot)				
 					tmdb = '0'
-					imdb = '0'
+					try: imdb = item['imdbId']
+					except: imdb = '0'
 					
-					self.list.append({'title': title, 'originaltitle': title, 'year': year, 'premiered': premiered, 'studio': studio, 'genre': '0', 'duration': '0', 'rating': '0', 'votes': '0', 'mpaa': '0', 'director': '0', 'writer': '0', 'cast': '0', 'plot': plot, 'tagline': '0', 'code': imdb, 'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb, 'poster': '0', 'banner': '0', 'fanart': '0', 'next': ''})
+					try: banner = item['banner']
+					except: banner = '0'
+
+						
+					self.list.append({'title': title, 'originaltitle': title, 'year': year, 'premiered': premiered, 'studio': studio, 'genre': '0', 'duration': '0', 'rating': '0', 'votes': '0', 'mpaa': '0', 'director': '0', 'writer': '0', 'cast': '0', 'plot': plot, 'tagline': '0', 'code': imdb, 'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb, 'poster': '0', 'banner': banner, 'fanart': '0', 'next': ''})
 				except:
 					continue
 
@@ -312,6 +341,81 @@ class tvshows:
 		except:
 			pass			
 			
+    def getTvdb(self, url, idx = True):
+		self.list = []
+		try:
+			results  = []
+			result   = tvdbapi.getTvdb(url)
+			items    = json.loads(result)
+			item     = items['data']
+
+			try:
+					try: 
+						tvdb = item['id']
+						tvdb = str(tvdb)
+					except: tvdb = '0'
+					try: imdb = item['imdbId']
+					except: imdb = '0'					
+					# print ("SEARCH TVDB tvdb", tvdb)
+					if tvdb == '': raise Exception()
+					try: title = item['seriesName']
+					except: title = ''
+					if title == '': title = '0'
+					title = client.replaceHTMLCodes(title)
+					title = cleantitle.normalize_string(title)
+					if "series not permitted" in title.lower(): raise Exception()
+					try: year = item['firstAired'].encode('utf-8')
+					except: year = ''
+					try: year = re.compile('(\d{4})').findall(year)[0]
+					except: year = ''
+					if year == '': year = '0'
+					year = year.encode('utf-8')
+					
+					self.remotedbMeta = self.remotedb_meta(imdb=imdb, tvdb=tvdb)
+					if self.remotedbMeta != None:
+						if len(self.remotedbMeta) > 0: 
+							meta = self.remotedbMeta
+							meta.update({'metalibrary': True, 'tvshowtitle': title, 'originaltitle': title, 'title': title, 'year': year, 'originaltitle': title, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
+							self.list.append(meta)
+							
+							raise Exception()
+							
+					try: premiered = item['firstAired'].encode('utf-8')
+					except: premiered = '0'
+					if premiered == '': premiered = '0'
+					premiered = client.replaceHTMLCodes(premiered)
+					premiered = premiered.encode('utf-8')
+					try: studio = item['network']
+					except: studio = ''
+					if studio == '': studio = '0'
+					studio = client.replaceHTMLCodes(studio)
+					studio = studio.encode('utf-8')
+
+					try: plot = item['overview']
+					except: plot = ''
+					if plot == '': plot = '0'
+					plot = plot.encode('utf-8')
+					# print ("SEARCH TVDB plot", plot)				
+					tmdb = '0'
+					try: imdb = item['imdbId']
+					except: imdb = '0'
+					
+					try: banner = item['banner']
+					except: banner = '0'
+
+						
+					self.list.append({'title': title, 'originaltitle': title, 'year': year, 'premiered': premiered, 'studio': studio, 'genre': '0', 'duration': '0', 'rating': '0', 'votes': '0', 'mpaa': '0', 'director': '0', 'writer': '0', 'cast': '0', 'plot': plot, 'tagline': '0', 'code': imdb, 'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb, 'poster': '0', 'banner': banner, 'fanart': '0', 'next': ''})
+			except:
+				pass
+
+			
+			try: self.worker()
+			except:pass
+
+			if idx == True: self.tvshowDirectory(self.list)
+			return self.list
+		except:
+			pass			
 
 
     def searchTvdb(self):
@@ -602,7 +706,7 @@ class tvshows:
                 title = item['title']
                 title = re.sub('\s(|[(])(UK|US|AU|\d{4})(|[)])$', '', title)
                 title = client.replaceHTMLCodes(title)
-                title = cleantitle.normalize_string(title)	
+                title = cleantitle.normalize_string(title)
                 year = item['year']
                 year = re.sub('[^0-9]', '', str(year))
 
@@ -619,10 +723,7 @@ class tvshows:
 						meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': title, 'originaltitle': title, 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
 						self.list.append(meta)
 						raise Exception()
-						
-				
-
-					
+			
 
                 tvdb = item['ids']['tvdb']
                 tvdb = re.sub('[^0-9]', '', str(tvdb))
@@ -747,9 +848,10 @@ class tvshows:
                 imdb = client.parseDOM(item, 'a', ret='href')[0]
                 imdb = re.findall('(tt\d*)', imdb)[0]
                 imdb = imdb.encode('utf-8')
+					
                 title = client.parseDOM(item, 'a')[1]
                 title = client.replaceHTMLCodes(title)
-                title = cleantitle.normalize_string(title)				
+                title = cleantitle.normalize_string(title)					
 				# METALIBRARY
                 self.remotedbMeta = self.remotedb_meta(imdb=imdb)
                 if self.remotedbMeta != None:
@@ -758,7 +860,6 @@ class tvshows:
 						meta.update({'metalibrary': True, 'year': meta['premiered'], 'tvshowtitle': title, 'originaltitle': title, 'next': next, 'poster': self.tmdb_poster + meta['poster'], 'fanart': self.tmdb_image + meta['fanart']})
 						self.list.append(meta)
 						raise Exception()
-					
 					
 
 
@@ -906,7 +1007,7 @@ class tvshows:
                 title = item['name']
                 title = re.sub('\s(|[(])(UK|US|AU|\d{4})(|[)])$', '', title)
                 title = client.replaceHTMLCodes(title)
-                title = cleantitle.normalize_string(title)	
+                title = title.encode('utf-8')
 
                 year = item['premiered']
                 year = re.findall('(\d{4})', year)[0]
@@ -1016,6 +1117,7 @@ class tvshows:
 		
     def remotedb_meta(self, imdb=None, tmdb=None, tvdb=None):
 		try:
+			print ("REMOTEDB META", imdb, tmdb, tvdb)
 			dbmeta = metalibrary.metaTV(imdb=imdb, tmdb=tmdb, tvdb=tvdb)
 			return dbmeta
             

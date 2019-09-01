@@ -6,7 +6,9 @@ import xbmc, xbmcaddon, xbmcgui, xbmcvfs
 import time
 import json
 import libThread
-
+from resources.lib.modules import cache, utils
+from resources.lib.api import trakt	
+from resources.lib.modules import lib_meta
 
 sysaddon = sys.argv[0]
 syshandle = int(sys.argv[1])
@@ -25,7 +27,7 @@ BOUNDARY = 'X-X-X'
 data = {}
 params = {}
 
-VALID_EXT = ['mkv', 'avi', 'mp4' ,'divx', 'mpeg', 'mov', 'wmv', 'avc', 'mk3d', 'xvid', 'mpg', 'flv', 'aac', 'asf', 'm4a', 'm4v', 'mka', 'ogg' 'oga', 'ogv', 'ogx', '3gp', 'VIVO', 'PVA', 'NUV', 'NSV', 'NSA', 'FLI', 'FLC']
+VALID_EXT = ['mkv', 'avi', 'mp4' ,'divx', 'mpeg', 'mov', 'wmv', 'avc', 'mk3d', 'xvid', 'mpg', 'flv', 'aac', 'asf', 'm4a', 'm4v', 'mka', 'ogg' 'oga', 'ogv', 'ogx', '3gp', 'vivo', 'pva', 'flc']
 
 requestTimeout = 30
 EXT_BLACKLIST = ['rar.html','.php','.txt','.iso','.zip', '.rar', '.jpeg', '.img', '.jpg', '.RAR', '.ZIP', '.png' , '.sub', '.srt']
@@ -35,6 +37,342 @@ data = {}
 # ####################################################################################
 # ################################ REAL DEBRID #######################################
 # ####################################################################################
+
+def meta_folder(create_directory=True, content='all'):
+	if control.setting('first.start') == 'true': 
+		r = realdebrid().scraperList(cache = True)
+	else:
+		r = realdebrid().cloudJson(mode= 'get')
+		control.setSetting(id='first.start', value='false')
+
+	from resources.lib.indexers import movies, tvshows, episodes
+
+	traktCredentials = trakt.getTraktCredentialsInfo()
+	epRegex = '(.+?)[._\s-]?(?:s|season)?(\d{1,2})(?:e|x|-|episode)(\d{1,2})[._\s\(\[-]'
+	movieRegex = '(.+?)(\d{4})[._ -\)\[]'
+
+	r = [i for i in r if i['type'] == 'torrent']
+	r = [i for i in r if i['name'].split('.')[-1].lower() in VALID_EXT]
+	try:r =  sorted(r, key=lambda k: utils.title_key(k['name'].replace('.',' ')))
+	except: pass
+	
+	if control.setting('metacloud.dialog') == 'true':
+		progressDialog = control.progressDialog
+		progressDialog.create('Creating Meta DB', '')
+		progressDialog.update(0,'Checking your Cloud...')
+		
+		
+	total = len(r)
+	count = 0
+	
+	metaItems = []
+	metaEpisodes = []
+	for result in r:
+		count += 1
+		isMovie = False
+		isTv    = False
+		OriginalName = result['name']
+		name = result['name']
+		try: name = name.split('/')[-1]
+		except: name = name
+		prog = (count * 100) / int(total)
+		if control.setting('metacloud.dialog') == 'true': progressDialog.update(prog,'This process will run just for items in your cloud not already in the database...', name)	
+
+		season = None
+		episode = None
+		imdb = None
+		tvdb = None
+		tmdb = None
+		tvshowtitle = None		
+		match = re.search(epRegex, name.lower(), re.I)
+		if match: 
+			isTv = True
+			match = match.groups()
+			tvTitle    = match[0]
+			season     = match[1]	
+			episode    = match[2]				
+		if isTv == False:
+			match2 = re.search(movieRegex, name.lower(), re.I)
+			if match2: 
+				match2 = match2.groups()
+
+				isMovie = True
+				movieTitle = match2[0]
+				movieYear  = match2[1]
+				
+		cm = []	
+
+		id = result['id']
+		cacheID = "realdebrid-%s" % (id)
+		name = normalize(name)
+		superInfo = {'title': name, 'year':'0', 'imdb':'0'}
+		try:
+			if progressDialog.iscanceled(): break
+		except:
+			pass
+		try:
+			meta = []
+			metaData = []
+			
+			if isMovie == True:
+
+				if content != 'movie' and content != 'all': raise Exception()
+				cacheID = cacheID + "-movie"
+				getCache  = cache.get_from_string(cacheID, 2000, None)
+				if getCache == None: 
+					getSearch =	movies.movies().searchTMDB(title=movieTitle, year=movieYear)
+					getSearch = getSearch[0]
+					if len(getSearch) > 0: cache.get_from_string(cacheID, 2000, getSearch)
+				else: getSearch = getCache
+				meta = getSearch
+
+			elif isTv == True: 
+
+				if content != 'tv' and content != 'all': raise Exception()
+	
+				getCache  = cache.get_from_string(cacheID, 2000, None)
+				if getCache == None: 
+					getSearch = tvshows.tvshows().getSearch(title=tvTitle)
+					getSearch = getSearch[0]
+
+					if len(getSearch) > 0: cache.get_from_string(cacheID, 2000, getSearch)
+				else: getSearch = getCache
+				
+				tvdb = getSearch['tvdb']
+				imdb = getSearch['imdb']
+				tvplot = getSearch['plot']
+				fanart = getSearch['fanart']
+				clearlogo = getSearch['clearlogo'] if 'clearlogo' in getSearch else '0'
+				banner = getSearch['banner'] if 'banner' in getSearch else '0'
+
+				year = getSearch['year']
+				tvshowtitle = getSearch['title']
+				episode = "%02d" % int(episode)
+				ss      = "%02d" % int(season)
+				
+				cacheIDEpisode = cacheID + '-episode-tvdb-%s-season-%s-episode-%s' % (tvdb, ss, episode)
+				getCacheEp  = cache.get_from_string(cacheIDEpisode, 720, None)
+				if getCacheEp == None: 
+					episodeMeta = episodes.episodes().get(tvshowtitle, year, imdb, tvdb, season = season, create_directory = False)
+					episodeMeta = [i for i in episodeMeta if "%02d" % int(i['episode']) == episode]
+					episodeMeta = episodeMeta[0]
+					if len(episodeMeta) > 0: cache.get_from_string(cacheIDEpisode, 720, episodeMeta)
+				else: episodeMeta = getCacheEp
+				meta = episodeMeta
+				meta.update({'realdebrid_id': id, 'tvshowimdb': imdb, 'tvshowtvdb': tvdb, 'clearlogo': clearlogo, 'banner': banner, 'realdebrid_name': OriginalName})
+				metaEpisodes.append(meta)
+				
+			if create_directory != True: raise Exception()			
+			metaData = meta
+			metatitle = metaData['title'] if 'title' in metaData else name
+			metaposter = metaData['poster'] if 'poster' in metaData else '0'
+			metafanart = metaData['fanart'] if 'fanart' in metaData else '0'
+			if metaposter == '0' or metaposter == None: metaposter = control.icon
+			if metafanart == '0' or metafanart == None: metafanart = control.fanart
+			imdb = metaData['imdb'] if 'imdb' in metaData else None
+			tvdb = metaData['tvdb'] if 'tvdb' in metaData else None			
+			tmdb      = metaData['tmdb'] if 'tmdb' in metaData else None	
+			tvshowtitle = metaData['tvshowtitle'] if 'tvshowtitle' in metaData else None
+			if isTv == True: metaData.update({'season.poster': metaposter, 'tvshow.poster': metaposter})
+			superInfo = metaData
+
+			systitle = urllib.quote_plus(metatitle)			
+			if imdb!= None and imdb != '': metaItems.append(imdb)
+			if tvdb!= None and tvdb != '': metaItems.append(tvdb)		
+			
+			if isTv == True:
+				
+				if tvshowtitle in metaItems: raise Exception()
+				metatitle = tvshowtitle
+				metaItems.append(tvshowtitle)
+				label = "%s" % (tvshowtitle)
+				systitle = urllib.quote_plus(superInfo['title'])	
+			else: 
+				if metatitle in metaItems: raise Exception()
+				metaItems.append(metatitle)
+				quality = lib_meta.meta_quality(OriginalName)
+				label = '[B]%s[/B] | %s' % (quality.upper(), metatitle)
+			playLink = '0'
+			sysmeta = urllib.quote_plus(json.dumps(superInfo))				
+			year = superInfo['year']
+
+			
+			cm = []
+			if isTv == True: url = '%s?action=meta_episodes&imdb=%s&tmdb=%s&tvdb=%s' % (sysaddon, imdb, tmdb, tvdb)
+			else: url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s&name=%s' % (sysaddon, 'resolve', systitle , year, imdb, sysmeta, id, urllib.quote_plus(OriginalName))
+	
+			item = control.item(label=label)	
+			art = {}
+			art.update({'icon': metaposter, 'thumb': metaposter, 'poster': metaposter})
+			# if 'thumb' in metaData and not metaData['thumb'] == '0': art.update({'icon': metaData['thumb'], 'thumb': metaData['thumb']})
+			if 'banner' in metaData and not metaData['banner'] == '0': art.update({'banner': metaData['banner']})
+			if 'clearlogo' in metaData and not metaData['clearlogo'] == '0': art.update({'clearlogo': metaData['clearlogo']})
+			if 'clearart' in metaData and not metaData['clearart'] == '0': art.update({'clearart': metaData['clearart']})
+			if 'season.poster' in metaData and not metaData['season.poster'] == '0': art.update({'season.poster': metaposter})
+
+			if traktCredentials == True:
+				try:
+					if isTv == True: raise Exception()
+					indicators = playcount.getMovieIndicators(refresh=True)
+					overlay = int(playcount.getMovieOverlay(indicators, imdb))
+					if overlay == 7:
+						cm.append((unwatchedMenu, 'RunPlugin(%s?action=moviePlaycount&imdb=%s&query=6)' % (sysaddon, imdb)))
+						meta.update({'playcount': 1, 'overlay': 7})
+					else:
+						cm.append((watchedMenu, 'RunPlugin(%s?action=moviePlaycount&imdb=%s&query=7)' % (sysaddon, imdb)))
+						meta.update({'playcount': 0, 'overlay': 6})
+				except:
+					pass	
+
+				# try:
+					# if isTv != True: raise Exception()
+					# indicators = playcount.getTVShowIndicators(refresh=True)
+					# overlay = int(playcount.getEpisodeOverlay(indicators, imdb, tvdb, season, episode))
+					# if overlay == 7:
+						# cm.append((unwatchedMenu, 'RunPlugin(%s?action=episodePlaycount&imdb=%s&tvdb=%s&season=%s&episode=%s&query=6)' % (sysaddon, imdb, tvdb, season, episode)))
+						# meta.update({'playcount': 1, 'overlay': 7})
+					# else:
+						# cm.append((watchedMenu, 'RunPlugin(%s?action=episodePlaycount&imdb=%s&tvdb=%s&season=%s&episode=%s&query=7)' % (sysaddon, imdb, tvdb, season, episode)))
+						# meta.update({'playcount': 0, 'overlay': 6})
+				# except:
+					# pass					
+			superInfo.update({'code': imdb, 'imdbnumber': imdb, 'imdb_id': imdb})
+			superInfo.update({'tmdb_id': tmdb})
+			superInfo.update({'mediatype': 'movie'})
+			if isTv == True: superInfo.update({'mediatype': 'tvshow'})
+			if "cast" in superInfo: del superInfo['cast']
+			superInfo.update({'trailer': '%s?action=trailer&name=%s' % (sysaddon, urllib.quote_plus(metatitle))})
+			try:
+				superInfo.update({'duration': str(int(superInfo['duration']) * 60)})
+			except:
+				pass		
+			superInfo = dict((k, v) for k, v in superInfo.iteritems() if not v == '0')				
+			item.setProperty('Fanart_Image', metafanart)
+			infolabels = {}
+			infolabels.update(superInfo)
+
+			item.setArt(art)
+			item.addContextMenuItems(cm)
+			if isTv != True: item.setProperty('IsPlayable', 'true')
+			
+			if isTv == True: 
+				del superInfo['plot']
+				infolabels = {'plot': tvplot}
+				infolabels.update(superInfo)			
+				isFolder = True
+				
+			else: isFolder = False
+			item.setInfo(type='Video', infoLabels = infolabels)
+			control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)				
+		except: pass
+		
+	try: progressDialog.close()
+	except:	pass
+	
+	if len(metaEpisodes) > 0:
+		premiumizeCacheID = 'debrid-tvshows-meta-scrape'
+		cache.get_from_string(premiumizeCacheID, 720, metaEpisodes)
+	
+	if create_directory == True: 
+		contentDir = 'movies'
+		if content == 'tv': contentDir = 'tvshows'
+		control.content(syshandle, contentDir)	
+		control.directory(syshandle, cacheToDisc=True)	
+
+
+def meta_episodes(imdb=None, tvdb=None, tmdb = None, create_directory=True):
+	traktCredentials = trakt.getTraktCredentialsInfo()
+	epRegex = '(.+?)[._\s-]?(?:s|season)?(\d{1,2})(?:e|x|-|episode)(\d{1,2})[._\s\(\[-]'
+	movieRegex = '(.+?)(\d{4})[._ -\)\[]'
+ 
+	premiumizeCacheID = 'debrid-tvshows-meta-scrape'
+	episodes = cache.get_from_string(premiumizeCacheID, 720, None)
+
+	if imdb != None: r = [i for i in episodes if i['tvshowimdb'] == imdb]
+	elif tvdb != None: r = [i for i in episodes if i['tvshowtvdb'] == tvdb]
+	try: r = sorted(r, key=lambda x: (int(x['season']), int(x['episode'])))
+	except: pass
+	
+
+	
+	for result in r:
+			id = result['realdebrid_id']
+			OriginalName = result['realdebrid_name']
+
+			meta = result
+			metaData = meta
+			metatitle = metaData['title'] if 'title' in metaData else name
+			metaposter = metaData['poster'] if 'poster' in metaData else '0'
+			metafanart = metaData['fanart'] if 'fanart' in metaData else '0'
+			if metaposter == '0' or metaposter == None: metaposter = control.icon
+			if metafanart == '0' or metafanart == None: metafanart = control.fanart
+			year	= meta['year']
+			season = meta['season']
+			episode = meta['episode']
+			imdb = metaData['imdb'] if 'imdb' in metaData else None
+			tvdb = metaData['tvdb'] if 'tvdb' in metaData else None			
+			tmdb      = metaData['tmdb'] if 'tmdb' in metaData else None	
+			tvshowtitle = metaData['tvshowtitle'] if 'tvshowtitle' in metaData else None
+			metaData.update({'season.poster': metaposter, 'tvshow.poster': metaposter})
+			superInfo = metaData
+			systitle = urllib.quote_plus(metatitle)			
+
+			label = "S%s:E%s - %s" % (season, episode, metatitle)
+			quality = lib_meta.meta_quality(OriginalName)
+			label = '[B]%s[/B] | %s' % (quality.upper(), label)
+			systitle = urllib.quote_plus(superInfo['title'])	
+
+			playLink = '0'
+			sysmeta = urllib.quote_plus(json.dumps(superInfo))				
+			year = superInfo['year']
+
+			cm = []
+			url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&meta=%s&id=%s&name=%s' % (sysaddon, 'resolve', systitle, year, imdb, tmdb, tvdb, season, episode, tvshowtitle, sysmeta, id, urllib.quote_plus(OriginalName))
+
+			item = control.item(label=label)	
+			art = {}
+			art.update({'icon': metaposter, 'thumb': metaposter, 'poster': metaposter})
+			if 'thumb' in metaData and not metaData['thumb'] == '0': art.update({'icon': metaData['thumb'], 'thumb': metaData['thumb']})
+			if 'banner' in metaData and not metaData['banner'] == '0': art.update({'banner': metaData['banner']})
+			if 'clearlogo' in metaData and not metaData['clearlogo'] == '0': art.update({'clearlogo': metaData['clearlogo']})
+			if 'clearart' in metaData and not metaData['clearart'] == '0': art.update({'clearart': metaData['clearart']})
+			if 'season.poster' in metaData and not metaData['season.poster'] == '0': art.update({'season.poster': metaposter})
+
+			if traktCredentials == True:
+				try:
+					indicators = playcount.getTVShowIndicators(refresh=True)
+					overlay = int(playcount.getEpisodeOverlay(indicators, imdb, tvdb, season, episode))
+					if overlay == 7:
+						cm.append((unwatchedMenu, 'RunPlugin(%s?action=episodePlaycount&imdb=%s&tvdb=%s&season=%s&episode=%s&query=6)' % (sysaddon, imdb, tvdb, season, episode)))
+						meta.update({'playcount': 1, 'overlay': 7})
+					else:
+						cm.append((watchedMenu, 'RunPlugin(%s?action=episodePlaycount&imdb=%s&tvdb=%s&season=%s&episode=%s&query=7)' % (sysaddon, imdb, tvdb, season, episode)))
+						meta.update({'playcount': 0, 'overlay': 6})
+				except:
+					pass					
+			superInfo.update({'code': imdb, 'imdbnumber': imdb, 'imdb_id': imdb})
+			superInfo.update({'tmdb_id': tmdb})
+
+			superInfo.update({'mediatype': 'episode'})
+			if "cast" in superInfo: del superInfo['cast']
+
+			try:
+				superInfo.update({'duration': str(int(superInfo['duration']) * 60)})
+			except:
+				pass		
+			superInfo = dict((k, v) for k, v in superInfo.iteritems() if not v == '0')				
+			item.setProperty('Fanart_Image', metafanart)
+			item.setInfo(type='Video', infoLabels = superInfo)
+			item.setArt(art)
+			item.addContextMenuItems(cm)
+			item.setProperty('IsPlayable', 'true')
+			control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)				
+
+	if create_directory == True: 
+		contentDir = 'episodes'
+		control.content(syshandle, contentDir)	
+	
+		control.directory(syshandle, cacheToDisc=True)	
 
 def addTorrent(torrent):
 	r = realdebrid().addtorrent(torrent)
@@ -113,7 +451,6 @@ def transferList(page='1'):
 	control.content(syshandle, 'movies')
 	control.directory(syshandle, cacheToDisc=True)
 	
-
 def torrentList(page='1'):
 	r, isNext = realdebrid().torrentList(page=int(page), info=True)
 
@@ -191,7 +528,6 @@ def torrentInfo(id):
 	control.content(syshandle, 'movies')
 	control.directory(syshandle, cacheToDisc=True)
 	
-	
 def playtorrentItem(name, id):
 	torrInDownload = []
 	try : name = name.split('/')[-1]
@@ -234,7 +570,6 @@ def playtorrentItem(name, id):
 			item.setProperty('IsPlayable', 'true')	
 			item = control.item(path= torrItem['download'])
 			control.resolve(int(sys.argv[1]), True, item)
-			
 			
 def torrentItemToDownload(name, id):
 	torrInDownload = []
@@ -314,7 +649,6 @@ def torrentItemToDownload(name, id):
 
 	except: return []
 
-	
 def scrapecloud(title, year=None, season=None, episode=None):
 	progress = control.progressDialogBG
 	cachedSession = control.setting('cached.mode')
@@ -523,7 +857,6 @@ def scrapecloud(title, year=None, season=None, episode=None):
 		
 	else: return selected_url, selected_id
 	
-	
 def downloadItem(name, url, id):
 	from resources.lib.modules import downloader
 	downloader.downloader().download(name, url)
@@ -686,7 +1019,7 @@ class realdebrid:
 	def rdRequest(self, url, method='get', data=None, params=None, refresh=False):
 		
 		token = self.getToken(refresh=refresh)
-		headers = {'Authorization': 'Bearer %s' % token, 'User-Agent': self.USER_AGENT}
+		headers = {'Authorization': 'Bearer %s' % token, 'client_id': self.RD_CLIENTID, 'User-Agent': self.USER_AGENT}
 		try:
 			if method == 'get': result = requests.get(url, headers=headers, params=params, timeout=requestTimeout)
 			elif method == 'post': result = requests.post(url, headers=headers, data=data, timeout=requestTimeout)
@@ -773,7 +1106,6 @@ class realdebrid:
 
 		
 	def addtorrent(self, torrent):
-		print ("ADDING TORRENT", torrent)
 		url = self.RealDebridApi + '/torrents/addMagnet'
 		data = {'magnet': torrent}
 		result = self.rdRequest(url, method='post', data=data).json()

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    realizer Add-on
-    Copyright (C) 2016 realizer
+    premiumizer Add-on
+    Copyright (C) 2016 premiumizer
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -61,6 +61,27 @@ def get(function, duration, *args):
         return ast.literal_eval(fresh_result.encode('utf-8'))
     except Exception:
         return None
+		
+def get_from_string(key, duration, data):
+    # type: (function, int, object) -> object or None
+    """
+    Gets cached value for provided function with optional arguments, or executes and stores the result
+    :param function: Function to be executed
+    :param duration: Duration of validity of cache in hours
+    :param args: Optional arguments for the provided function
+    """
+
+    try:
+
+        cache_result = cache_get(key)
+        if cache_result:
+            if _is_cache_valid(cache_result['date'], duration):
+                return ast.literal_eval(cache_result['value'].encode('utf-8'))
+        if data == None: return None
+        cache_insert(key, str(data))
+        return data
+    except Exception:
+        return None
 
 
 def timeout(function, *args):
@@ -80,6 +101,7 @@ def cache_get(key):
         return cursor.fetchone()
     except OperationalError:
         return None
+
 
 
 def cache_insert(key, value):

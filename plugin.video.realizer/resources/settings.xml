@@ -4,6 +4,8 @@
 		<setting type="lsep" label="General Settings" />
 		<setting id="first.start" type="bool" label="startup control" default="true" visible="false" />
 		<setting id="realdebrid.authorize" type="action" label="Authorize Real Debrid" option="close" action="RunPlugin(plugin://plugin.video.realizer/?action=authRealdebrid)" />
+		<setting type="lsep" label="Meta Cloud" />
+		<setting id="metacloud.dialog" type="bool" label="Shoe Meta Cloud scraping Dialogs" default="true"/>
 
 		<setting type="lsep" label="Playback Settings" />			
 		<setting id="playback.mode" type="enum" label="Playback Mode" values="AutoPlay|List" default="1" />

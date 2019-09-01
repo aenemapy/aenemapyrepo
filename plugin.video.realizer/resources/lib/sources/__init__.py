@@ -37,6 +37,35 @@ class sources:
 
             from resources.lib.modules.player import player
             player().run(title, year, season, episode, imdb, tvdb, url, meta, id)
+			
+			
+    def directPlay(self, url, title, year, imdb, tvdb, season, episode, tvshowtitle, premiered, meta, id, name):
+        try:
+            debug('PLAY ITEM:', title, id)
+			
+            title = tvshowtitle if not tvshowtitle == None else title
+						
+            if url == None or url =='' or url == '0':
+                return self.errorForSources()
+			
+            elif url == 'resolve':
+
+				torrFile = debrid.torrentItemToDownload(name, id)
+				control.infoDialog('Playing Torrent Item', torrFile['filename'], time=3)
+				url = torrFile['download']
+				id  = torrFile['id']
+				if url == None: return self.errorForSources()
+				
+            try: meta = json.loads(meta)
+            except: pass
+
+            from resources.lib.modules.player import player
+            player().run(title, year, season, episode, imdb, tvdb, url, meta, id)
+        except:
+            pass
+			
+			
+
 
 			
     def errorForSources(self):

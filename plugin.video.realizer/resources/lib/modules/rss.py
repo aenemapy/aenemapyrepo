@@ -125,27 +125,23 @@ def update():
 		timeOffset = int(x['offset'])
 		timeOffset = (timeNow - datetime.timedelta(days=int(timeOffset))).strftime('%Y%m%d')
 		
-		html = requests.get(u).content
-		r = BeautifulSoup(html, "html.parser")
+		html = feedparser.parse(u)
+		rssEntries = html.entries
+		rssTitle = html['feed']['title']
 
-		soup = r.find_all('channel')[0]
-		soup = soup.find_all('item')
-
-		for item in soup:
+		for item in rssEntries:
 			try:
-				title = item.find_all('title')[0].getText().strip()
-				link  = item.find_all('link')[0].getText().strip()
+
+				title = item.title
+				link  = item.link
+				dateString = item.published_parsed
 				
 				checkDB = rssDB(mode='check', link=link, title=title)
 				
 				if checkDB == True: 
 					print ("[REALIZER RSS MANAGER] TORRENT ALREADY ADDED: %s" % title)
 					raise Exception()
-					
-				try: date  = item.find_all('pubdate')[0].getText().strip()
-				except: date  = item.find_all('pubDate')[0].getText().strip()
 
-				dateString = feedparser._parse_date(date)
 				dt = datetime.datetime.fromtimestamp(mktime(dateString))
 				pubDate = dt.strftime('%Y%m%d')
 				strDate = dt.strftime('%Y-%m-%d')				
@@ -178,7 +174,7 @@ def reader_cat():
 	syshandle = int(sys.argv[1])
 	VALID_EXT = debrid.VALID_EXT
 	rsslist = rssList()
-	rsslist = [i for i in rsslist if i['mode'] == 'read']
+	rsslist = [i for i in rsslist]
 	try:
 		for x in rsslist:
 			link = x['rss']
@@ -203,16 +199,13 @@ def reader(url):
 	VALID_EXT = debrid.VALID_EXT
 
 	try:
-			html = requests.get(url).content
-			r = BeautifulSoup(html, "html.parser")
-
-			soup = r.find_all('channel')[0]
-			soup = soup.find_all('item')
-
-			for item in soup:
+			html = feedparser.parse(url)
+			rssEntries = html.entries
+			for item in rssEntries:
 				try:
-					title = item.find_all('title')[0].getText().strip()
-					link  = item.find_all('link')[0].getText().strip()
+
+					title = item.title
+					link  = item.link
 					
 					label = title
 					item = control.item(label=label)					

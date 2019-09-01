@@ -46,15 +46,21 @@ class navigator:
 			authDialog.doModal()
 			del authDialog			
 			sys.exit()	
-		
+        self.addDirectoryItem('Meta Cloud', 'meta_cloud', 'cloud.png', 'DefaultAddonProgram.png')		
         #self.addDirectoryItem('TEST', 'testItem', 'movies.png', 'DefaultMovies.png')
         self.addDirectoryItem(50001, 'rdNavigator', 'cloud.png', 'DefaultAddonProgram.png')
+
         self.addDirectoryItem('Lists', 'browse_nav', 'cloud.png', 'DefaultAddonProgram.png')
         self.addDirectoryItem('Download Manager', 'download_manager', 'cloud.png', 'DefaultAddonProgram.png')   
         self.addDirectoryItem('RSS Manager', 'rss_manager_nav', 'cloud.png', 'DefaultAddonProgram.png')		
         self.addDirectoryItem(32008, 'toolNavigator', 'settings.png', 'DefaultAddonProgram.png')
         self.addDirectoryItem('[I]Support and Donations[/I]', 'donations', 'support.png', 'DefaultAddonProgram.png', isFolder=False)
         self.endDirectory()
+
+    def meta_cloud(self):
+        self.addDirectoryItem('Movies', 'meta_folder&content=movie', 'movies.png', 'DefaultMovies.png')
+        self.addDirectoryItem('Tv', 'meta_folder&content=tv', 'tv.png', 'DefaultTVShows.png')
+        self.endDirectory()	
 		
     def download_manager(self):
         self.addDirectoryItem('Downloading', 'download_manager_list', 'cloud.png', 'DefaultFolder.png')

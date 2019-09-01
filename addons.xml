@@ -49,7 +49,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.premiumizer" version="2019.08.28" name="Premiumizer" provider-name="aenema">
+<addon id="plugin.video.premiumizer" version="2019.09.01" name="Premiumizer" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.beautifulsoup4" />
@@ -101,7 +101,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.realizer" version="2019.06.14" name="Realizer" provider-name="aenema">
+<addon id="plugin.video.realizer" version="2019.09.01" name="Realizer" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.beautifulsoup4" />

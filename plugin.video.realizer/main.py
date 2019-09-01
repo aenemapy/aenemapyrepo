@@ -73,7 +73,7 @@ elif action == 'play':
 	
 elif action == 'directPlay':
 	from resources.lib.sources import sources	
-	sources().directPlay(url, title, year, imdb, tvdb, season, episode, tvshowtitle, premiered, meta, id)
+	sources().directPlay(url, title, year, imdb, tvdb, season, episode, tvshowtitle, premiered, meta, id, name)
 
 elif action == 'authRealdebrid':
 	from resources.lib.modules import control	
@@ -102,6 +102,17 @@ elif action == 'changelogNavigator':
     from resources.lib.indexers import navigator
     navigator.navigator().changelog()
 	
+elif action == 'meta_cloud':
+    from resources.lib.indexers import navigator
+    navigator.navigator().meta_cloud()	
+	
+elif action == 'meta_folder':
+	from resources.lib.api import debrid
+	debrid.meta_folder(content=content)
+	
+elif action == 'meta_episodes':
+	from resources.lib.api import debrid
+	debrid.meta_episodes(imdb=imdb, tvdb=tvdb, tmdb=tmdb)
 	
 	
 # PREMIUMIZE SECTION #################

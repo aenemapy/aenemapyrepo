@@ -115,8 +115,8 @@ class player(xbmc.Player):
             item.setInfo(type='Video', infoLabels = self.infolabels)
 
             control.player.play(url, item)
-            
-            #control.resolve(int(sys.argv[1]), True, item)
+
+            control.resolve(int(sys.argv[1]), True, item)
 
             control.window.setProperty('script.trakt.ids', json.dumps(self.ids))
 			

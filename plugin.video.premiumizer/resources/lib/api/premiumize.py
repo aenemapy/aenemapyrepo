@@ -6,7 +6,7 @@ import xbmc, xbmcaddon, xbmcgui, xbmcvfs
 import time
 import datetime
 from difflib import SequenceMatcher
-from resources.lib.modules import cache
+from resources.lib.modules import cache, utils
 from resources.lib.api import trakt	
 params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
 action = params.get('action')
@@ -244,7 +244,6 @@ def downloadFolder(name, id):
 	downloader.downloadZip(zipLink, dest, name)
 	
 
-
 def downloadFileToLoc(link, path):
 	from resources.lib.modules import downloadzip
 	downloadzip.silent_download(link, path)
@@ -372,7 +371,17 @@ def meta_folder(create_directory=True, content='all'):
 		
 	r = [i for i in r if i['type'] == 'file']
 	r = [i for i in r if i['name'].split('.')[-1] in VALID_EXT]
-	r =  sorted(r, key=lambda k: int(k['created_at']), reverse=True)
+	
+	if control.setting('metacloud.sort') == '1': 
+	
+		try:r =  sorted(r, key=lambda k: utils.title_key(k['name'].replace('.',' ')))
+		except: pass
+		
+	else:
+	
+		try:r =  sorted(r, key=lambda k: int(k['created_at']), reverse=True)
+		except: pass
+		
 	if control.setting('metacloud.dialog') == 'true':
 		progressDialog = control.progressDialog
 		progressDialog.create('Creating Meta DB', '')
