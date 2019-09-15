@@ -1,21 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-    premiumizer Add-on
-    Copyright (C) 2016 premiumizer
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
 import ast
 import hashlib
 import re
@@ -32,7 +16,7 @@ This module is used to get/set cache for every action done in the system
 """
 
 cache_table = 'cache'
-
+cache_table_string = 'cache_string'
 
 def get(function, duration, *args):
     # type: (function, int, object) -> object or None
@@ -61,29 +45,38 @@ def get(function, duration, *args):
         return ast.literal_eval(fresh_result.encode('utf-8'))
     except Exception:
         return None
-		
-def get_from_string(key, duration, data):
-    # type: (function, int, object) -> object or None
-    """
-    Gets cached value for provided function with optional arguments, or executes and stores the result
-    :param function: Function to be executed
-    :param duration: Duration of validity of cache in hours
-    :param args: Optional arguments for the provided function
-    """
 
+def get_from_string(key, duration, data, update=False):
     try:
-
+		if update == False: raise Exception()
+		r = cache_update(key, str(data))
+		return data
+    except:
+		pass
+    try:
+        if update != False: raise Exception()
         cache_result = cache_get(key)
         if cache_result:
             if _is_cache_valid(cache_result['date'], duration):
                 return ast.literal_eval(cache_result['value'].encode('utf-8'))
-        if data == None: return None
-        cache_insert(key, str(data))
+        if data == None: return None # UPDATE CACHE NOW
+        cache_update(key, str(data))
         return data
     except Exception:
         return None
-
-
+		
+def cache_update(key, value):
+    try:
+        cursor = _get_connection_cursor()
+        now = int(time.time())
+        cursor.execute("DELETE FROM %s WHERE key = ?" % cache_table, [key])
+        cursor.execute("CREATE TABLE IF NOT EXISTS %s (key TEXT, value TEXT, date INTEGER, UNIQUE(key))" % cache_table)	
+        cursor.execute("INSERT INTO %s Values (?, ?, ?)" % cache_table, (key, value, now))
+        cursor.connection.commit()
+        return True
+    except OperationalError:
+        return None
+		
 def timeout(function, *args):
     try:
         key = _hash_function(function, args)
@@ -101,7 +94,6 @@ def cache_get(key):
         return cursor.fetchone()
     except OperationalError:
         return None
-
 
 
 def cache_insert(key, value):

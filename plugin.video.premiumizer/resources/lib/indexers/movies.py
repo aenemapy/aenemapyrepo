@@ -122,26 +122,24 @@ class movies:
         self.imdbwatchlist2_link = 'http://www.imdb.com/user/ur%s/watchlist?sort=date_added,desc' % self.imdb_user
 
         self.tmdbdvd_link = 'https://api.themoviedb.org/3/discover/movie?api_key=%s&language=en-US&sort_by=popularity.desc&certification_country=US&include_adult=false&include_video=false&page=1&primary_release_date.gte=%s&primary_release_date.lte=%s&vote_count.gte=20&with_release_type=5' % ("%s", self.last180days, self.Today)
-
         self.imdbsearch_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&title=%s&start=1'
-		
 		
     def searchTMDB(self, title=None, year=None, create_directory=False):
         try:
             if (title == None or title == ''): return
+            years = [str(year), str(int(year)+1), str(int(year)-1)]
             query = cleantitle.query(title)
-            url = 'https://api.themoviedb.org/3/search/movie?api_key=%s&query=%s&page=1' % ("%s", query)
-            self.list = cache.get(self.tmdb_list, 720, url, title, year)
+            url = 'https://api.themoviedb.org/3/search/movie?api_key=%s&query=%s&page=1' % ("%s", urllib.quote_plus(query))
+            self.list = cache.get(self.tmdb_list, 720, url, title, years)
             self.workerTMDB()
-            self.list = [i for i in self.list if cleantitle.get_year(title.lower()) == cleantitle.get_year(i['title'].lower())]
-            self.list = [i for i in self.list if str(i['year']) == year]
+            self.list = [i for i in self.list if cleantitle.get(title.lower()) == cleantitle.get(i['title'].lower())]
+            self.list = [i for i in self.list if str(i['year']) in year]
             return self.list
         except: return []
 			
     def traktOnDeck(self):
         from resources.lib.api import trakt
         items = trakt.getTraktAsJson('/sync/playback/movies')
-
         for item in items:
             try:
                 title = item['movie']['title']
@@ -546,22 +544,29 @@ class movies:
 
                 next = url.replace('page=%s' % currPage, nextPage)
 				
-                title = item['title']
+                title = item['title'].encode('utf-8')
                 title = cleantitle.normalize_string(title)
-
+                try:
+					title = client.replaceHTMLCodes(title)
+					title = cleantitle.normalize_string(title)
+					# title = re.sub(r'[^\x00-\x7f]',r'', title)
+					# title = ' '.join(title.split())
+                except:pass
+				
+                try:originaltitle = item['originaltitle'].encode('utf-8')
+                except: originaltitle = title
+				
                 year = item['release_date']
                 try: year = re.compile('(\d{4})').findall(str(year))[0]
                 except: year = '0'
                 year = year.encode('utf-8')
-                if matchTitle != None and matchTitle != '':
 
-					matchTitle = cleantitle.normalize_string(title)
-					#print ("2. TMDB MATCHING TITLE", cleantitle.get(title), cleantitle.get(matchTitle))
+
+                if matchTitle != None and matchTitle != '':
+					if cleantitle.get(title) != cleantitle.get(matchTitle): 
+						if cleantitle.get(originaltitle) != cleantitle.get(matchTitle):	raise Exception()
+					if not str(year) in matchYear: raise Exception()
 					
-					if cleantitle.get(title) != cleantitle.get(matchTitle): raise Exception()
-					#print ("3. TMDB MATCHING YEAR", year, matchYear)
-					if str(year) != str(matchYear): raise Exception()
-                #print ("4. TMDB MATCHED TITLE", matchTitle, title)					
                 tmdb = item.get('id')
                 tmdb = str(tmdb)
 				

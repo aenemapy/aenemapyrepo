@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from resources.lib.modules import control, cleantitle, client
+from resources.lib.modules import control, cleantitle, client, playcount
 import requests
 import os,sys,re,json,urllib,urlparse
 import xbmc, xbmcaddon, xbmcgui, xbmcvfs
@@ -28,6 +28,8 @@ premiumizeFolder = '/api/folder/list?id='
 premiumizeDeleteItem = '/api/item/delete'
 premiumizeRenameItem = '/api/item/rename'
 premiumizeItemDetails = '/api/item/details'
+premiumizeSearch      = '/api/folder/search'
+
 OAUTH = premiumize_Api + '/token'		
 CLIENTID = '978629017'
 
@@ -349,8 +351,14 @@ def getFolder(id, meta=None, list=False):
 
 def meta_folder(create_directory=True, content='all'):
 	from resources.lib.indexers import movies, tvshows, episodes
+	watchedMenu = control.lang(32068).encode('utf-8') if trakt.getTraktIndicatorsInfo() == True else control.lang(32066).encode('utf-8')
 
+	unwatchedMenu = control.lang(32069).encode('utf-8') if trakt.getTraktIndicatorsInfo() == True else control.lang(32067).encode('utf-8')
+			
 	traktCredentials = trakt.getTraktCredentialsInfo()
+	indicatorsMovies = playcount.getMovieIndicators(refresh=True)
+	indicatorsTv = playcount.getTVShowIndicators(refresh=True)	
+	
 	epRegex = '(.+?)[._\s-]?(?:s|season)?(\d{1,2})(?:e|x|-|episode)(\d{1,2})[._\s\(\[-]'
 	movieRegex = '(.+?)(\d{4})[._ -\)\[]'
 
@@ -426,6 +434,9 @@ def meta_folder(create_directory=True, content='all'):
 		cacheID = "premiumize-%s" % (id)
 		name = result['name'].encode('utf-8')
 		name = normalize(name)
+		cacheIDName = re.sub('[^A-z0-9]','', name)
+		cacheID = "premiumize-%s-%s" % (cacheIDName, id)
+		
 		superInfo = {'title': name, 'year':'0', 'imdb':'0'}
 		try:
 			if progressDialog.iscanceled(): break
@@ -438,26 +449,20 @@ def meta_folder(create_directory=True, content='all'):
 			if isMovie == True:
 
 				if content != 'movie' and content != 'all': raise Exception()
-				cacheID = cacheID + "-movie"
 				getCache  = cache.get_from_string(cacheID, 2000, None)
 				if getCache == None: 
 					getSearch =	movies.movies().searchTMDB(title=movieTitle, year=movieYear)
 					getSearch = getSearch[0]
-					if len(getSearch) > 0: cache.get_from_string(cacheID, 2000, getSearch)
+					if len(getSearch) > 0: cache.get_from_string(cacheID, 2000, getSearch, update=True)
 				else: getSearch = getCache
 				meta = getSearch
 				
 			elif isTv == True: 
-
+				tvshowtitle = None
 				if content != 'tv' and content != 'all': raise Exception()
-	
-				getCache  = cache.get_from_string(cacheID, 2000, None)
-				if getCache == None: 
-					getSearch = tvshows.tvshows().getSearch(title=tvTitle)
-					getSearch = getSearch[0]
-
-					if len(getSearch) > 0: cache.get_from_string(cacheID, 2000, getSearch)
-				else: getSearch = getCache
+				getSearch = tvshows.tvshows().getSearch(title=tvTitle)
+				getSearch = getSearch[0]
+				if not len(getSearch) > 0: raise Exception()
 				
 				tvdb = getSearch['tvdb']
 				imdb = getSearch['imdb']
@@ -471,13 +476,13 @@ def meta_folder(create_directory=True, content='all'):
 				episode = "%02d" % int(episode)
 				ss      = "%02d" % int(season)
 				
-				cacheIDEpisode = cacheID + '-episode-tvdb-%s-season-%s-episode-%s' % (tvdb, ss, episode)
-				getCacheEp  = cache.get_from_string(cacheIDEpisode, 720, None)
+
+				getCacheEp  = cache.get_from_string(cacheID, 720, None)
 				if getCacheEp == None: 
 					episodeMeta = episodes.episodes().get(tvshowtitle, year, imdb, tvdb, season = season, create_directory = False)
 					episodeMeta = [i for i in episodeMeta if "%02d" % int(i['episode']) == episode]
 					episodeMeta = episodeMeta[0]
-					if len(episodeMeta) > 0: cache.get_from_string(cacheIDEpisode, 720, episodeMeta)
+					if len(episodeMeta) > 0: cache.get_from_string(cacheID, 720, episodeMeta, update=True)
 				else: episodeMeta = getCacheEp
 				meta = episodeMeta
 				meta.update({'premiumizeid': id, 'tvshowimdb': imdb, 'tvshowtvdb': tvdb, 'clearlogo': clearlogo, 'banner': banner})
@@ -493,8 +498,8 @@ def meta_folder(create_directory=True, content='all'):
 			imdb = metaData['imdb'] if 'imdb' in metaData else None
 			tvdb = metaData['tvdb'] if 'tvdb' in metaData else None			
 			tmdb      = metaData['tmdb'] if 'tmdb' in metaData else None	
-			tvshowtitle = metaData['tvshowtitle'] if 'tvshowtitle' in metaData else None
-			if isTv == True: metaData.update({'season.poster': metaposter, 'tvshow.poster': metaposter})
+
+			if isTv == True: metaData.update({'tvshowtitle': tvshowtitle, 'season.poster': metaposter, 'tvshow.poster': metaposter})
 			superInfo = metaData
 
 			systitle = urllib.quote_plus(metatitle)			
@@ -533,29 +538,30 @@ def meta_folder(create_directory=True, content='all'):
 			if traktCredentials == True:
 				try:
 					if isTv == True: raise Exception()
-					indicators = playcount.getMovieIndicators(refresh=True)
-					overlay = int(playcount.getMovieOverlay(indicators, imdb))
+
+					overlay = int(playcount.getMovieOverlay(indicatorsMovies, imdb))
 					if overlay == 7:
 						cm.append((unwatchedMenu, 'RunPlugin(%s?action=moviePlaycount&imdb=%s&query=6)' % (sysaddon, imdb)))
-						meta.update({'playcount': 1, 'overlay': 7})
+						superInfo.update({'playcount': 1, 'overlay': 7})
 					else:
 						cm.append((watchedMenu, 'RunPlugin(%s?action=moviePlaycount&imdb=%s&query=7)' % (sysaddon, imdb)))
-						meta.update({'playcount': 0, 'overlay': 6})
+						superInfo.update({'playcount': 0, 'overlay': 6})
 				except:
 					pass	
 
-				# try:
-					# if isTv != True: raise Exception()
-					# indicators = playcount.getTVShowIndicators(refresh=True)
-					# overlay = int(playcount.getEpisodeOverlay(indicators, imdb, tvdb, season, episode))
-					# if overlay == 7:
-						# cm.append((unwatchedMenu, 'RunPlugin(%s?action=episodePlaycount&imdb=%s&tvdb=%s&season=%s&episode=%s&query=6)' % (sysaddon, imdb, tvdb, season, episode)))
-						# meta.update({'playcount': 1, 'overlay': 7})
-					# else:
-						# cm.append((watchedMenu, 'RunPlugin(%s?action=episodePlaycount&imdb=%s&tvdb=%s&season=%s&episode=%s&query=7)' % (sysaddon, imdb, tvdb, season, episode)))
-						# meta.update({'playcount': 0, 'overlay': 6})
-				# except:
-					# pass					
+				try:
+					if isTv != True: raise Exception()
+
+					overlay = int(playcount.getTVShowOverlay(indicatorsTv, tvdb))
+					if overlay == 7:
+						cm.append((unwatchedMenu, 'RunPlugin(%s?action=moviePlaycount&imdb=%s&query=6)' % (sysaddon, imdb)))
+						superInfo.update({'playcount': 1, 'overlay': 7})
+					else:
+						cm.append((watchedMenu, 'RunPlugin(%s?action=moviePlaycount&imdb=%s&query=7)' % (sysaddon, imdb)))
+						superInfo.update({'playcount': 0, 'overlay': 6})
+				except:
+					pass	
+					
 			superInfo.update({'code': imdb, 'imdbnumber': imdb, 'imdb_id': imdb})
 			superInfo.update({'tmdb_id': tmdb})
 			superInfo.update({'mediatype': 'movie'})
@@ -591,7 +597,7 @@ def meta_folder(create_directory=True, content='all'):
 	
 	if len(metaEpisodes) > 0:
 		premiumizeCacheID = 'premiumize-tvshows-meta-scrape'
-		cache.get_from_string(premiumizeCacheID, 720, metaEpisodes)
+		cache.get_from_string(premiumizeCacheID, 720, metaEpisodes, update=True)
 	
 	if create_directory == True: 
 		contentDir = 'movies'
@@ -603,7 +609,10 @@ def meta_episodes(imdb=None, tvdb=None, tmdb = None, create_directory=True):
 	traktCredentials = trakt.getTraktCredentialsInfo()
 	epRegex = '(.+?)[._\s-]?(?:s|season)?(\d{1,2})(?:e|x|-|episode)(\d{1,2})[._\s\(\[-]'
 	movieRegex = '(.+?)(\d{4})[._ -\)\[]'
- 
+	watchedMenu = control.lang(32068).encode('utf-8') if trakt.getTraktIndicatorsInfo() == True else control.lang(32066).encode('utf-8')
+
+	unwatchedMenu = control.lang(32069).encode('utf-8') if trakt.getTraktIndicatorsInfo() == True else control.lang(32067).encode('utf-8')
+	indicators = playcount.getTVShowIndicators(refresh=True)		 
 	premiumizeCacheID = 'premiumize-tvshows-meta-scrape'
 	episodes = cache.get_from_string(premiumizeCacheID, 720, None)
 
@@ -653,14 +662,14 @@ def meta_episodes(imdb=None, tvdb=None, tmdb = None, create_directory=True):
 
 			if traktCredentials == True:
 				try:
-					indicators = playcount.getTVShowIndicators(refresh=True)
+
 					overlay = int(playcount.getEpisodeOverlay(indicators, imdb, tvdb, season, episode))
 					if overlay == 7:
 						cm.append((unwatchedMenu, 'RunPlugin(%s?action=episodePlaycount&imdb=%s&tvdb=%s&season=%s&episode=%s&query=6)' % (sysaddon, imdb, tvdb, season, episode)))
-						meta.update({'playcount': 1, 'overlay': 7})
+						superInfo.update({'playcount': 1, 'overlay': 7})
 					else:
 						cm.append((watchedMenu, 'RunPlugin(%s?action=episodePlaycount&imdb=%s&tvdb=%s&season=%s&episode=%s&query=7)' % (sysaddon, imdb, tvdb, season, episode)))
-						meta.update({'playcount': 0, 'overlay': 6})
+						superInfo.update({'playcount': 0, 'overlay': 6})
 				except:
 					pass					
 			superInfo.update({'code': imdb, 'imdbnumber': imdb, 'imdb_id': imdb})
@@ -756,6 +765,8 @@ def meta_library():
 		cacheID = "premiumize-%s" % (id)
 		name = result['name'].encode('utf-8')
 		name = normalize(name)
+		cacheIDName = re.sub('[^A-z0-9]','', name)
+		cacheID = "premiumize-%s-%s" % (cacheIDName, id)
 		superInfo = {'title': name, 'year':'0', 'imdb':'0'}
 		print superInfo
 		try:
@@ -767,25 +778,20 @@ def meta_library():
 			metaData = []
 			
 			if isMovie == True:
-				cacheID = cacheID + "-movie"
 				getCache  = cache.get_from_string(cacheID, 2000, None)
 				if getCache == None: 
 					getSearch =	movies.movies().searchTMDB(title=movieTitle, year=movieYear)
 					getSearch = getSearch[0]
-					if len(getSearch) > 0: cache.get_from_string(cacheID, 2000, getSearch)
+					if len(getSearch) > 0: cache.get_from_string(cacheID, 2000, getSearch, update=True)
 				else: getSearch = getCache
 				meta = getSearch
 				
 				
 				
 			elif isTv == True: 
-				getCache  = cache.get_from_string(cacheID, 2000, None)
-				if getCache == None: 
-					getSearch = tvshows.tvshows().getSearch(title=tvTitle)
-					getSearch = getSearch[0]
-
-					if len(getSearch) > 0: cache.get_from_string(cacheID, 2000, getSearch)
-				else: getSearch = getCache
+				getSearch = tvshows.tvshows().getSearch(title=tvTitle)
+				getSearch = getSearch[0]
+				if not len(getSearch) > 0: raise Exception()	
 				
 				tvdb = getSearch['tvdb']
 				imdb = getSearch['imdb']
@@ -799,13 +805,12 @@ def meta_library():
 				episode = "%02d" % int(episode)
 				ss      = "%02d" % int(season)
 				
-				cacheIDEpisode = cacheID + '-episode-tvdb-%s-season-%s-episode-%s' % (tvdb, ss, episode)
-				getCacheEp  = cache.get_from_string(cacheIDEpisode, 720, None)
+				getCacheEp  = cache.get_from_string(cacheID, 720, None)
 				if getCacheEp == None: 
 					episodeMeta = episodes.episodes().get(tvshowtitle, year, imdb, tvdb, season = season, create_directory = False)
 					episodeMeta = [i for i in episodeMeta if "%02d" % int(i['episode']) == episode]
 					episodeMeta = episodeMeta[0]
-					if len(episodeMeta) > 0: cache.get_from_string(cacheIDEpisode, 720, episodeMeta)
+					if len(episodeMeta) > 0: cache.get_from_string(cacheID, 720, episodeMeta, update=True)
 				else: episodeMeta = getCacheEp
 				meta = episodeMeta
 				meta.update({'premiumizeid': id, 'tvshowimdb': imdb, 'tvshowtvdb': tvdb, 'clearlogo': clearlogo, 'banner': banner})
@@ -834,7 +839,7 @@ def meta_library():
 		
 	if len(metaEpisodes) > 0:
 		premiumizeCacheID = 'premiumize-tvshows-meta-scrape'
-		cache.get_from_string(premiumizeCacheID, 720, metaEpisodes)
+		cache.get_from_string(premiumizeCacheID, 720, metaEpisodes, update=True)
 
 	control.execute('XBMC.UpdateLibrary(video)')
 		
@@ -896,10 +901,6 @@ def lib_delete_folder(path):
 def library_setup(id=None, type=None, meta=None):
     movielibraryPath   = xbmc.translatePath(control.setting('meta.library.movies'))
     tvlibraryPath		= xbmc.translatePath(control.setting('meta.library.tv'))
-	
-    print movielibraryPath
-    print tvlibraryPath
-	
     if not os.path.exists(movielibraryPath): os.mkdir(movielibraryPath)	
     if not os.path.exists(tvlibraryPath): os.mkdir(tvlibraryPath)	
 
@@ -913,11 +914,11 @@ def library_setup(id=None, type=None, meta=None):
 		if year == '0': year = ''
 		transtitle = normalize(title)
 		transtitle = re.sub('[\?\!]', '', transtitle)
-		print title, transtitle, legal_filename(transtitle)
+
 		folder = make_path(movielibraryPath, transtitle, year)
 		create_folder(folder)
 		filePath = os.path.join(folder, legal_filename(transtitle) + '.strm')
-		print filePath
+
 		if imdb   != '0' and imdb != None: nfo_url_content = nfo_url('imdb', imdb)
 		elif tmdb != '0' and tmdb != None: nfo_url_content = nfo_url('tmdb', tmdb)
 		else: nfo_url_content = ''
@@ -988,68 +989,27 @@ def check_cloud(title):
 		ratio = matchRatio(cleantitle.get(title), cleantitle.get(name))
 		return ratio
 	
+def searchCloud(query):
+	try:
+		query = cleantitle.query(query)
+		query = normalize(query)
+		url = urlparse.urljoin(premiumize_Api, premiumizeSearch)
+		data = {'q': query}
+		r = reqJson(url, data=data)
+		files = r['content']
+		# files = [i for i in r if i['type'] == 'file']
+		# files = [i for i in files if i['name'].split('.')[-1].lower() in VALID_EXT]
+		return files
+	except:
+		return
+			
 def scrapecloud(title, match, year=None, season=None, episode=None):
 	progress = control.progressDialogBG
 	filesOnly = control.setting('scraper.filesonly')
-	cachedSession = control.setting('cachecloud.remember')
 	try:
-		cached_time, cached_results = cloudCache(mode='get')
 		progress.create('Scraping Your Cloud','Please Wait...')
-		
-		if cached_time != '0' and cached_time != None:
-			if cachedSession == 'true': 
-				if control.setting('first.start') == 'true':
-					control.setSetting(id='first.start', value='false')
-					progress.update(100,'Scraping Your Cloud','Please Wait...')
-					r = PremiumizeScraper().sources()
-					cloudCache(mode='write', data=r)
-				else:
-					r = cached_results
-					
-				try: progress.close()
-				except:pass
-				try: progress.close()
-				except:pass
-				
-			else:
-				cachedLabel = "Cached Cloud: %s" % cached_time
-				results = [cachedLabel, 'New Cloud Scrape', '[AUTO] Cached Cloud']
-				select = control.selectDialog(results)
-				if select == 0: r = cached_results
-				elif select == 1: 
-					progress.update(100,'Scraping Your Cloud','Please Wait...')
-					r = PremiumizeScraper().sources()
-					cloudCache(mode='write', data=r)
-				elif select == 2: # FORCE NEW CACHE AND AUTO CACHE MODE
-					control.setSetting(id='cachecloud.remember', value='true')
-					control.setSetting(id='first.start', value='false')
-					progress.update(100,'Scraping Your Cloud','Please Wait...')
-					r = PremiumizeScraper().sources()
-					cloudCache(mode='write', data=r)
-				try: progress.close()
-				except:pass
-				try: progress.close()
-				except:pass
-		
-		else:
-			if cachedSession == 'true': 
-				control.setSetting(id='first.start', value='false')
-				progress.update(100,'Scraping Your Cloud','Please Wait...')
-				r = PremiumizeScraper().sources()
-				cloudCache(mode='write', data=r)
-				try: progress.close()
-				except:pass
-				try: progress.close()
-				except:pass
-				
-			else:
-				progress.update(100,'Scraping Your Cloud','Please Wait...')
-				r = PremiumizeScraper().sources()
-				cloudCache(mode='write', data=r)
-				try: progress.close()
-				except:pass
-				try: progress.close()
-				except:pass				
+		progress.update(100,'Scraping Your Cloud','Please Wait...')
+		r = searchCloud(title)
 			
 		labels = []
 		sources = []

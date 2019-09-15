@@ -11,7 +11,6 @@
 		
 		<setting id="premiumize.tls" type="bool" label="Use HTTPS protocol" default="true" />
 		<setting id="cachecloud.startup" type="bool" label="Cache Cloud content at Startup" default="false" />
-		<setting id="cachecloud.remember" type="bool" label="Auto Select Cached Files" default="true"/>
 		<setting type="lsep" label="Meta Cloud" />
 		<setting id="metacloud.dialog" type="bool" label="Shoe Meta Cloud scraping Dialogs" default="true"/>
 		<setting id="metacloud.sort" type="enum" label="Sort Meta Cloud by" values="Date|Title" default="0" />
