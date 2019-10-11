@@ -324,8 +324,10 @@ class tvshows:
 					try: imdb = item['imdbId']
 					except: imdb = '0'
 					
-					try: banner = item['banner']
+					try: banner = item['banner']		
 					except: banner = '0'
+					if banner == '' or banner == None: banner = '0'
+					if banner != '0' banner = self.tvdb_image + banner	
 
 						
 					self.list.append({'title': title, 'originaltitle': title, 'year': year, 'premiered': premiered, 'studio': studio, 'genre': '0', 'duration': '0', 'rating': '0', 'votes': '0', 'mpaa': '0', 'director': '0', 'writer': '0', 'cast': '0', 'plot': plot, 'tagline': '0', 'code': imdb, 'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb, 'poster': '0', 'banner': banner, 'fanart': '0', 'next': ''})
@@ -343,19 +345,20 @@ class tvshows:
 			
     def getTvdb(self, url, idx = True):
 		self.list = []
+
 		try:
 			results  = []
 			result   = tvdbapi.getTvdb(url)
 			items    = json.loads(result)
-			item     = items['data']
-
-			try:
+			items     = items['data']
+			for item in items:
+				try:
 					try: 
 						tvdb = item['id']
 						tvdb = str(tvdb)
-					except: tvdb = '0'
+					except: tvdb = ''
 					try: imdb = item['imdbId']
-					except: imdb = '0'					
+					except: imdb = ''					
 					# print ("SEARCH TVDB tvdb", tvdb)
 					if tvdb == '': raise Exception()
 					try: title = item['seriesName']
@@ -405,8 +408,8 @@ class tvshows:
 
 						
 					self.list.append({'title': title, 'originaltitle': title, 'year': year, 'premiered': premiered, 'studio': studio, 'genre': '0', 'duration': '0', 'rating': '0', 'votes': '0', 'mpaa': '0', 'director': '0', 'writer': '0', 'cast': '0', 'plot': plot, 'tagline': '0', 'code': imdb, 'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb, 'poster': '0', 'banner': banner, 'fanart': '0', 'next': ''})
-			except:
-				pass
+				except:
+					pass
 
 			
 			try: self.worker()
@@ -1125,7 +1128,22 @@ class tvshows:
 
     def super_info(self, i):
         try:
-		
+            if 'metalibrary' in self.list[i]:
+				clearart  = self.list[i]['clearart'] if 'clearart' in self.list[i] else '0'
+				clearlogo = self.list[i]['clearlogo'] if 'clearlogo' in self.list[i] else '0'
+				banner    = self.list[i]['banner'] if 'banner' in self.list[i] else '0'
+
+				if clearlogo == '' or clearlogo == None or clearlogo == '0':
+						ftvmeta = fanarttv.get(tvdb, 'tv')
+						if clearlogo == '' or clearlogo == None or clearlogo == '0': clearlogo = ftvmeta['clearlogo']
+						if clearart == '' or clearart == None or clearart == '0': clearart = ftvmeta['clearart']
+						if banner == '' or banner == None or banner == '0': banner = ftvmeta['banner']
+						
+				self.list[i].update({'clearlogo': clearlogo, 'banner': banner, 'clearart': clearart})					
+				metaDict = {'clearlogo': clearlogo, 'clearart': clearart, 'banner': banner, 'imdb': self.list[i]['imdb'], 'tmdb': self.list[i]['tmdb'], 'tvdb': self.list[i]['tvdb'], 'lang': self.lang, 'user': self.user, 'item': self.list[i]}
+				self.meta.append(metaDict)
+				print ("USING REMOTEDB META TV")
+				if self.list[i]['metalibrary'] == True: raise Exception()		
             
             if self.list[i]['metacache'] == True: raise Exception()
 
@@ -1254,7 +1272,19 @@ class tvshows:
 				title = trans['data']['seriesName']
 				plot = trans['data']['overview']
             except:
-                pass			
+                pass	
+
+			#FINAL CLEARLOGO CHECK
+
+			try:
+				if clearlogo == '' or clearlogo == None or clearlogo == '0':
+					ftvmeta = fanarttv.get(tvdb, 'tv')
+					if clearlogo == '' or clearlogo == None or clearlogo == '0': clearlogo = ftvmeta['clearlogo']
+					if clearart == '' or clearart == None or clearart == '0': clearart = ftvmeta['clearart']
+					if banner == '' or banner == None or banner == '0': banner = ftvmeta['banner']
+			except:pass
+
+				
             if "http" in poster: artmeta = True 
             elif "http" in fanart: artmeta = True
 			

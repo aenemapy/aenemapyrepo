@@ -11,7 +11,7 @@ from resources.lib.modules import views
 from resources.lib.modules import utils
 from resources.lib.modules import bookmarks
 
-from resources.lib.api import tvdbapi
+from resources.lib.api import tvdbapi, fanarttv
 import libThread
 import os,sys,re,json,zipfile,StringIO,urllib,urllib2,urlparse,datetime,json,time
 
@@ -143,14 +143,19 @@ class seasons:
             tvdb = tvdb
             imdb = imdb
             poster = '0'
+            clearlogo = '0'
 
-            banner = '0'
             cast = '0'
 			
             self.poster = '0'
             self.fanart = '0'
             self.seasons_posters = '0'
 
+            try: banner = api['banner']		
+            except: banner = '0'
+            if banner == '' or banner == None: banner = '0'
+            if banner != '0' : banner = self.tvdb_image + banner
+			
             getmeta = []
 
 
@@ -330,7 +335,7 @@ class seasons:
 			
                 if thumb == '0' or thumb == '' or thumb == None: thumb = poster			
 
-                self.list.append({'season': season, 'tvshowtitle': tvshowtitle, 'label': label, 'year': year, 'premiered': premiered, 'status': status, 'studio': studio, 'genre': genre, 'duration': duration, 'rating': rating, 'votes': votes, 'mpaa': mpaa, 'cast': '0', 'plot': plot, 'imdb': imdb, 'tvdb': tvdb, 'poster': poster, 'banner': banner, 'fanart': fanart, 'thumb': thumb})
+                self.list.append({'season': season, 'tvshowtitle': tvshowtitle, 'label': label, 'year': year, 'premiered': premiered, 'status': status, 'studio': studio, 'genre': genre, 'duration': duration, 'rating': rating, 'votes': votes, 'mpaa': mpaa, 'cast': '0', 'plot': plot, 'imdb': imdb, 'tvdb': tvdb, 'poster': poster, 'banner': banner, 'clearlogo': clearlogo, 'fanart': fanart, 'thumb': thumb})
             except:
                 pass
 
@@ -362,7 +367,7 @@ class seasons:
                 if limit == 'nextepisode':
 					if int(re.sub('[^0-9]', '', str(premiered))) > int(re.sub('[^0-9]', '', str(self.today_date))): continue  
 					
-                self.list.append({'id': id, 'epnumber' : epnumber, 'title': title,'label': title, 'season': season, 'episode': epnumber, 'tvshowtitle': tvshowtitle, 'year': year, 'premiered': premiered, 'status': status, 'studio': studio, 'genre': genre, 'duration': duration, 'rating': rating, 'votes': votes, 'mpaa': mpaa, 'director': '0', 'writer': '0', 'cast': '0', 'plot': plot, 'imdb': imdb, 'tvdb': tvdb, 'poster': poster, 'banner': '0', 'fanart': fanart, 'thumb': fanart})
+                self.list.append({'id': id, 'epnumber' : epnumber, 'title': title,'label': title, 'season': season, 'episode': epnumber, 'tvshowtitle': tvshowtitle, 'year': year, 'premiered': premiered, 'status': status, 'studio': studio, 'genre': genre, 'duration': duration, 'rating': rating, 'votes': votes, 'mpaa': mpaa, 'director': '0', 'writer': '0', 'cast': '0', 'plot': plot, 'imdb': imdb, 'tvdb': tvdb, 'poster': poster, 'banner': banner, 'clearlogo': clearlogo, 'fanart': fanart, 'thumb': fanart})
 
                 # self.list.append({'title': title, 'label': label, 'season': season, 'episode': episode, 'tvshowtitle': tvshowtitle, 'year': year, 'premiered': premiered, 'status': status, 'studio': studio, 'genre': genre, 'duration': duration, 'rating': rating, 'votes': votes, 'mpaa': mpaa, 'director': director, 'writer': writer, 'cast': cast, 'plot': episodeplot, 'imdb': imdb, 'tvdb': tvdb, 'poster': poster, 'banner': banner, 'fanart': fanart, 'thumb': thumb})
             except:
@@ -612,6 +617,24 @@ class seasons:
             if votes == '' or votes == None: votes = '0'
             if not votes == '0': 
 				self.list[i].update({'votes': votes})
+				
+			# BANNER OR CLEARLOGO META
+            try:clearlogo = item['clearlogo'].encode('utf-8')
+            except: clearlogo = '0'
+            if clearlogo == '': clearlogo = '0'
+            try:banner = item['banner'].encode('utf-8')
+            except: banner = '0'
+            if banner == '': banner = '0'
+			
+            if clearlogo == '0' or banner == '0':
+				try:
+					ftvmeta = fanarttv.get(tvdb, 'tv')
+					if clearlogo == '' or clearlogo == None or clearlogo == '0': clearlogo = ftvmeta['clearlogo']
+					if banner == '' or banner == None or banner == '0': banner = ftvmeta['banner']	
+				except:pass			
+            if not clearlogo == '0':  self.list[i].update({'clearlogo': clearlogo})
+            if not banner == '0':  self.list[i].update({'banner': banner})
+			
 
         except:
             pass
@@ -1707,6 +1730,7 @@ class episodes:
         addToLibrary = control.lang(32551).encode('utf-8')
 
         for i in items:
+
             try:
                 if not 'label' in i: i['label'] = i['title']
 
@@ -1807,7 +1831,10 @@ class episodes:
                     art.update({'banner': i['fanart']})
                 else:
                     art.update({'banner': addonBanner})
-
+					
+                if 'clearlogo' in i and not i['clearlogo'] == '0':
+                    art.update({'clearlogo': i['clearlogo']})
+					
                 if settingFanart == 'true' and 'fanart' in i and not i['fanart'] == '0':
                     item.setProperty('Fanart_Image', i['fanart'])
                 elif not addonFanart == None:

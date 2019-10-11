@@ -1,16 +1,21 @@
 # -*- coding: utf-8 -*-
 
-from resources.lib.modules import control
+from resources.lib.modules import control, cache
 from resources.lib.modules import client
 import requests
 import os,sys,re,json,urllib,urlparse,base64,datetime,time,json
 params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
 action = params.get('action')
 ftvAPI = control.setting('fanart.tv.project')
+if ftvAPI == '' or ftvAPI == None: ftvAPI = 'c0f8fe09b047737777e4cb525105ab94'
 ApiTv = 'http://webservice.fanart.tv/v3/tv/%s?api_key=%s' % ("%s", ftvAPI)
 ApiMovies = 'http://webservice.fanart.tv/v3/movies/%s?api_key=%s' % ("%s", ftvAPI)	
 
 def get(imdb, query):
+	meta = cache.get(getmeta, 720, imdb, query)
+	return meta
+	
+def getmeta(imdb, query):
 	if query == 'movies':  art = ApiMovies % imdb
 	else: art = ApiTv % imdb
 	art = requests.get(art).json()
