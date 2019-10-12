@@ -327,7 +327,7 @@ class tvshows:
 					try: banner = item['banner']		
 					except: banner = '0'
 					if banner == '' or banner == None: banner = '0'
-					if banner != '0' banner = self.tvdb_image + banner	
+					if banner != '0': banner = self.tvdb_image + banner	
 
 						
 					self.list.append({'title': title, 'originaltitle': title, 'year': year, 'premiered': premiered, 'studio': studio, 'genre': '0', 'duration': '0', 'rating': '0', 'votes': '0', 'mpaa': '0', 'director': '0', 'writer': '0', 'cast': '0', 'plot': plot, 'tagline': '0', 'code': imdb, 'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb, 'poster': '0', 'banner': banner, 'fanart': '0', 'next': ''})
@@ -1276,13 +1276,13 @@ class tvshows:
 
 			#FINAL CLEARLOGO CHECK
 
-			try:
+            try:
 				if clearlogo == '' or clearlogo == None or clearlogo == '0':
 					ftvmeta = fanarttv.get(tvdb, 'tv')
 					if clearlogo == '' or clearlogo == None or clearlogo == '0': clearlogo = ftvmeta['clearlogo']
 					if clearart == '' or clearart == None or clearart == '0': clearart = ftvmeta['clearart']
 					if banner == '' or banner == None or banner == '0': banner = ftvmeta['banner']
-			except:pass
+            except:pass
 
 				
             if "http" in poster: artmeta = True 
