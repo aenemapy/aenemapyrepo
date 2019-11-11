@@ -74,6 +74,11 @@ elif action == 'donations':
 	authDialog = deviceAuthDialog.DonationDialog('donations.xml', xbmcaddon.Addon().getAddonInfo('path'), code='', url='')
 	authDialog.doModal()
 	del authDialog			
+
+elif action == 'premiumizeSearch':
+	from resources.lib.api import premiumize
+	premiumize.getSearch()
+
 	
 elif action == 'browse_nav':
     from resources.lib.indexers import navigator

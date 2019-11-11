@@ -251,6 +251,104 @@ def downloadFileToLoc(link, path):
 	downloadzip.silent_download(link, path)
 	
 
+def getSearch(meta=None, list=False):
+	from resources.lib.indexers import movies, tvshows
+	try:
+		t = control.lang(32010).encode('utf-8')
+		k = control.keyboard('', t) ; k.doModal()
+		title = k.getText() if k.isConfirmed() else None
+		if (title == None or title == ''): return	
+		r = searchCloud(title)
+		lists = []
+		for result in r:
+			cm = []	
+			season = '0'
+			isMovie = True
+			isFullShow = False
+			artMeta = False
+			type = result['type']
+			fileLabel = type
+			id = result['id']
+			name = result['name'].encode('utf-8')
+			name = normalize(name)
+			superInfo = {'title': name, 'year':'0', 'imdb':'0'}
+			# RETURN LIST FOR BROWSE SECTION
+			if list==True: 
+				lists.append(name) 
+				continue
+			# ##################################
+		
+			playLink = '0'
+			isFolder = True
+			isPlayable = 'false'
+
+			url = '%s?action=%s&id=%s' % (sysaddon, 'premiumizeOpenFolder', id)
+			
+			sysmeta = urllib.quote_plus(json.dumps(superInfo))				
+			year = superInfo['year']
+			imdb = superInfo['imdb']
+			systitle = urllib.quote_plus(superInfo['title'])
+			
+			links = []
+			if type == 'file':
+				if control.setting('transcoded.play') == 'true':
+					try:
+						playLink = result['stream_link']
+						if not "http" in playLink: playLink = result['link']
+						type = 'TRANSCODED'
+					except: playLink = result['link']
+				else:
+					playLink = result['link']
+				playLink = urllib.quote_plus(playLink)
+				ext = playLink.split('.')[-1]
+				
+				if control.setting('filter.files') == 'true':
+					if not ext.lower() in VALID_EXT: continue
+	
+				fileLabel = type + " " + str(ext)
+				try: 
+					size = result['size']
+					size = getSize(size)
+				except: size = ''
+				if size != '': fileLabel = fileLabel + " | " + str(size)
+
+				isFolder = False
+				isPlayable = 'true'
+
+				url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, 'resolve', systitle , year, imdb, sysmeta, id)
+				cm.append(('Queue Item', 'RunPlugin(%s?action=queueItem)' % sysaddon))					
+				if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s&id=%s)' % (sysaddon, name, playLink, id)))
+			else: cm.append(('Download Folder (Zip)', 'RunPlugin(%s?action=downloadZip&name=%s&id=%s)' % (sysaddon, name, id)))
+			
+			cm.append(('Delete from Cloud', 'RunPlugin(%s?action=premiumizeDeleteItem&id=%s&type=%s)' % (sysaddon, id, type)))
+			cm.append(('Rename Item', 'RunPlugin(%s?action=premiumizeRename&id=%s&type=%s&title=%s)' % (sysaddon, id, type, name)))
+			
+			if control.setting('file.prefix') == 'true': 			
+				label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
+				
+			else: label = str(name)
+			
+			item = control.item(label=label)
+			item.setProperty('IsPlayable', isPlayable)				
+			try:
+				if ext.lower() == 'mp3' or ext.lower() == 'flac': 
+					item.setProperty('IsPlayable', isPlayable)	
+					url = playLink
+			except:pass
+				
+			item.setArt({'icon': control.icon, 'thumb': control.icon})
+			item.setProperty('Fanart_Image', control.addonFanart())
+				
+			item.setInfo(type='Video', infoLabels = superInfo)
+			item.addContextMenuItems(cm)
+			if list != True: control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)
+			
+		if list == True: return lists
+
+		control.directory(syshandle, cacheToDisc=False)
+	except: pass
+	
+	
 def getFolder(id, meta=None, list=False):
 	from resources.lib.indexers import movies, tvshows
 	try:
@@ -1069,7 +1167,7 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
 			exactPlay = True
 				
 		else: content = normalSources
-		
+		autoPlayFiles = []		
 		for result in content:
 			cm = []
 			type = result['type']
@@ -1102,15 +1200,22 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
 				isFolder = False
 				isPlayable = 'true'
 				url = playLink
+				autoPlayFiles.append([url, id])
 				#AUTOPLAY
-				if exactPlay == True and control.setting('scraper.autoplay') == 'true': return url, id
-				
+			
+
 			label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
 			labels.append(label)
 			sources.append(url)
 			types.append(type)
 			IDs.append(id)
+
 		
+		if exactPlay == True and control.setting('scraper.autoplay') == 'true' and len(autoPlayFiles) == 1: 
+			url = autoPlayFiles[0][0]
+			id  = autoPlayFiles[0][1]
+			return url, id
+							
 		try: progress.close()
 		except:pass
 		try: progress.close()

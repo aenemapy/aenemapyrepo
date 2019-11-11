@@ -48,6 +48,7 @@ class navigator:
 			sys.exit()	
 		
         #self.addDirectoryItem('TEST', 'testItem', 'movies.png', 'DefaultMovies.png')
+        self.addDirectoryItem('Search Cloud', 'premiumizeSearch', 'cloud.png', 'DefaultMovies.png')
         self.addDirectoryItem('Meta Cloud', 'meta_cloud', 'cloud.png', 'DefaultTVShows.png')
         self.addDirectoryItem('Meta Library', 'libraryNavigator', 'cloud.png', 'DefaultMovies.png', isFolder=True)   
         self.addDirectoryItem(50001, 'premiumizeNavigator', 'cloud.png', 'DefaultTVShows.png')
