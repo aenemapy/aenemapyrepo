@@ -90,7 +90,7 @@ class DonationDialog(xbmcgui.WindowXMLDialog):
 
         if control == LATER_BUTTON:
             import webbrowser
-            link = 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ERQGTGH35NREL&source=url'
+            link = ''
             webbrowser.open(link, autoraise = True, new = 2)			
 
         if control in [LATER_BUTTON, NEVER_BUTTON]:

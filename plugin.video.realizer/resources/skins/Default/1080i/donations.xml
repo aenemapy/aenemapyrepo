@@ -17,7 +17,7 @@
 			<top>0</top>
 			<left>0</left>
 			<control type="group">
-				# PAYPAL
+<!-- 				# PAYPAL
 				<control type="image">
 					<posx>12%</posx>
 					<posy>10%</posy>
@@ -32,12 +32,12 @@
 					<width>250</width>
 					<height>250</height>
 					<texture>donations/paypal-code.png</texture>
-				</control>
+				</control> -->
 				
 				
 				# PREMIUMIZE
 				<control type="image">
-					<posx>32%</posx>
+					<posx>12%</posx>
 					<posy>10%</posy>
 					<width>250</width>
 					<height>200</height>
@@ -45,7 +45,7 @@
 				</control>
 				
 				<control type="image">
-					<posx>32%</posx>
+					<posx>12%</posx>
 					<posy>30%</posy>
 					<width>250</width>
 					<height>250</height>
@@ -54,7 +54,7 @@
 				
 				# REALDEBRID
 				<control type="image">
-					<posx>52%</posx>
+					<posx>33%</posx>
 					<posy>10%</posy>
 					<width>250</width>
 					<height>200</height>
@@ -62,7 +62,7 @@
 				</control>
 				
 				<control type="image">
-					<posx>52%</posx>
+					<posx>33%</posx>
 					<posy>30%</posy>
 					<width>250</width>
 					<height>250</height>
@@ -72,7 +72,7 @@
 				
 				# IPVANISH
 				<control type="image">
-					<posx>72%</posx>
+					<posx>52%</posx>
 					<posy>10%</posy>
 					<width>250</width>
 					<height>200</height>
@@ -80,7 +80,7 @@
 				</control>
 				
 				<control type="image">
-					<posx>72%</posx>
+					<posx>52%</posx>
 					<posy>30%</posy>
 					<width>250</width>
 					<height>250</height>

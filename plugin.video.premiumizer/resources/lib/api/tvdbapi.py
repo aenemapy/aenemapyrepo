@@ -61,7 +61,7 @@ def createJson():
 	
 def authTvdb():
     oauth = "https://api.thetvdb.com/login"
-    headers = {'accept-encoding': 'gzip', 'accept-language': 'en-US', 'Content-Type': 'application/json', 'apikey': tvdbApi}
+    headers = {'accept-encoding': 'gzip', 'accept-language': 'en', 'Content-Type': 'application/json', 'apikey': tvdbApi}
     auth_post = {'apikey': tvdbApi}
     result = requests.post(oauth, data=json.dumps(auth_post), headers=headers).json()
     token = result['token'].encode('utf-8')
@@ -96,7 +96,7 @@ def getToken():
 
 def getTvdb(url, timeout=30):
     token = getToken()
-    headers = {'accept-encoding': 'gzip', 'accept-language': 'en-US', 'Content-Type': 'application/json',  'apikey': tvdbApi}
+    headers = {'Accept-Language': 'en', 'Content-Type': 'application/json'}
     headers['Authorization'] = 'Bearer %s' % token
     checkTVDB(url, headers)
     try: result = requests.get(url, headers=headers, timeout=timeout).content
@@ -126,7 +126,7 @@ def addTvShow(title, tvdb):
     url = '/%s' % tvdb
     url = tvdb_favourites + url
 
-    headers = {'accept-encoding': 'gzip', 'accept-language': 'en-US', 'Content-Type': 'application/json', 'apikey': tvdbApi}
+    headers = {'accept-encoding': 'gzip', 'accept-language': 'en', 'Content-Type': 'application/json', 'apikey': tvdbApi}
     headers['Authorization'] = 'Bearer %s' % token
     auth_post = {'apikey': tvdbApi}
     result = requests.put(url, data=json.dumps(auth_post), headers=headers)
