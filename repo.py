@@ -150,7 +150,7 @@ if (__name__ == "__main__"):
                 foldertozip = rootdir + os.sep + x
                 filesinfoldertozip = os.listdir(foldertozip) 
 
-				
+                
                 # #check if zips folder exists
                 if not os.path.exists(zipsfolder):
                     os.makedirs(zipsfolder)
@@ -168,14 +168,14 @@ if (__name__ == "__main__"):
                     tree_ex = ET.parse(existing_xml)
                     root_ex = tree_ex.getroot()
                     for elem in root_ex.iter('addon'):
-						version_ext = str(elem.attrib['version'])	
-						if versionID == version_ext: toskip = True
+                        version_ext = str(elem.attrib['version'])   
+                        if versionID == version_ext: toskip = True
                 except:pass
-				
+                
                 if toskip == True:
-					skipped += 1
-					print ("SKIPPING ADDON AS IT IS NOT CHANGED: ", x)
-					continue
+                    skipped += 1
+                    print ("SKIPPING ADDON AS IT IS NOT CHANGED: ", x)
+                    continue
                 # #check if and move addon, changelog, fanart and icon to zipdir                       
                 for y in filesinfoldertozip: 
                     # print('processing file: ' + os.path.join(rootdir,x,y))

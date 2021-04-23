@@ -1,0 +1,29 @@
+[B]2021.04.23[/B] - Updated Addon to Python 3, compatible to Kodi 19
+[B]2019.02.17[/B] - Switched to Oauth Authorization
+[B]2019.02.09[/B] - Added sort options for Trakt Lists
+[B]2019.02.06[/B] - (SETTINGS) Added ability to see and play non  video files.
+[B]2018.11.28[/B] - Hotfixes and changed NextUp skin
+[B]2018.08.06[/B] - Fixed missing tv shows seasons while browsing content
+[B]2018.08.05[/B] - Fixed Playback Issues
+[B]2018.07.10[/B] - Improved post playback routines and checks
+[B]2018.05.10[/B] - User Requests: Transcoded option for playback - Show Only Video Files
+[B]2018.05.10[/B] - Added Delete Items after Watched + autodelete setting, Added Autoplay under Scraper Settings
+[B]2018.04.21[/B] - Library now match your cloud folders and files structures. Selective sync updated and improved to reflect changes
+[B]2018.04.17[/B] - Rewrote Cloud Sync to Library. Now is a selective Mode instead of a full Cloud Copy. Some improvements in handling files.
+[B]2018.04.13[/B] - Code improvements. Improved library sync all around
+[B]2018.03.26[/B] - Scraper Recursive Folders
+[B]2018.03.25[/B] - Added Library Sync
+[B]2018.03.06[/B] - Recursive Metadata in Cloud Folders and improved overall
+[B]2018.01.22[/B] - User Request. Added Filesize to files
+[B]2018.01.14[/B] - Improved code and title matching. Added TV Shows metadata in cloud sections(need to be enabled in the settings)
+[B]2018.01.12[/B] - Improved title matching and playback. Overall cleanup
+[B]2018.01.12[/B] - Fixed Playback Issues and some code cleanup. Better Title matching in Cloud Section
+[B]2018.01.11[/B] - Added Meta to Movies in Cloud Section if title starts with the format "TITLE (YEAR)" i.e: Dunkirk (2017)
+[B]2018.01.08[/B] - Added Rename - Match in Browse Lists and some additional cleanups
+[B]2018.01.05.3[/B] - Added Download Features and tweaked lists
+[B]2018.01.05[/B]
+
+- Improved results and transfer functions
+[B]2018.01.04[/B]
+
+- Initial Release

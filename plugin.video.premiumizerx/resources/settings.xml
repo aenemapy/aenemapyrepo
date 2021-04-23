@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<category label="32310">
+		<setting type="lsep" label="Premiumize Settings" />
+		<setting id="first.start" type="bool" label="startup control" default="true" visible="false" />
+		<setting id="first.setup" type="bool" label="setup control" default="false" visible="false" />
+		<setting id="popup.date" type="text" label="popu control" default="0" visible="false" />
+		<setting id="premiumize.authorization" type="action" label="Authorize Premiumize" option="close" action="RunPlugin(plugin://plugin.video.premiumizerx/?action=authPremiumize)" />		
+		<setting id="premiumize.status" type="text" visible="true" label="Status" default="" />
+		<setting id="premiumize.token" type="text" option="hidden" visible="false" label="" default="" />
+		<setting id="premiumize.refresh" type="text" option="hidden" visible="false" label="" default="" />
+		
+		<setting id="premiumize.tls" type="bool" label="Use HTTPS protocol" default="true" />
+		<setting id="cachecloud.startup" type="bool" label="Cache Cloud content at Startup" default="false" />
+		<setting type="lsep" label="Meta Cloud" />
+		<setting id="metacloud.dialog" type="bool" label="Show Meta Cloud scraping Dialogs" default="true"/>
+		<setting id="metacloud.sort" type="enum" label="Sort Meta Cloud by" values="Date|Title" default="0" />
+				
+		<setting type="lsep" label="Playback Settings" />			
+		<setting id="transcoded.play" type="bool" label="Play Transcoded Files if avaialable" default="false" />
+		<setting id="filter.files" type="bool" label="Filter Non Video Files" default="true" />
+		<setting type="lsep" label="Nextup Notification" />	
+		<setting type="sep" />	
+		<setting id="nextup.service" type="bool" label="Nextup Notification for Tv Shows" default="false" />
+		<setting id="nextup.timeout" type="slider" label="Time left for notification (seconds)" default="45" range="10,300" option="int"  visible="eq(-1,true)" />
+		<setting id="nextup.action" type="enum" label="Default Action after dialog ends" values="Play|Do Nothing" default="0" visible="eq(-2,true)" />
+		<setting id="nextup.skin.native" type="bool" label="Skin native look for Popup (if supported)" default="false" visible="eq(-3,true)" />
+				
+		<setting type="lsep" label="Post-Playback Settings" />			
+		<setting id="cloud.delete.mode" type="enum" label="Delete Watched File Mode" values="Ask|Autodelete|Off" default="0" />
+		<setting id="cloud.autodelete.movies" type="bool" label="Autodelete Movie File" default="true" visible="eq(-1,1)"/>
+		<setting id="cloud.autodelete.tv" type="bool" label="Autodelete TV File" default="true" visible="eq(-2,1)"/>
+		<setting id="cloud.autodelete.unknown" type="bool" label="Autodelete Unknown Type File" default="true" visible="eq(-3,1)"/>
+	
+		<setting type="lsep" label="Cosmetics" />		
+		<setting id="file.prefix"  type="bool"  label="Show Files Prefix in Cloud Browser" default="true" />		
+		<setting id="poster.type" type="enum" label="Poster Quality" values="SD|HD|Max Quality" default="1" />
+		<setting id="fanart.type" type="enum" label="Fanart Quality" values="SD|HD|Max Quality" default="2" />
+		<setting id="fanart.tv.meta" type="bool" label="Fanart.tv additional Meta" default="true" />
+		
+		<setting type="lsep" label="General Settings" />		
+		<setting id="api.language" type="select" label="32316" values="AUTO|Bulgarian|Chinese|Croatian|Czech|Danish|Dutch|English|Finnish|French|German|Greek|Hebrew|Hungarian|Italian|Japanese|Korean|Norwegian|Polish|Portuguese|Romanian|Russian|Serbian|Slovak|Slovenian|Spanish|Swedish|Thai|Turkish|Ukrainian" default="English" />
+		<setting id="fanart" type="bool" label="32318" default="true" />
+		<setting id="bookmarks" type="bool" label="32344" default="true" />
+		<setting id="bookmarks.autoresume" type="bool" label="Auto Resume Bookmars" visible="!eq(-1,false)" default="true" />
+		<setting id="indicators.alt" type="enum" label="32313" lvalues="32314|32315" default="0" />
+		<setting id="inprogress_db" type="bool" label="Enable In Progress Database" default="true" />		
+
+		<setting id="setting.timezone" type="labelenum" visible="!eq(-1,false)" label="TimeZone UTC" default="+0" values="+0|+1|+2|+3|+4|+5|+6|+7|+8|+9|+10|+11|+12|-1|-2|-3|-4|-5|-6|-7|-8|-9|-10|-11|-12" />
+		<setting type="lsep" label="Developer Settings" />
+		<setting id="premiumizer.debug" type="bool" label="Enable Debug Log" default="false" />
+		
+		
+		<setting id="last.version" type="text" label="Notification Popup" default="0" visible="false" />	
+	</category>
+	<category label="32346">
+		<setting id="remotedb.list" type="bool" label="Remote SQL Database" visible='false' default="false" />
+		<setting id="remotedb.url" type="text" label="Url" default="" visible="false"  />	
+		<setting type="lsep" label="Trakt" />
+		<setting id="trakt.authorization" type="action" label="32306" option="close" action="RunPlugin(plugin://plugin.video.premiumizerx/?action=authTrakt)" />
+		<setting id="trakt.user" type="text" default="" label="User" visible="true" />		
+		<setting id="trakt.scrobbleTV" type="bool" label="Scrobble Episodes" default="true" />
+		<setting id="trakt.scrobbleMovies" type="bool" label="Scrobble Movies" default="true" />
+		<setting id="trakt.scrobblePlayback" type="bool" label="Scrobble Playback/Resume" default="false" />
+		<setting id="trakt.sortby" type="enum" label="Sort Trakt Lists by" values="Last Watched|Premiered|Title" default="0" />
+		<setting id="trakt.token" type="text" option="hidden" visible="false" label="" default="" />
+		<setting id="trakt.refresh" type="text" option="hidden" visible="false" label="" default="" />
+		<setting type="sep" />
+		<setting type="lsep" label="IMDb" />
+		<setting id="imdb.user" type="text" label="32303" default="" />		
+		<setting type="sep" />
+		<setting type="lsep" label="TVDB" />
+		<setting id="tvdb.AuthorizeApi" type="action" label="Refresh Token" enable="true" option="close" action="RunPlugin(plugin://plugin.video.premiumizerx/?action=AuthorizeTvdb)" />
+		<setting id="tvdb.api" type="text" visible="true" label="API" default="DC475D7361F78DCD" />
+		<setting id="tvdb.token" type="text" option="hidden" visible="false" label="" default="" />
+		<setting id="tvdb.refresh" type="text" option="hidden" visible="false" label="" default="0" />
+		<setting type="sep" />
+		<setting type="lsep" label="TMDb" />
+		<setting id="tmdb.api" type="text" label="API" default="" />
+				
+		<setting type="sep" />
+		<setting type="lsep" label="FANART.TV" />
+		<setting id="fanart.tv.user" type="text" visible="true" label="User Api KEY" default="" />
+		<setting id="fanart.tv.project" type="text" visible="true" label="Project Api KEY" default="" />
+	</category>
+
+	<category id="general" label="Meta Library">
+		<setting id="meta.library.movies" type="folder" label="Movies Library Path" default="special://userdata/addon_data/plugin.video.premiumizerx/Movies" />	
+		<setting id="meta.library.tv" type="folder" label="Tv Library Path" default="special://userdata/addon_data/plugin.video.premiumizerx/Tv" />	
+		<setting id="meta.library.update" type="bool" label="Auto Update Meta Library" default="false" />	
+		<setting id="meta.library.refresh" type="text" label="" default="0" visible="false" />	
+	</category>	
+
+	
+	<category id="general" label="Scraper Settings">
+		<setting id="scraper.matchtitle" type="bool" label="Show Only Matching Titles while Scraping" default="true" />
+		<setting id="scraper.filesonly" type="bool" label="Show Only Files Results" default="true" />
+		<setting id="scraper.autoplay" type="bool" label="AutoPlay if Single Matched Item" default="true" />
+	</category>	
+	
+ 	<category label="32347">
+		<setting id="downloads" type="bool" label="32348" default="false" />
+		<setting id="download.path" type="folder" label="Path" enable="!eq(-1,false)" default="" />
+
+	</category>
+	
+	
+	
+</settings>

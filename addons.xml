@@ -49,7 +49,7 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.premiumizer" version="2019.11.11" name="Premiumizer" provider-name="aenema">
+<addon id="plugin.video.premiumizer" version="2020.01.24" name="Premiumizer" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.beautifulsoup4" />
@@ -101,7 +101,58 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.realizer" version="2019.09.01" name="Realizer" provider-name="aenema">
+<addon id="plugin.video.premiumizerx" version="2021.04.23" name="Premiumizer (py3)" provider-name="aenema">
+	<requires>
+		<import addon="xbmc.python" version="3.0.0" />
+		<import addon="script.module.beautifulsoup4" />
+		<import addon="script.module.requests" />
+
+
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="main.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.service" library="service.py" start="startup" />
+	<extension point="kodi.context.item">
+		<menu id="kodi.core.main">
+			<menu>
+
+				<label>[COLOR red]Premiumizer[/COLOR]</label>
+				<item library="context/updatecache.py">
+					<label>New Cloud Cache</label>
+					<visible>System.HasAddon(plugin.video.premiumizerx)</visible>
+				</item>
+				<item library="context/updatelibrary.py">
+					<label>Update Library</label>
+					<visible>System.HasAddon(plugin.video.premiumizerx)</visible>
+				</item>
+				<item library="context/contextTools.py">
+					<label>Settings</label>
+					<visible>System.HasAddon(plugin.video.premiumizerx)</visible>
+				</item>
+			</menu>
+		</menu>
+	</extension>
+
+	<extension point="xbmc.addon.metadata">
+        <description>Premiumize Cloud Addon with a twist!
+		This addon is inteded for use with content that you currently own! The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the content provider.
+		</description>
+
+		<summary lang="en">premiumizer Cloud Addon</summary>
+		<platform>all</platform>
+		<forum>-</forum>
+		<website>http://premiumize.me</website>
+		<source>-</source>
+		<assets>
+			<icon>icon.png</icon>
+			<fanart>fanart.jpg</fanart>
+		</assets>
+		<news>-</news>
+	</extension>
+</addon>
+
+<addon id="plugin.video.realizer" version="2020.01.24" name="Realizer" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.beautifulsoup4" />

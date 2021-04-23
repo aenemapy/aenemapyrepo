@@ -1,0 +1,13 @@
+This addons uses your Premiumize Cloud as a base for scraping Movies and TV Shows.
+It is meant to be used with the Premiumize cloud service based on content you currently own, it does not share/upload/links to copyrighted content, please use this addon responsibly and according to the law of your country.
+Any query/question regarding copyrighted material will not be answered nor addressed.
+
+To get the best out of this addon please add your own TMDB API (https://www.themoviedb.org/) and TVDB API (https://www.thetvdb.com). Some features will not work if you did not set an API from those services, mainly missing fanarts, and some categories.
+
+Meta only work if title are named in a conventional way: 
+
+FOR MOVIES:  {Movie Name} {Year} - for example: Interstellar.2018.Bluray.mkv
+FOR EPISODES: {Tvshow Title} {Season|S}{SeasonNumber}{Episode|E|x}{EpisodeNumber} - examples are :TheBig Bang Theory.S10E10 - The Big Bang Theory.10x10 - The Big Bang Theory Season 10 Episode 10
+The addon will filter out most of the commas and special characthers but those structures must be present for the meta to work.
+
+Bear in mind that any changes to the addons are pure discretions of the developer, the addon is free in the spirit of open source.

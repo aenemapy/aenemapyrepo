@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window id="9999">
+	<defaultcontrol always="true">9001</defaultcontrol>
+
+	<animation effect="fade" start="0" end="100" time="300">WindowOpen</animation>
+	<animation effect="fade" start="100" end="0" time="300">WindowClose</animation>
+	<controls>
+		<control type="image">
+			<description>Fade</description>
+
+			<width>2200</width>
+			<height>2200</height>
+			<texture>bg-fade.png</texture>
+		</control>
+		
+		<control type="group">
+			<top>0</top>
+			<left>0</left>
+			<control type="group">
+<!-- 				<control type="image">
+					<description>Background Image</description>
+					<posx>0</posx>
+					<posy>0</posy>
+					<width>800</width>
+					<height>340</height>
+					<texture>auth-bg.png</texture>
+				</control> -->
+				<control type="label">
+					<description>header label</description>
+					<posx>55%</posx>
+					<posy>2%</posy>
+					<width>490</width>
+					<height>25</height>
+					<label>Premiumize Account Verification</label>
+					<align>right</align>
+					<aligny>center</aligny>
+					<font>font14</font>
+					<textcolor>FFEB1518</textcolor>
+				</control>
+				<control type="button">
+					<description>Close Window button</description>
+					<posx>95%</posx>
+					<posy>0</posy>
+					<width>64</width>
+					<height>32</height>
+					<label></label>
+					<font></font>
+					<onclick>PreviousMenu</onclick>
+					<texturefocus>close-fo.png</texturefocus>
+					<texturenofocus>close-nofo.png</texturenofocus>
+					<visible>system.getbool(input.enablemouse)</visible>
+				</control>
+			</control>
+			<control type="group">
+				<control type="label" id="203">
+					<description>Instructions Label</description>
+					<posx>25%</posx>
+					<posy>40%</posy>
+					<width>50%</width>
+					<height>150</height>
+					<font>font16</font>
+					<wrapmultiline>true</wrapmultiline>
+					<label>TEST LABEL</label>
+					<textcolor>ffffffff</textcolor>
+					<aligny>center</aligny>
+				</control>
+				<control type="label" id="204">
+					<description>Code Label</description>
+					<posx>30%</posx>
+					<posy>25%</posy>
+					<width>360</width>
+					<height>60</height>
+					<font>font16</font>
+					<label>TEST LABEL</label>
+					<textcolor>00000000</textcolor>
+					<aligny>center</aligny>
+				</control>
+				<control type="label" id="205">
+					<description>Warning Label</description>
+					<posx>25%</posx>
+					<posy>30%</posy>
+					<width>80%</width>
+					<height>60</height>
+					<font>font16</font>
+					<wrapmultiline>true</wrapmultiline>
+					<label>This Addon Cannot be used without an account.</label>
+					<textcolor>ffffffff</textcolor>
+					<aligny>center</aligny>
+				</control> 
+			</control>
+			<control type="image">
+				<description>QR Code</description>
+				<posx>75%</posx>
+				<posy>25%</posy>
+				<width>350</width>
+				<height>350</height>
+				<texture>qr_code.png</texture>
+				<aspectratio>keep</aspectratio>
+			</control>
+			<control type="grouplist" id="9001">
+				<posx>25%</posx>
+				<posy>80%</posy>
+				<width>800</width>
+				<height>40</height>
+				<align>center</align>
+				<itemgap>30</itemgap>
+				<orientation>horizontal</orientation>
+				<control type="button" id="201">
+					<description>Later Button</description>
+					<width>300</width>
+					<height>40</height>
+					<align>center</align>
+					<aligny>center</aligny>
+					<label>Visit Website</label>
+					<font>font12_title</font>
+					<textcolor>AA000000</textcolor>
+					<texturenofocus>button-nofo.png</texturenofocus>
+					<texturefocus>button-fo.png</texturefocus>				
+					<textoffsetx>10</textoffsetx>
+				</control>
+				<control type="button" id="202">
+					<description>Never Button</description>
+					<width>300</width>
+					<height>40</height>
+					<align>center</align>
+					<aligny>center</aligny>
+					<label>Settings</label>
+					<textcolor>AA000000</textcolor>
+					<texturenofocus>button-nofo.png</texturenofocus>
+					<texturefocus>button-fo.png</texturefocus>				
+					<font>font12_title</font>
+					<textoffsetx>10</textoffsetx>
+				</control>
+			</control>
+
+		</control>
+
+		</controls>
+</window>
