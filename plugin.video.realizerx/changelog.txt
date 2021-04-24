@@ -1,0 +1,14 @@
+[B]2021.04.24[/B] - Forked Realizer to Realizer py3 - new version will work on python 3 and kodi matrix
+[B]2019.05.01[/B] - Improved RSS Manager - added Rss Reader Mode - Added a Timer for auto RSS update
+[B]2019.02.09[/B] - Added sort options for Trakt Lists
+[B]2019.02.06.2[/B] - Hotfix Torrent Packs are now sorted alphabetically
+[B]2019.02.06[/B] - Improved Multipage Scraping for Torrent Packs and Single Items
+[B]2019.01.31[/B] - Hotfixes on paginations and api calls
+[B]2019.01.30[/B] - Added Rss Manager, Improved modules and lists
+[B]2019.01.27.5[/B] - Improved multi pages torrent lists and scraping, (OPTION) Cached cloud list option, (OPTION) sort torrent list alphabetically
+[B]2019.01.22[/B] - Improved matching titles and torrent checks
+[B]2019.01.20[/B] - Fixed Scraping Bugs and fallback for Torrent Packs
+[B]2019.x.x[/B] - Initial Release
+
+
+

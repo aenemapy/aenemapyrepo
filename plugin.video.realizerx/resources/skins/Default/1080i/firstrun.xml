@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window id="9999">
+	<defaultcontrol always="true">201</defaultcontrol>
+
+	<animation effect="fade" start="0" end="100" time="300">WindowOpen</animation>
+	<animation effect="fade" start="100" end="0" time="300">WindowClose</animation>
+	<controls>
+		<control type="image">
+			<description>Fade</description>
+
+			<width>2200</width>
+			<height>2200</height>
+			<texture>bg-fade.png</texture>
+		</control>
+		
+		<control type="group">
+			<top>0</top>
+			<left>0</left>
+			<control type="group">
+<!-- 				# PAYPAL
+				<control type="image">
+					<posx>12%</posx>
+					<posy>10%</posy>
+					<width>250</width>
+					<height>200</height>
+					<texture>donations/paypal.png</texture>
+				</control>
+				
+				<control type="image">
+					<posx>12%</posx>
+					<posy>30%</posy>
+					<width>250</width>
+					<height>250</height>
+					<texture>donations/paypal-code.png</texture>
+				</control> -->
+
+				<control type="image">
+
+					<posx>40%</posx>
+					<posy>10%</posy>
+					<width>250</width>
+					<height>250</height>
+					<texture>donations/premiumize-logo.png</texture>
+				</control>
+				
+				<control type="image">
+					<posx>40%</posx>
+					<posy>35%</posy>
+					<width>250</width>
+					<height>250</height>
+					<texture>donations/pm-code.png</texture>
+				</control>
+			
+				
+				<control type="label">
+					<description>header label</description>
+					<posx>55%</posx>
+					<posy>2%</posy>
+					<width>490</width>
+					<height>25</height>
+					<label>Premiumize Account</label>
+					<align>right</align>
+					<aligny>center</aligny>
+					<font>font14</font>
+					<textcolor>FFEB1518</textcolor>
+				</control>
+				<control type="button">
+					<description>Close Window button</description>
+					<posx>95%</posx>
+					<posy>0</posy>
+					<width>64</width>
+					<height>32</height>
+					<label></label>
+					<font></font>
+					<onclick>PreviousMenu</onclick>
+					<texturefocus>close-fo.png</texturefocus>
+					<texturenofocus>close-nofo.png</texturenofocus>
+					<visible>system.getbool(input.enablemouse)</visible>
+				</control>
+			</control>
+			<control type="group">
+
+				<control type="label" id="205">
+					<description>Warning Label</description>
+					<posx>10%</posx>
+					<posy>65%</posy>
+					<width>80%</width>
+					<height>30%</height>
+					<font>font16</font>
+					<wrapmultiline>true</wrapmultiline>
+					<label>A premiumize Account is needed to use this addon. You can setup one following the QR Code and you will get 15 days free, If you already have one please authorize in the addon settings</label>
+					<textcolor>ffffffff</textcolor>
+					<aligny>center</aligny>
+				</control> 
+			</control>
+
+
+
+		</control>
+
+		</controls>
+</window>

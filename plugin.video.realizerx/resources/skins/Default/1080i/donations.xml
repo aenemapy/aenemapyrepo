@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window id="9999">
+	<defaultcontrol always="true">201</defaultcontrol>
+
+	<animation effect="fade" start="0" end="100" time="300">WindowOpen</animation>
+	<animation effect="fade" start="100" end="0" time="300">WindowClose</animation>
+	<controls>
+		<control type="image">
+			<description>Fade</description>
+
+			<width>2200</width>
+			<height>2200</height>
+			<texture>bg-fade.png</texture>
+		</control>
+		
+		<control type="group">
+			<top>0</top>
+			<left>0</left>
+			<control type="group">
+<!-- 				# PAYPAL
+				<control type="image">
+					<posx>12%</posx>
+					<posy>10%</posy>
+					<width>250</width>
+					<height>200</height>
+					<texture>donations/paypal.png</texture>
+				</control>
+				
+				<control type="image">
+					<posx>12%</posx>
+					<posy>30%</posy>
+					<width>250</width>
+					<height>250</height>
+					<texture>donations/paypal-code.png</texture>
+				</control> -->
+				
+				
+				# PREMIUMIZE
+				<control type="image">
+					<posx>12%</posx>
+					<posy>10%</posy>
+					<width>200</width>
+					<height>200</height>
+					<texture aspectration='keep'>donations/doge.png</texture>
+				</control>
+				
+				<control type="image">
+					<posx>12%</posx>
+					<posy>30%</posy>
+					<width>200</width>
+					<height>200</height>
+					<texture >donations/doge_code.png</texture>
+				</control>
+				
+				# REALDEBRID
+				<control type="image">
+					<posx>25%</posx>
+					<posy>10%</posy>
+					<width>200</width>
+					<height>200</height>
+					<texture>donations/eth-logo.png</texture>
+				</control>
+				
+				<control type="image">
+					<posx>25%</posx>
+					<posy>30%</posy>
+					<width>200</width>
+					<height>200</height>
+					<texture>donations/eth-code.png</texture>
+				</control>
+				
+				
+				# IPVANISH
+				<control type="image">
+					<posx>38%</posx>
+					<posy>10%</posy>
+					<width>200</width>
+					<height>200</height>
+					<texture>donations/btc-logo.png</texture>
+				</control>
+				
+				<control type="image">
+					<posx>38%</posx>
+					<posy>30%</posy>
+					<width>200</width>
+					<height>200</height>
+					<texture>donations/btc-code.png</texture>
+				</control>
+				
+				# REALDEBRID
+				<control type="image">
+					<posx>51%</posx>
+					<posy>10%</posy>
+					<width>200</width>
+					<height>200</height>
+					<texture>donations/premiumize-logo.png</texture>
+				</control>
+				
+				<control type="image">
+					<posx>51%</posx>
+					<posy>30%</posy>
+					<width>200</width>
+					<height>200</height>
+					<texture>donations/pm-code.png</texture>
+				</control>
+				
+				
+				# IPVANISH
+				<control type="image">
+					<posx>64%</posx>
+					<posy>10%</posy>
+					<width>200</width>
+					<height>200</height>
+					<texture>donations/rd-logo.png</texture>
+				</control>
+				
+				<control type="image">
+					<posx>64%</posx>
+					<posy>30%</posy>
+					<width>200</width>
+					<height>200</height>
+					<texture>donations/rd-code.png</texture>
+				</control>
+				
+				# IPVANISH
+				<control type="image">
+					<posx>77%</posx>
+					<posy>10%</posy>
+					<width>200</width>
+					<height>200</height>
+					<texture>donations/ipvanish-logo.png</texture>
+				</control>
+				
+				<control type="image">
+					<posx>77%</posx>
+					<posy>30%</posy>
+					<width>200</width>
+					<height>200</height>
+					<texture>donations/ipv-code.png</texture>
+				</control>				
+				
+				<control type="label">
+					<description>header label</description>
+					<posx>55%</posx>
+					<posy>2%</posy>
+					<width>490</width>
+					<height>25</height>
+					<label>Support Development</label>
+					<align>right</align>
+					<aligny>center</aligny>
+					<font>font14</font>
+					<textcolor>FFEB1518</textcolor>
+				</control>
+				<control type="button">
+					<description>Close Window button</description>
+					<posx>95%</posx>
+					<posy>0</posy>
+					<width>64</width>
+					<height>32</height>
+					<label></label>
+					<font></font>
+					<onclick>PreviousMenu</onclick>
+					<texturefocus>close-fo.png</texturefocus>
+					<texturenofocus>close-nofo.png</texturenofocus>
+					<visible>system.getbool(input.enablemouse)</visible>
+				</control>
+			</control>
+			<control type="group">
+
+				<control type="label" id="205">
+					<description>Warning Label</description>
+					<posx>10%</posx>
+					<posy>65%</posy>
+					<width>80%</width>
+					<height>30%</height>
+					<font>font16</font>
+					<wrapmultiline>true</wrapmultiline>
+					<label>To show appreciation for this addon and to the dev, you can send a donation or use the affiliation links if you are interested in using some of the services</label>
+					<textcolor>ffffffff</textcolor>
+					<aligny>center</aligny>
+				</control> 
+			</control>
+
+
+
+		</control>
+
+		</controls>
+</window>
