@@ -1,4 +1,4 @@
 # aenemapyrepo
 Kodi repo
 
-Updated script.tvskipintro to support Kodi v19
+Updated script.tvskipintro & scrip.hideosd to support Kodi v19
