@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from urlparse import parse_qsl
+from urllib.parse import parse_qsl
 import sys
 params = dict(parse_qsl(sys.argv[2].replace('?','')))
 
@@ -45,4 +45,4 @@ source = params.get('source')
 content = params.get('content')
 
 if action == None:
-    print "TODO MAIN ADDON SECTION"
+    print("TODO MAIN ADDON SECTION")
