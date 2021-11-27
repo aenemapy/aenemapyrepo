@@ -15,7 +15,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    along with this program.  If not, see .
 '''
 
 import xbmcvfs,xbmc,xbmcaddon,json,os,xbmcgui, time, re
@@ -23,8 +23,8 @@ import xbmcvfs,xbmc,xbmcaddon,json,os,xbmcgui, time, re
 KODI_VERSION = int(xbmc.getInfoLabel("System.BuildVersion").split(".")[0])
 addonInfo = xbmcaddon.Addon().getAddonInfo
 settings = xbmcaddon.Addon().getSetting
-profilePath = xbmc.translatePath(addonInfo('profile')).decode('utf-8')
-addonPath = xbmc.translatePath(addonInfo('path')).decode('utf-8')
+profilePath = xbmc.translatePath(addonInfo('profile'))
+addonPath = xbmc.translatePath(addonInfo('path'))
 skipFile = os.path.join(profilePath, 'skipintro.json')
 defaultSkip = settings('default.skip')
 if not os.path.exists(profilePath): xbmcvfs.mkdir(profilePath)
@@ -35,10 +35,10 @@ def cleantitle(title):
     title = re.sub('&#(\d+);', '', title)
     title = re.sub('(&#[0-9]+)([^;^0-9]+)', '\\1;\\2', title)
     title = title.replace('&quot;', '\"').replace('&amp;', '&')
-    title = re.sub(r'\<[^>]*\>','', title)
+    title = re.sub(r'\]*\>','', title)
     title = re.sub('\n|([[].+?[]])|([(].+?[)])|\s(vs|v[.])\s|(:|;|-|"|,|\'|\_|\.|\?)|\(|\)|\[|\]|\{|\}|\s', '', title).lower()
     return title.lower()
-	
+    
 def updateSkip(title, seconds=defaultSkip, start=0, service=True):
     with open(skipFile, 'r') as file:
          json_data = json.load(file)
@@ -73,10 +73,10 @@ def getSkip(title):
         skip = [i for i in data if i['service'] != False]
         skip = [i['skip'] for i in skip if cleantitle(i['title']) == cleantitle(title)][0]
     except: 
-		skip = defaultSkip
-		newskip(title, skip)
+        skip = defaultSkip
+        newskip(title, skip)
     return  skip
-	
+    
 def checkService(title):
     try:
         with open(skipFile) as f: data = json.load(f)
@@ -90,7 +90,7 @@ def checkStartTime(title):
         start = [i['start'] for i in data if cleantitle(i['title']) == cleantitle(title)][0]
     except: start = 0
     return  start
-	
+    
 if not os.path.exists(skipFile): newskip('default', defaultSkip)
 
 
@@ -121,33 +121,33 @@ class Service():
 
                     self.currentShow = xbmc.getInfoLabel("VideoPlayer.TVShowTitle")
                     if self.currentShow: 
-						
-						if playTime > 250: self.skipped = True
-						if self.skipped == False: self.SkipIntro(self.currentShow)
-                    print ("CURRENT SHOW PLAYER", currentShow, playTime)
+                        
+                        if playTime > 250: self.skipped = True
+                        if self.skipped == False: self.SkipIntro(self.currentShow)
+                    print(("CURRENT SHOW PLAYER", currentShow, playTime))
                 except:pass
             else: self.skipped = False
-				
+                
     def SkipIntro(self, tvshow):
         try:
-			if not xbmc.Player().isPlayingVideo(): raise Exception() 
-			
-			time.sleep(2)
-			timeNow = xbmc.Player().getTime()
-			status = checkService(tvshow)
-			
-			if status == False:
-				self.skipped = True
-				raise Exception()
-			startTime = checkStartTime(tvshow)
-			
-			if int(startTime) >= int(timeNow): raise Exception()
-			
-			Dialog = CustomDialog('script-dialog.xml', addonPath, show=tvshow)
-			Dialog.doModal()
-			self.skipped = True
-			del Dialog	
-			
+            if not xbmc.Player().isPlayingVideo(): raise Exception() 
+            
+            time.sleep(2)
+            timeNow = xbmc.Player().getTime()
+            status = checkService(tvshow)
+            
+            if status == False:
+                self.skipped = True
+                raise Exception()
+            startTime = checkStartTime(tvshow)
+            
+            if int(startTime) >= int(timeNow): raise Exception()
+            
+            Dialog = CustomDialog('script-dialog.xml', addonPath, show=tvshow)
+            Dialog.doModal()
+            self.skipped = True
+            del Dialog  
+            
         except:pass
 
 OK_BUTTON = 201
@@ -172,7 +172,7 @@ class CustomDialog(xbmcgui.WindowXMLDialog):
         skipLabel = 'SKIP INTRO: %s' % self.skipValue
         skipButton = self.getControl(OK_BUTTON)
         skipButton.setLabel(skipLabel)
-		
+        
     def onAction(self, action):
         if action == ACTION_PREVIOUS_MENU or action == ACTION_BACK:
             self.close()
@@ -184,12 +184,12 @@ class CustomDialog(xbmcgui.WindowXMLDialog):
         pass
 
     def onClick(self, control):
-        print ('onClick: %s' % (control))
+        print(('onClick: %s' % (control)))
 
         if control == OK_BUTTON:
             timeNow = xbmc.Player().getTime()
             skipTotal = int(timeNow) + int(self.skipValue)
-            xbmc.Player().seekTime(int(skipTotal))			
+            xbmc.Player().seekTime(int(skipTotal))          
 
         if control == NEW_BUTTON:
             dialog = xbmcgui.Dialog()
@@ -199,19 +199,13 @@ class CustomDialog(xbmcgui.WindowXMLDialog):
             if d2 == '' or d2 == None: d2 = 0
             if str(d) != '' and str(d) != '0': newskip(self.tvshow , d , start=d2)
 
-		            
-			
+                    
+            
         if control == DISABLE_BUTTON:
             updateSkip(self.tvshow, seconds=self.skipValue, service=False)
-			
+            
 
         if control in [OK_BUTTON, NEW_BUTTON, DISABLE_BUTTON]:
             self.close()
-			
+            
 Service().ServiceEntryPoint()
-
-
-	
-
-		
-
