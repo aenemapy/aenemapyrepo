@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.hideosd" version="2018.05.20" name="Hide Video OSD" provider-name="aenema">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.hideosd" version="2021.11.26" name="Hide Video OSD" provider-name="zDuts all credit to aenema">
 	<requires>
-		<import addon="xbmc.python" version="2.10.0" />
+		<import addon="xbmc.python" version="3.00.0" />
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="main.py">
 		<provides>executable</provides>
