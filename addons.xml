@@ -251,7 +251,7 @@
   </extension>
 </addon>
 
-<addon id="script.hideosd" version="2021.11.26" name="Hide Video OSD" provider-name="zDuts all credit to aenema">
+<addon id="script.hideosd" version="2021.12.03" name="Hide Video OSD" provider-name="zDuts all credit to aenema">
 	<requires>
 		<import addon="xbmc.python" version="3.00.0" />
 	</requires>
@@ -285,7 +285,7 @@
 	</extension>
 </addon>
 
-<addon id="script.tvskipintro" version="2021.11.25" name="TV Skip Intro" provider-name="zDuts but all credit to aenema">
+<addon id="script.tvskipintro" version="2021.12.03" name="TV Skip Intro" provider-name="zDuts but all credit to aenema">
 	<requires>
 		<import addon="xbmc.python" version="3.00.0" />
 	</requires>
