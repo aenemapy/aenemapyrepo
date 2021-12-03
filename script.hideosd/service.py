@@ -15,15 +15,15 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    along with this program.  If not, see .
 '''
 
 import xbmc,xbmcaddon
 KODI_VERSION = int(xbmc.getInfoLabel("System.BuildVersion").split(".")[0])
 addonInfo = xbmcaddon.Addon().getAddonInfo
 settings = xbmcaddon.Addon().getSetting
-profilePath = xbmc.translatePath(addonInfo('profile')).decode('utf-8')
-addonPath = xbmc.translatePath(addonInfo('path')).decode('utf-8')
+profilePath = xbmc.translatePath(addonInfo('profile'))
+addonPath = xbmc.translatePath(addonInfo('path'))
 hideTimeout = settings('hide.timeout')
 enableHide  = settings('hide.enable')
 
@@ -43,10 +43,10 @@ class Service():
                 break
             if xbmc.Player().isPlaying():
                 try:
-					if enableHide == 'true': CHECK_OSD()
+                    if enableHide == 'true': CHECK_OSD()
                 except:pass
             else: self.skipped = False
-				
+                
 def CHECK_OSD():
     seconds = str(settings('hide.timeout'))
     if xbmc.getCondVisibility("Window.IsActive(videoosd)"):
@@ -54,12 +54,6 @@ def CHECK_OSD():
         if seconds and seconds != "0":
             while xbmc.getCondVisibility("Window.IsActive(%s)" % window):
                 if xbmc.getCondVisibility("System.IdleTime(%s)" % seconds): xbmc.executebuiltin("Dialog.Close(%s)" % window)
-                else: xbmc.sleep(500)	
+                else: xbmc.sleep(500)   
 
 Service().ServiceEntryPoint()
-
-
-	
-
-		
-
