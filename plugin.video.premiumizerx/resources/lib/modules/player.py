@@ -18,7 +18,7 @@
 '''
 
 
-import re,sys,json,time,xbmc
+import re,sys,json,time,xbmc,xbmcvfs
 import hashlib,urllib.request,urllib.parse,urllib.error,os,zlib,base64,codecs,xmlrpc.client
 
 
@@ -47,33 +47,33 @@ class player(xbmc.Player):
             self.autoResume       = control.setting('bookmarks.autoresume')
             self.nextup_timeout   = control.setting('nextup.timeout')
             self.nextup_service   = control.setting('nextup.service')
-            self.next_episode = []          
+            self.next_episode = []
             self.seekStatus = False
             infoMeta = False
             self.filetype = 'unknown'
             self.watched          = False
-            
+
             self.totalTime = 0 ; self.currentTime = 0; self.lastProgress = 0
             self.original_meta = meta
             self.content = 'movie' if season == None or episode == None else 'episode'
-            
-            if self.content == 'movie' and imdb != '0' and imdb != None: 
+
+            if self.content == 'movie' and imdb != '0' and imdb != None:
                 self.filetype = 'movie'
                 infoMeta = True
             else: infoMeta = False
-            
-            if self.content == 'episode' and imdb != '0' and imdb != None: 
+
+            if self.content == 'episode' and imdb != '0' and imdb != None:
                 self.filetype = 'episode'
                 infoMeta = True
-                
-            elif self.content == 'episode' and tvdb != '0' and tvdb != None: 
+
+            elif self.content == 'episode' and tvdb != '0' and tvdb != None:
                 self.filetype = 'episode'
                 infoMeta = True
-                
+
             else: infoMeta = False
 
-            
-        
+
+
             self.tvshowtitle = title
             self.title = title
             self.year = year
@@ -86,7 +86,7 @@ class player(xbmc.Player):
             self.episode = '%01d' % int(episode) if self.content == 'episode' else None
             # self.Nextup = None
             self.DBID = None
-            
+
             try: plot = meta['plot']
             except: plot = ''
 
@@ -95,15 +95,15 @@ class player(xbmc.Player):
             self.tvdb = tvdb if not tvdb == None else '0'
             self.season = '%01d' % int(season) if self.content == 'episode' else None
             self.episode = '%01d' % int(episode) if self.content == 'episode' else None
-            
+
             self.metaID = [self.imdb, self.tvdb]
             self.metaID = [i for i in self.metaID if not str(i) == '0']
             if self.content == 'movie': self.ids = {'imdb': self.imdb}
             else: self.ids = {'imdb': self.imdb, 'tvdb': self.imdb }
             self.ids = dict((k,v) for k, v in self.ids.items() if not v == '0')
-            
+
             poster, thumb, fanart, meta = self.getMeta(meta)
-            
+
             item = control.item(path=url)
             self.infolabels = {"Title": title, "Plot": plot, "year": self.year}
             if self.content == 'episode' and infoMeta == True: self.infolabels.update({"season": meta['season'], "episode": meta['episode'], "tvshowtitle": meta['tvshowtitle'], "showtitle": meta['tvshowtitle'], "tvdb": self.tvdb})
@@ -113,15 +113,15 @@ class player(xbmc.Player):
             else: item.setArt({'icon': thumb, 'thumb': thumb, 'poster': thumb, 'fanart':thumb})
 
             item.setInfo(type='Video', infoLabels = self.infolabels)
-        
+
             control.player.play(url, item)
 
             control.resolve(int(sys.argv[1]), True, item)
 
             control.window.setProperty('script.trakt.ids', json.dumps(self.ids))
-            
+
             self.keepPlaybackAlive()
-            
+
             control.window.clearProperty('script.trakt.ids')
 
         except:
@@ -138,10 +138,10 @@ class player(xbmc.Player):
             return (poster, thumb, fanart, meta)
         except:
             pass
-        
+
     def remove_progress_movies(self, meta):
         content = 'movies'
-            
+
         try:
             if inprogress_db != 'true': raise Exception()
             dbcon = database.connect(progressFile)
@@ -158,7 +158,7 @@ class player(xbmc.Player):
 
     def remove_progress_episodes(self, meta):
         content = "episode"
-            
+
         try:
             if inprogress_db != 'true': raise Exception()
             dbcon = database.connect(progressFile)
@@ -174,7 +174,7 @@ class player(xbmc.Player):
             pass
 
 
-            
+
     def add_progress_movies(self, meta):
         try:
             if inprogress_db != 'true': raise Exception()
@@ -182,7 +182,7 @@ class player(xbmc.Player):
             typeofcontent = 'movies'
             try: id = meta['imdb']
             except: id = meta['tvdb']
-            
+
             if 'title' in meta: title = item['title'] = meta['title']
             if 'tvshowtitle' in meta: title = item['title'] = meta['tvshowtitle']
             if 'year' in meta: item['year'] = meta['year']
@@ -192,9 +192,9 @@ class player(xbmc.Player):
             if 'tmdb' in meta: item['tmdb'] = meta['tmdb']
             if 'tvdb' in meta: item['tvdb'] = meta['tvdb']
             if 'tvrage' in meta: item['tvrage'] = meta['tvrage']
-            if 'banner' in meta: item['banner'] = meta['banner']            
-            if 'plot' in meta: item['plot'] = meta['plot']          
-                        
+            if 'banner' in meta: item['banner'] = meta['banner']
+            if 'plot' in meta: item['plot'] = meta['plot']
+
 
             control.makeFile(dataPath)
             dbcon = database.connect(progressFile)
@@ -208,7 +208,7 @@ class player(xbmc.Player):
             # control.infoDialog('Added to Watchlist', heading=title)
         except:
             return
-        
+
     def add_progress_episodes(self, meta):
         try:
             if inprogress_db != 'true': raise Exception()
@@ -216,7 +216,7 @@ class player(xbmc.Player):
             typeofcontent = 'episode'
 
             id = meta['tvdb']
-            
+
             if 'title' in meta: title = item['title'] = meta['title']
             if 'tvshowtitle' in meta: item['tvshowtitle'] = meta['tvshowtitle']
             if 'year' in meta: item['year'] = meta['year']
@@ -230,9 +230,9 @@ class player(xbmc.Player):
             if 'season' in meta: item['season'] = meta['season']
             if 'premiered' in meta: item['premiered'] = meta['premiered']
             if 'original_year' in meta: item['original_year'] = meta['original_year']
-            if 'banner' in meta: item['banner'] = meta['banner']            
-            if 'plot' in meta: item['plot'] = meta['plot']          
-                    
+            if 'banner' in meta: item['banner'] = meta['banner']
+            if 'plot' in meta: item['plot'] = meta['plot']
+
 
             control.makeFile(dataPath)
             dbcon = database.connect(progressFile)
@@ -243,48 +243,48 @@ class player(xbmc.Player):
             dbcon.commit()
 
         except:
-            return      
-        
-        
+            return
+
+
     def keepPlaybackAlive(self):
-        self.nextupDialog     = False   
+        self.nextupDialog     = False
         self.playNext         = False
         self.statusPlayed     = False
         self.inProgress       = False
-        
+
         pname = '%s.player.overlay' % control.addonInfo('id')
         control.window.clearProperty(pname)
-        
+
         for i in range(0, 240):
             if self.isPlayingVideo(): break
             xbmc.sleep(200)
-            
+
         while self.isPlayingVideo():
             try:
                 self.totalTime = self.getTotalTime()
                 self.currentTime = self.getTime()
-                
+
                 #self.pause()
                 self.inWatching  =  (self.currentTime >= 60) # 1 MINUTE or More
-                
+
                 if self.inWatching == True and self.inProgress != True:
                     self.inProgress = True
                     if self.content == 'movie'    : self.add_progress_movies(self.original_meta)
                     elif self.content == 'episode': self.add_progress_episodes(self.original_meta)
-                    
+
                 self.statusWatched  = (self.currentTime / self.totalTime >= .85)
 
                 # NEXTUP MODE
                 self.time_remaining  = (self.totalTime - self.currentTime) - 10# ADDING SECONDS TO SCRAPE FOR NEXT EPISODE
-                
+
                 # NEXTUP SERVICE
                 #if self.nextup_service == 'true' and self.content != 'movie' and self.nextupDialog == False:
-                
+
                 #    if int(self.nextup_timeout) >= int(self.time_remaining) and self.inWatching == True: # POPUP MODE
                 #        self.nextupDialog = True
                 #        t = libThread.Thread(self.smartplay, 'nextup')
                 #        t.start()
-                    
+
                 #SETTING WATCHED STATUS WHILE STILL INPLAY
                 if self.statusWatched == True and self.statusPlayed != True:
                     self.statusPlayed = True
@@ -293,10 +293,10 @@ class player(xbmc.Player):
             except:
                 pass
             xbmc.sleep(2000)
-            
+
         control.window.clearProperty(pname)
-            
-            
+
+
     def smartplay(self, mode='next'):
         if mode == 'scrape_next_episode':
             try:
@@ -305,23 +305,23 @@ class player(xbmc.Player):
                 smartplay.scrape_next_episode(self.tvshowtitle, self.year, self.imdb, self.tvdb, 'en', season=self.season, episode=self.episode)
             except:
                 pass
-                
+
         elif mode == 'nextup':
             try:
                 if self.content == 'movie': raise Exception()
                 from resources.lib.modules import smartplay
                 self.next_episode = smartplay.next_episode(self.tvshowtitle, self.year, self.imdb, self.tvdb, 'en', season=self.season, episode=self.episode)
-                self.playNext = nextup.nextup(self.next_episode)    
+                self.playNext = nextup.nextup(self.next_episode)
             except:
-                pass    
-                
+                pass
+
         elif mode == 'next_episode':
             try:
                 from resources.lib.modules import smartplay
                 self.next_episode = smartplay.next_episode(self.tvshowtitle, self.year, self.imdb, self.tvdb, 'en', season=self.season, episode=self.episode)
             except:
                 pass
-            
+
         elif mode == 'inprogress_next_episode':
             try:
                 from resources.lib.modules import smartplay
@@ -329,21 +329,21 @@ class player(xbmc.Player):
                     self.next_episode = smartplay.next_episode(self.tvshowtitle, self.year, self.imdb, self.tvdb, 'en', season=self.season, episode=self.episode)
                     self.add_nextup_episode(self.next_episode)
             except:
-                pass                
-            
+                pass
+
     def setPlaybackWatched(self):
         try:
             bookmarks().delete(self.bookMarkName)
             if self.content == 'movie': self.remove_progress_movies(self.original_meta)
         except:
             pass
-            
+
         try:
             if self.content == 'movie': playcount.markMovieDuringPlayback(self.imdb, '7')
             elif self.content == 'episode':playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '7')
         except:
             pass
-            
+
         try:
             if self.DBID == None: raise Exception()
 
@@ -355,8 +355,8 @@ class player(xbmc.Player):
         except:
             pass
         self.watched = True
-                
-            
+
+
     def setPlayed(self):
         try: # DIALOG DELETE
 
@@ -364,8 +364,8 @@ class player(xbmc.Player):
             from resources.lib.api import premiumize
             premiumize.DeleteDialog(self.FileId)
         except:
-            pass    
-            
+            pass
+
         try: # AUTO DELETE
             if control.setting('cloud.delete.mode') != '1': raise Exception()
             if self.filetype == 'unknown' and control.setting('cloud.autodelete.unknown') != 'true': raise Exception()
@@ -374,22 +374,22 @@ class player(xbmc.Player):
             from resources.lib.api import premiumize
             premiumize.AutoDelete(self.FileId)
         except:
-            pass    
-    
+            pass
+
         control.refresh()
-            
+
     def debridClear(self):
         threads = []
         threads.append(libThread.Thread(self.setPlayed))
-        [i.start() for i in threads]            
-            
+        [i.start() for i in threads]
+
     def libraryProgrees(self, content, currentTime, totalTime, DBID):
         try:
             if content == 'movie': rpc = '{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetMovieDetails", "params": {"movieid": %s , "resume": {"position": %s, "total": %s}}}' % (DBID, currentTime, totalTime)
             else: rpc = '{"jsonrpc": "2.0", "id": 1, "method": "VideoLibrary.SetEpisodeDetails", "params": {"episodeid": %s , "resume": {"position": %s, "total": %s}}}' % (DBID, currentTime, totalTime)
             control.jsonrpc(rpc)
         except: pass
-    
+
 
     def idleForPlayback(self):
         for i in range(0, 200):
@@ -397,25 +397,25 @@ class player(xbmc.Player):
             else: break
             control.sleep(100)
 
-            
+
     def resumePlayback(self):
         while True:
             try: # KODI 18 LEIA CHANGES TO PLAYER NOW REQUIRES isPlayingVideo to make sure Video is Playing
                 #print (self.isPlayingVideo())
-                if not self.isPlayingVideo(): continue 
+                if not self.isPlayingVideo(): continue
                 try: timeTotal = self.getTotalTime()
                 except: timeTotal = 0
 
                 if timeTotal != None and timeTotal != 0: break
                 time.sleep(0.5)
             except:continue
-            
-        progress = '0'      
-    
+
+        progress = '0'
+
         if self.autoResume == 'true': dialog = False
         else: dialog = True
 
-        
+
         # NEED TO CALL TRAKTPLAYBACK OUTSIDE BOOKMARKS TO GET TOTALTIME AND OTHER SELF VARIABLES
         if control.setting('trakt.scrobblePlayback') == 'true':
             try:
@@ -432,28 +432,28 @@ class player(xbmc.Player):
                                 timeHours, timeMinutes = divmod(timeMinutes, 60)
                                 label = '%02d:%02d:%02d' % (timeHours, timeMinutes, timeSeconds)
                                 label = (label)
-                                label = "[T] Resume: " + label                          
+                                label = "[T] Resume: " + label
                                 try: yes = control.dialog.contextmenu([label, control.lang(32501), ])
                                 except: yes = control.yesnoDialog(label, '', '', str(name), control.lang(32503), control.lang(32501))
                                 if yes: seconds = 0
                             except: pass
-                            
+
                         if seconds > 0: self.seekTime(seconds)
             except: progress = 0
-            
-        # FALLBACK TO DATABASE AND REMOTEDB BOOKMARKS   
+
+        # FALLBACK TO DATABASE AND REMOTEDB BOOKMARKS
         if progress == None or progress == '' or progress == 0:
                 self.seekStatus = True
 
                 self.offset = bookmarks().get(self.bookMarkName, dialog=dialog)
-                
-                if self.offset != '0' and self.offset != None: self.seekTime(float(self.offset)) 
-            
+
+                if self.offset != '0' and self.offset != None: self.seekTime(float(self.offset))
+
 
         self.totalTime = self.getTotalTime()
-        self.currentTime = self.getTime()           
+        self.currentTime = self.getTime()
         self.traktSetPlayback('start')
-        
+
     def traktSetPlayback(self , action):
         try:
             if not control.setting('bookmarks') == 'true': raise Exception()
@@ -463,7 +463,7 @@ class player(xbmc.Player):
             else:  playcount.traktscrobblePlayback(action,'episode', tvdb=self.tvdb, season=self.season, episode=self.episode, progress = progress)
         except:
             pass
-            
+
     def traktGetPlayback(self):
         try:
             if control.setting('trakt.scrobblePlayback') == 'false': raise Exception()
@@ -471,33 +471,33 @@ class player(xbmc.Player):
             if self.content == 'movie': offset = playcount.traktPlayback('movie', imdb=self.imdb)
             else:  offset = playcount.traktPlayback('episode', tvdb=self.tvdb, season=self.season, episode=self.episode)
             if offset != '' and offset != None: return offset
-            else: return 0          
+            else: return 0
         except:
             return 0
-            
+
     def onPlayBackStarted(self):
         #print ("PLAYBACK STARTED")
         control.execute('Dialog.Close(all,true)')
         self.idleForPlayback()
         # PASSING seekStatus to Avoid Prompt Multiple Times
-        if self.seekStatus == False: 
+        if self.seekStatus == False:
             self.seekStatus = True
             self.resumePlayback()
         if control.setting('subtitles') == 'true': subtitles().get(self.bookMarkName, self.imdb, self.season, self.episode)
         self.idleForPlayback()
-    
+
     def setProgress(self):
 
         try:
             threads = []
             if self.watched != True:
-                if self.currentTime == None: 
+                if self.currentTime == None:
                     try: self.currentTime = self.getTime()
                     except: self.currentTime = 0
-                        
-                if self.totalTime   == None: 
+
+                if self.totalTime   == None:
                     try: self.totalTime = self.getTotalTime()
-                    except: self.totalTime = 0      
+                    except: self.totalTime = 0
 
                 try: self.watched  = (self.currentTime / self.totalTime >= .85)
                 except: self.watched = False
@@ -505,10 +505,10 @@ class player(xbmc.Player):
                 threads.append(libThread.Thread(bookmarks().reset, self.currentTime, self.totalTime, self.bookMarkName))
             else: threads.append(libThread.Thread(self.setPlayed))
 
-            threads.append(libThread.Thread(self.traktSetPlayback, 'stop'))     
+            threads.append(libThread.Thread(self.traktSetPlayback, 'stop'))
             [i.start() for i in threads]
         except:pass
-        
+
     def onPlayBackPaused(self):
         ##print ("PLAYBACK PAUSED")
         try:
@@ -519,34 +519,34 @@ class player(xbmc.Player):
             if allow: bookmarks().reset(cTime, tTime, self.bookMarkName)
             self.lastProgress = cTime
         except:pass
-        
+
     def onPlayBackStopped(self):
         # SET BOOKMARKS AND RESUME POINTS AND CLEAR FILE
         self.setProgress()
         # NEXTUP MODE
         #if self.nextup_service == 'true' and self.content != 'movie':
-        #    if self.playNext == True: 
+        #    if self.playNext == True:
                 #print ("PLAYER NEXT EPISODE")
          #       from resources.lib.modules import smartplay
          #       smartplay.play_next_episode(self.next_episode)
 
-        
+
     def onPlayBackEnded(self):
-        self.onPlayBackStopped()  
-        
-        
+        self.onPlayBackStopped()
+
+
     def getPlayingFile(self):
-        return xbmc.Player().getPlayingFile()  
-        
+        return xbmc.Player().getPlayingFile()
+
 class bookmarks:
     def get(self, name, dialog=True):
         try:
             self.offset = '0'
-   
+
             remoteSQL = False
             if not control.setting('bookmarks') == 'true': raise Exception()
             idFile = name.lower()
-            
+
             if control.setting('bookmarks.autoresume') == 'true': dialog = False
             else: dialog = True
             # FALLBACK TO LOCAL OFFSET
@@ -560,16 +560,16 @@ class bookmarks:
                 if self.offset == '0': raise Exception()
                 type = '[L]'
             except: pass
-       
+
             if self.offset == '0': raise Exception()
-            
+
             if dialog == False: return self.offset
 
             minutes, seconds = divmod(float(self.offset), 60) ; hours, minutes = divmod(minutes, 60)
             label = '%02d:%02d:%02d' % (hours, minutes, seconds)
             label = (label)
             label = type + " Resume: " + label
-            
+
             try: yes = control.dialog.contextmenu([label, control.lang(32501), ])
             except: yes = control.yesnoDialog(label, '', '', str(name), control.lang(32503), control.lang(32501))
 
@@ -578,8 +578,8 @@ class bookmarks:
             return self.offset
         except:
             return self.offset
-            
-            
+
+
     def reset(self, currentTime, totalTime, name):
         try:
 
@@ -588,11 +588,11 @@ class bookmarks:
             if watched:
                 self.delete(name)
                 raise Exception()
-                
+
 
             timeInSeconds = str(currentTime)
             idFile = name.lower()
-                
+
             control.makeFile(control.dataPath)
             dbcon = database.connect(control.bookmarksFile)
             dbcur = dbcon.cursor()
@@ -602,7 +602,7 @@ class bookmarks:
             dbcon.commit()
         except:
             pass
-            
+
 
     def delete(self, name):
         idFile = name.lower()
@@ -612,13 +612,13 @@ class bookmarks:
             from resources.lib.api import remotedb
             remotedb.bookmarks('delete', idFile)
         except:pass
-            
-            
-        
-        
-        
-        
-    
+
+
+
+
+
+
+
 class subtitles:
     def get(self, name, imdb, season, episode):
         try:
@@ -681,7 +681,7 @@ class subtitles:
             content = base64.b64decode(content['data'][0]['data'])
             content = str(zlib.decompressobj(16+zlib.MAX_WBITS).decompress(content))
 
-            subtitle = xbmc.translatePath('special://temp/')
+            subtitle = xbmcvfs.translatePath('special://temp/')
             subtitle = os.path.join(subtitle, 'TemporarySubs.%s.srt' % lang)
 
             codepage = codePageDict.get(lang, '')

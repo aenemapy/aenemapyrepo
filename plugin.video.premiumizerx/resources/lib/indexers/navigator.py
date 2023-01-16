@@ -56,15 +56,15 @@ class navigator:
             from resources.lib.modules import deviceAuthDialog
             authDialog = deviceAuthDialog.DonationDialog('firstrun.xml', xbmcaddon.Addon().getAddonInfo('path'), code='', url='')
             authDialog.doModal()
-            del authDialog	
+            del authDialog
             control.openSettings('0.0')
             sys.exit()
         elif (popup == '0' or ((int(timeNow) - int(popup)) > 30)):
             from resources.lib.modules import deviceAuthDialog
             authDialog = deviceAuthDialog.DonationDialog('donations.xml', xbmcaddon.Addon().getAddonInfo('path'), code='', url='')
             authDialog.doModal()
-            del authDialog	
-            control.setSetting(id='popup.date', value=timeNow) 
+            del authDialog
+            control.setSetting(id='popup.date', value=timeNow)
         #self.addDirectoryItem('TEST', 'testItem', 'movies.png', 'DefaultMovies.png')
         self.addDirectoryItem(
             'Search Cloud', 'premiumizeSearch', 'cloud.png', 'DefaultMovies.png')
@@ -386,7 +386,7 @@ class navigator:
         import xbmcvfs
         import os
         addonInfo = xbmcaddon.Addon().getAddonInfo
-        addonPath = xbmc.translatePath(addonInfo('path'))
+        addonPath = xbmcvfs.translatePath(addonInfo('path'))
         changelogfile = os.path.join(addonPath, 'help.txt')
         r = open(changelogfile)
         text = r.read()
@@ -414,7 +414,7 @@ class navigator:
         import xbmcvfs
         import os
         addonInfo = xbmcaddon.Addon().getAddonInfo
-        addonPath = xbmc.translatePath(addonInfo('path'))
+        addonPath = xbmcvfs.translatePath(addonInfo('path'))
         changelogfile = os.path.join(addonPath, 'changelog.txt')
         r = open(changelogfile)
         text = r.read()
