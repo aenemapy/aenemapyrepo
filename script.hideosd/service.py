@@ -18,12 +18,12 @@
     along with this program.  If not, see .
 '''
 
-import xbmc,xbmcaddon
+import xbmc,xbmcvfs,xbmcaddon
 KODI_VERSION = int(xbmc.getInfoLabel("System.BuildVersion").split(".")[0])
 addonInfo = xbmcaddon.Addon().getAddonInfo
 settings = xbmcaddon.Addon().getSetting
-profilePath = xbmc.translatePath(addonInfo('profile'))
-addonPath = xbmc.translatePath(addonInfo('path'))
+profilePath = xbmcvfs.translatePath(addonInfo('profile'))
+addonPath = xbmcvfs.translatePath(addonInfo('path'))
 hideTimeout = settings('hide.timeout')
 enableHide  = settings('hide.enable')
 
