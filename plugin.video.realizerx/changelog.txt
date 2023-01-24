@@ -1,3 +1,4 @@
+[B]2022.01.16[/B] - Changed call translatePath from xbmc to xbmcvfs. Still works on kodi matrix but now also on nexus
 [B]2021.04.24[/B] - Forked Realizer to Realizer py3 - new version will work on python 3 and kodi matrix
 [B]2019.05.01[/B] - Improved RSS Manager - added Rss Reader Mode - Added a Timer for auto RSS update
 [B]2019.02.09[/B] - Added sort options for Trakt Lists

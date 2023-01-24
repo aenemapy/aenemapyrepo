@@ -8,15 +8,15 @@ import time
 import datetime
 from difflib import SequenceMatcher
 from resources.lib.modules import cache, utils
-from resources.lib.api import trakt 
+from resources.lib.api import trakt
 params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
 action = params.get('action')
 sysaddon = sys.argv[0]
 syshandle = int(sys.argv[1])
 
 addonInfo     = xbmcaddon.Addon().getAddonInfo
-profilePath   = xbmc.translatePath(addonInfo('profile'))
-pmSettings = xbmc.translatePath(os.path.join(profilePath, 'auth.json'))
+profilePath   = xbmcvfs.translatePath(addonInfo('profile'))
+pmSettings = xbmcvfs.translatePath(os.path.join(profilePath, 'auth.json'))
 
 if control.setting('premiumize.tls') == 'true': premiumize_Api = 'https://www.premiumize.me'
 else: premiumize_Api = 'http://www.premiumize.me'
@@ -32,7 +32,7 @@ premiumizeItemDetails = '/api/item/details'
 premiumizeSearch      = '/api/folder/search'
 premiumizeAllfiles = '/api/item/listall'
 
-OAUTH = premiumize_Api + '/token'       
+OAUTH = premiumize_Api + '/token'
 CLIENTID = '978629017'
 
 USER_AGENT = 'Premiumize Addon for Kodi'
@@ -54,9 +54,9 @@ def auth():
         expires_in = result['expires_in']
         device_code = result['device_code']
         interval = result['interval']
-        
+
         message = verification_url + " & " + user_code + "  ... " + line3
-        
+
         try:
             from resources.lib.modules import clipboard
             clipboard.Clipboard.copy(result['user_code'])
@@ -74,45 +74,45 @@ def auth():
                 progressDialog.update(int(percent), message)
                 r = getAuth(OAUTH , device_code)
 
-                if 'access_token' in str(r): 
+                if 'access_token' in str(r):
                     token = r['access_token']
-                    refresh_token = r['expires_in']             
-                    control.infoDialog('Premiumize Authorized') 
+                    refresh_token = r['expires_in']
+                    control.infoDialog('Premiumize Authorized')
                     control.setSetting(id='premiumize.status', value='Authorized')
-                    control.setSetting(id='premiumize.token', value=str(token))     
-                    control.setSetting(id='premiumize.refresh', value=str(refresh_token))                           
+                    control.setSetting(id='premiumize.token', value=str(token))
+                    control.setSetting(id='premiumize.refresh', value=str(refresh_token))
                     try: progressDialog.close()
-                    except: pass                    
-                
+                    except: pass
+
                     return token
                     break
             except:
                 pass
-                
+
         try: progressDialog.close()
         except: pass
-                    
-                
-def validAccount(): 
+
+
+def validAccount():
         token = getToken()
         if token != '' and token != '0' and token != None: return True
         else: return False
-                
-def getAuth(url, device_code): 
+
+def getAuth(url, device_code):
     data = {'client_id': CLIENTID, 'code': device_code, 'grant_type': 'device_code'}
     result = requests.post(url, data=data, timeout=10).json()
     return result
 
 def saveJson(token=None, refresh_token=None, expires_in=None):
         timeNow = datetime.datetime.now().strftime('%Y%m%d%H%M')
-        dirCheck = xbmc.translatePath(profilePath)
-        if not os.path.exists(dirCheck): os.makedirs(xbmc.translatePath(dirCheck))
+        dirCheck = xbmcvfs.translatePath(profilePath)
+        if not os.path.exists(dirCheck): os.makedirs(xbmcvfs.translatePath(dirCheck))
         if token != None: data = {'client_id': CLIENTID, 'token': token, 'refresh_token': refresh_token , 'added':timeNow}
         else: data = {'client_id': CLIENTID, 'token':'0', 'refresh_token': '0' , 'added': timeNow}
         with open(pmSettings, 'w') as outfile: json.dump(data, outfile, indent=2)
-        
-        
-    # REAL DEBRID TOKEN #######################################     
+
+
+    # REAL DEBRID TOKEN #######################################
 def getToken(refresh=False):
     token = '0'
     token = control.setting('premiumize.token')
@@ -124,22 +124,22 @@ def reqJson(url, params=None, data=None, multipart_data=None, mode="post"):
     token = getToken()
     headers = {'Authorization': 'Bearer %s' % token, 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11'}
     #print (headers)
-    if multipart_data != None: 
+    if multipart_data != None:
         headers['Content-Type'] = 'multipart/form-data; boundary=%s' % (BOUNDARY)
-        try: 
+        try:
             if mode == "post": result = requests.post(url, data=multipart_data, headers=headers, timeout=30).json()
             else: result = requests.get(url, headers=headers, timeout=30).json()
         except requests.Timeout as err: control.infoDialog('PREMIUMIZE API is Down...', time=3000)
     else:
-        try: 
+        try:
             if mode == "post": result = requests.post(url, params=params, headers=headers, data=data, timeout=30).json()
             else: result = requests.get(url, headers=headers, timeout=30).json()
-        except requests.Timeout as err: control.infoDialog('PREMIUMIZE API is Down...', time=3000)  
+        except requests.Timeout as err: control.infoDialog('PREMIUMIZE API is Down...', time=3000)
         if "bad_token" in result: control.infoDialog('Premiumize is not Authorized', 'Please authorize in the settings')
     return result
 
-        
-    
+
+
 def info():
     label = 'CANNOT GET ACCOUNT INFO'
     url = urlparse.urljoin(premiumize_Api, premiumizeInfo)
@@ -150,7 +150,7 @@ def info():
 
         expirationDate = datetime.datetime.fromtimestamp(expire)
         expirationDate = expirationDate.strftime('%Y-%m-%d')
-        
+
         limits = r['limit_used']
         try:
             size   = r['space_used']
@@ -162,66 +162,66 @@ def info():
         label = label % (perc, size, expirationDate)
     else: label = 'CANNOT GET ACCOUNT INFO: '
     return label
-    
-    
+
+
 def add():
     type = ['Add with Link', 'Add with File']
     select = control.selectDialog(type)
     if select == 1: add_file()
-    elif select == 0: 
-        k = control.keyboard('', 'Paste torrent Link') ; k.doModal()    
+    elif select == 0:
+        k = control.keyboard('', 'Paste torrent Link') ; k.doModal()
         q = k.getText() if k.isConfirmed() else None
 
         if (q == None or q == ''): return
         add_download(q, q)
-        
+
 def downloadItem(name, url, id):
     from resources.lib.modules import downloader
     downloader.downloader().download(name, url)
-        
+
 def deleteItem(id, type):
     data = {'id': id , 'type': type}
     if type == 'folder': deleteUrl = '/api/folder/delete'
     elif type == 'torrent': deleteUrl = '/api/transfer/delete'
     else: deleteUrl = premiumizeDeleteItem
-    url = urlparse.urljoin(premiumize_Api, deleteUrl) 
+    url = urlparse.urljoin(premiumize_Api, deleteUrl)
     r = reqJson(url, data=data)
     control.refresh()
-    
+
 def renameItem(title, id, type):
     data = {'id': id , 'type': type}
     if type == 'folder': renameUrl = '/api/folder/rename'
     elif type == 'torrent': renameUrl = '/api/transfer/rename'
     else: renameUrl = premiumizeRenameItem
     folderName = ''
-    
+
     if type != 'folder':
-        u = urlparse.urljoin(premiumize_Api, premiumizeItemDetails) 
+        u = urlparse.urljoin(premiumize_Api, premiumizeItemDetails)
         details = reqJson(u, data=data)
 
-        filename = details['name']  
+        filename = details['name']
         ext = filename.split('.')[-1]
-        folderId = details['folder_id'] 
+        folderId = details['folder_id']
         x = premiumizeFolder + str(folderId)
         folder = urlparse.urljoin(premiumize_Api, x)
         folder = reqJson(folder)
         folderName = folder['name']
         if folderName == 'root': folderName = filename
         else: folderName = folderName + '.' + ext
-    
-    k = control.keyboard(folderName, 'Rename Item (includes Extension)') ; k.doModal()  
+
+    k = control.keyboard(folderName, 'Rename Item (includes Extension)') ; k.doModal()
     q = k.getText() if k.isConfirmed() else None
     if (q == None or q == ''): return
     data['name'] = q
-    url = urlparse.urljoin(premiumize_Api, renameUrl) 
+    url = urlparse.urljoin(premiumize_Api, renameUrl)
     r = reqJson(url, data=data)
     control.refresh()
-    
+
 def libPlayer(title, url, xbmc_id, content):
     from resources.lib.modules import library_player
     library_player.player().run(title, url, xbmc_id, content)
-        
-        
+
+
 def getIDLink(id):
     try:
 
@@ -249,12 +249,12 @@ def downloadFolder(name, id):
     loc = control.setting('download.path')
     dest = os.path.join(loc, name)
     downloader.downloadZip(zipLink, dest, name)
-    
+
 
 def downloadFileToLoc(link, path):
     from resources.lib.modules import downloadzip
     downloadzip.silent_download(link, path)
-    
+
 
 def getSearch(meta=None, list=False):
     from resources.lib.indexers import movies, tvshows
@@ -262,11 +262,11 @@ def getSearch(meta=None, list=False):
         t = control.lang(32010)
         k = control.keyboard('', t) ; k.doModal()
         title = k.getText() if k.isConfirmed() else None
-        if (title == None or title == ''): return   
+        if (title == None or title == ''): return
         r = searchCloud(title)
         lists = []
         for result in r:
-            cm = [] 
+            cm = []
             season = '0'
             isMovie = True
             isFullShow = False
@@ -278,22 +278,22 @@ def getSearch(meta=None, list=False):
             name = normalize(name)
             superInfo = {'title': name, 'year':'0', 'imdb':'0'}
             # RETURN LIST FOR BROWSE SECTION
-            if list==True: 
-                lists.append(name) 
+            if list==True:
+                lists.append(name)
                 continue
             # ##################################
-        
+
             playLink = '0'
             isFolder = True
             isPlayable = 'false'
 
             url = '%s?action=%s&id=%s' % (sysaddon, 'premiumizeOpenFolder', id)
-            
-            sysmeta = urllib.parse.quote_plus(json.dumps(superInfo))                
+
+            sysmeta = urllib.parse.quote_plus(json.dumps(superInfo))
             year = superInfo['year']
             imdb = superInfo['imdb']
             systitle = urllib.parse.quote_plus(superInfo['title'])
-            
+
             links = []
             if type == 'file':
                 if control.setting('transcoded.play') == 'true':
@@ -306,12 +306,12 @@ def getSearch(meta=None, list=False):
                     playLink = result['link']
                 playLink = urllib.parse.quote_plus(playLink)
                 ext = playLink.split('.')[-1]
-                
+
                 if control.setting('filter.files') == 'true':
                     if not ext.lower() in VALID_EXT: continue
-    
+
                 fileLabel = type + " " + str(ext)
-                try: 
+                try:
                     size = result['size']
                     size = getSize(size)
                 except: size = ''
@@ -321,52 +321,52 @@ def getSearch(meta=None, list=False):
                 isPlayable = 'true'
 
                 url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, 'resolve', systitle , year, imdb, sysmeta, id)
-                cm.append(('Queue Item', 'RunPlugin(%s?action=queueItem)' % sysaddon))                  
+                cm.append(('Queue Item', 'RunPlugin(%s?action=queueItem)' % sysaddon))
                 if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s&id=%s)' % (sysaddon, name, playLink, id)))
             else: cm.append(('Download Folder (Zip)', 'RunPlugin(%s?action=downloadZip&name=%s&id=%s)' % (sysaddon, name, id)))
-            
+
             cm.append(('Delete from Cloud', 'RunPlugin(%s?action=premiumizeDeleteItem&id=%s&type=%s)' % (sysaddon, id, type)))
             cm.append(('Rename Item', 'RunPlugin(%s?action=premiumizeRename&id=%s&type=%s&title=%s)' % (sysaddon, id, type, name)))
-            
-            if control.setting('file.prefix') == 'true':            
-                label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
-                
+
+            if control.setting('file.prefix') == 'true':
+                label = "[B]" + fileLabel.upper() + " |[/B] " + str(name)
+
             else: label = str(name)
-            
+
             item = control.item(label=label)
-            item.setProperty('IsPlayable', isPlayable)              
+            item.setProperty('IsPlayable', isPlayable)
             try:
-                if ext.lower() == 'mp3' or ext.lower() == 'flac': 
-                    item.setProperty('IsPlayable', isPlayable)  
+                if ext.lower() == 'mp3' or ext.lower() == 'flac':
+                    item.setProperty('IsPlayable', isPlayable)
                     url = playLink
             except:pass
-                
+
             item.setArt({'icon': control.icon, 'thumb': control.icon})
             item.setProperty('Fanart_Image', control.addonFanart())
-                
+
             item.setInfo(type='Video', infoLabels = superInfo)
             item.addContextMenuItems(cm)
             if list != True: control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)
-            
+
         if list == True: return lists
 
         control.directory(syshandle, cacheToDisc=False)
     except: pass
-    
- 
+
+
 def getFolder(id, meta=None, list=False):
     from resources.lib.indexers import movies, tvshows
     try:
-        if id == 'root': url = urlparse.urljoin(premiumize_Api, premiumizeRootFolder) 
-        else: 
+        if id == 'root': url = urlparse.urljoin(premiumize_Api, premiumizeRootFolder)
+        else:
             folder = premiumizeFolder + id
-            url = urlparse.urljoin(premiumize_Api, folder) 
+            url = urlparse.urljoin(premiumize_Api, folder)
         r = reqJson(url)
         r = r['content']
         #print (r)
         lists = []
         for result in r:
-            cm = [] 
+            cm = []
             season = '0'
             isMovie = True
             isFullShow = False
@@ -378,22 +378,22 @@ def getFolder(id, meta=None, list=False):
             name = normalize(name)
             superInfo = {'title': name, 'year':'0', 'imdb':'0'}
             # RETURN LIST FOR BROWSE SECTION
-            if list==True: 
-                lists.append(name) 
+            if list==True:
+                lists.append(name)
                 continue
             # ##################################
-        
+
             playLink = '0'
             isFolder = True
             isPlayable = 'false'
 
             url = '%s?action=%s&id=%s' % (sysaddon, 'premiumizeOpenFolder', id)
-            
-            sysmeta = urllib.parse.quote_plus(json.dumps(superInfo))                
+
+            sysmeta = urllib.parse.quote_plus(json.dumps(superInfo))
             year = superInfo['year']
             imdb = superInfo['imdb']
             systitle = urllib.parse.quote_plus(superInfo['title'])
-            
+
             links = []
             if type == 'file':
                 if control.setting('transcoded.play') == 'true':
@@ -406,12 +406,12 @@ def getFolder(id, meta=None, list=False):
                     playLink = result['link']
                 playLink = urllib.parse.quote_plus(playLink)
                 ext = playLink.split('.')[-1]
-                
+
                 if control.setting('filter.files') == 'true':
                     if not ext.lower() in VALID_EXT: continue
-    
+
                 fileLabel = type + " " + str(ext)
-                try: 
+                try:
                     size = result['size']
                     size = getSize(size)
                 except: size = ''
@@ -421,33 +421,33 @@ def getFolder(id, meta=None, list=False):
                 isPlayable = 'true'
 
                 url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, 'resolve', systitle , year, imdb, sysmeta, id)
-                cm.append(('Queue Item', 'RunPlugin(%s?action=queueItem)' % sysaddon))                  
+                cm.append(('Queue Item', 'RunPlugin(%s?action=queueItem)' % sysaddon))
                 if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s&id=%s)' % (sysaddon, name, playLink, id)))
             else: cm.append(('Download Folder (Zip)', 'RunPlugin(%s?action=downloadZip&name=%s&id=%s)' % (sysaddon, name, id)))
-            
+
             cm.append(('Delete from Cloud', 'RunPlugin(%s?action=premiumizeDeleteItem&id=%s&type=%s)' % (sysaddon, id, type)))
             cm.append(('Rename Item', 'RunPlugin(%s?action=premiumizeRename&id=%s&type=%s&title=%s)' % (sysaddon, id, type, name)))
-            
-            if control.setting('file.prefix') == 'true':            
-                label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
-                
+
+            if control.setting('file.prefix') == 'true':
+                label = "[B]" + fileLabel.upper() + " |[/B] " + str(name)
+
             else: label = str(name)
-            
+
             item = control.item(label=label)
-            item.setProperty('IsPlayable', isPlayable)              
+            item.setProperty('IsPlayable', isPlayable)
             try:
-                if ext.lower() == 'mp3' or ext.lower() == 'flac': 
-                    item.setProperty('IsPlayable', isPlayable)  
+                if ext.lower() == 'mp3' or ext.lower() == 'flac':
+                    item.setProperty('IsPlayable', isPlayable)
                     url = playLink
             except:pass
-                
+
             item.setArt({'icon': control.icon, 'thumb': control.icon})
             item.setProperty('Fanart_Image', control.addonFanart())
-                
+
             item.setInfo(type='Video', infoLabels = superInfo)
             item.addContextMenuItems(cm)
             if list != True: control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)
-            
+
         if list == True: return lists
 
         control.directory(syshandle, cacheToDisc=False)
@@ -460,34 +460,34 @@ def meta_folder(create_directory=True, content='all'):
 
     epRegex = '(.+?)[._\s-]?(?:s|season)?(\d{1,2})(?:e|x|-|episode)(\d{1,2})[._\s\(\[-]'
     movieRegex = '(.+?)(\d{4})[._ -\)\[]'
-    epRegexYear = '(.+?)[._\s-]?[\(\[]?(\d{4})?[\)\]]?[._\s-]?(?:s|season)?(\d{1,2})(?:e|x|-|episode)(\d{1,2})[._\s\(\[-]'  
+    epRegexYear = '(.+?)[._\s-]?[\(\[]?(\d{4})?[\)\]]?[._\s-]?(?:s|season)?(\d{1,2})(?:e|x|-|episode)(\d{1,2})[._\s\(\[-]'
 
-    r = PremiumizeScraper().sources() 
-    r = [i for i in r if i['name'].split('.')[-1] in VALID_EXT]  
-    
-    if control.setting('metacloud.sort') == '1': 
+    r = PremiumizeScraper().sources()
+    r = [i for i in r if i['name'].split('.')[-1] in VALID_EXT]
+
+    if control.setting('metacloud.sort') == '1':
         try:r =  sorted(r, key=lambda k: utils.title_key(k['name'].replace('.',' ')))
         except: pass
-        
+
     else:
         try:r =  sorted(r, key=lambda k: int(k['created_at']), reverse=True)
         except: pass
-        
+
     if control.setting('metacloud.dialog') == 'true':
         progressDialog = control.progressDialog
         progressDialog.create('Creating Meta DB', '')
         progressDialog.update(0,'Checking your Cloud...')
-        
+
     total = len(r)
     count = 0
-    
+
     watchedMenu = control.lang(32068).encode('utf-8') if trakt.getTraktIndicatorsInfo() == True else control.lang(32066).encode('utf-8')
 
     unwatchedMenu = control.lang(32069).encode('utf-8') if trakt.getTraktIndicatorsInfo() == True else control.lang(32067).encode('utf-8')
-            
+
     indicatorsMovies = playcount.getMovieIndicators(refresh=True)
-    indicatorsTv     = playcount.getTVShowIndicators(refresh=True)  
-    
+    indicatorsTv     = playcount.getTVShowIndicators(refresh=True)
+
     metaItems = []
     metaEpisodes = []
     for result in r:
@@ -496,41 +496,41 @@ def meta_folder(create_directory=True, content='all'):
         isTv    = False
         name = result['name']
         id = result['id']
-        try: 
+        try:
             size = result['size']
             size = getSize(size)
         except: size = None
 
         prog = (count * 100) / int(total)
-        if control.setting('metacloud.dialog') == 'true': progressDialog.update(int(prog),'Updating database: %s' % name) 
+        if control.setting('metacloud.dialog') == 'true': progressDialog.update(int(prog),'Updating database: %s' % name)
         season = None
         episode = None
         imdb = None
         tvdb = None
         tmdb = None
-        tvshowtitle = None      
+        tvshowtitle = None
         match = re.search(epRegexYear, name.lower(), re.I)
-        if match: 
+        if match:
             isTv = True
             tvYear = None
             match = match.groups()
             tvTitle    = match[0]
             tvYear     = match[1]
-            season     = match[2]   
-            episode    = match[3]   
-            #print(("PREMIUMIZE MATCHED tvTitle", tvTitle, season, episode, tvYear)) 
-            
+            season     = match[2]
+            episode    = match[3]
+            #print(("PREMIUMIZE MATCHED tvTitle", tvTitle, season, episode, tvYear))
+
         if isTv == False:
             match2 = re.search(movieRegex, name.lower(), re.I)
-            if match2: 
+            if match2:
                 match2 = match2.groups()
 
                 isMovie = True
                 movieTitle = match2[0]
                 movieYear  = match2[1]
                 #print(("PREMIUMIZE MATCHED MOVIE", movieTitle, movieYear))
-                
-        cm = [] 
+
+        cm = []
 
 
 
@@ -546,19 +546,19 @@ def meta_folder(create_directory=True, content='all'):
         try:
             meta = []
             metaData = []
-            
+
             if isMovie == True:
 
                 if content != 'movie' and content != 'all': raise Exception()
                 getCache  = None
-                if getCache == None: 
+                if getCache == None:
                     getSearch = movies.movies().getSearchTMDB(title=movieTitle, year=movieYear)
                     getSearch = getSearch[0]
                     if len(getSearch) > 0: cache.get_from_string(cacheID, 2000, getSearch, update=True)
                 else: getSearch = getCache
                 meta = getSearch
-                
-            elif isTv == True: 
+
+            elif isTv == True:
                 tvshowtitle = None
                 if content != 'tv' and content != 'all': raise Exception()
 
@@ -585,20 +585,20 @@ def meta_folder(create_directory=True, content='all'):
                 episode = "%02d" % int(episode)
                 ss      = "%02d" % int(season)
                 getCacheEp  = None
-               
-                if getCacheEp == None: 
+
+                if getCacheEp == None:
                     episodeMeta = episodes.episodes().getTMDB(tvshowtitle, year, imdb, tvdb, tmdb, season = season, create_directory = False)
                     episodeMeta = [i for i in episodeMeta if "%02d" % int(i['episode']) == episode]
                     episodeMeta = episodeMeta[0]
                     episodeMeta.update({'season': ss, 'episode': episode})
                     if len(episodeMeta) > 0: cache.get_from_string(cacheID, 2000, episodeMeta, update=True)
-                else: 
+                else:
                     episodeMeta = getCacheEp
                 meta = episodeMeta
                 meta.update({'filename': name, 'rating': rating, 'premiumizeid': id, 'tvshowimdb': imdb, 'tvshowtmdb': tmdb, 'tvshowtvdb': tvdb, 'clearlogo': clearlogo, 'banner': banner})
                 metaEpisodes.append(meta)
 
-            if create_directory != True: raise Exception()          
+            if create_directory != True: raise Exception()
             metaData = meta
             globalDuration = metaData['duration'] if 'title' in metaData else name
             metatitle = metaData['title'] if 'title' in metaData else name
@@ -607,46 +607,46 @@ def meta_folder(create_directory=True, content='all'):
             if metaposter == '0' or metaposter == None: metaposter = control.icon
             if metafanart == '0' or metafanart == None: metafanart = control.fanart
             imdb = metaData['imdb'] if 'imdb' in metaData else None
-            tvdb = metaData['tvdb'] if 'tvdb' in metaData else None         
-            tmdb      = metaData['tmdb'] if 'tmdb' in metaData else None    
+            tvdb = metaData['tvdb'] if 'tvdb' in metaData else None
+            tmdb      = metaData['tmdb'] if 'tmdb' in metaData else None
 
             if isTv == True:  metaData.update({'tvshowtitle': tvshowtitle, 'season.poster': metaposter, 'tvshow.poster': metaposter})
             superInfo = {}
-            for k,v in metaData.items(): superInfo.update({k : v})          
+            for k,v in metaData.items(): superInfo.update({k : v})
 
-            systitle = urllib.parse.quote_plus(metatitle)           
+            systitle = urllib.parse.quote_plus(metatitle)
             if imdb!= None and imdb != '': metaItems.append(imdb)
-            if tvdb!= None and tvdb != '': metaItems.append(tvdb)       
-            
+            if tvdb!= None and tvdb != '': metaItems.append(tvdb)
+
             if isTv == True:
-                
+
                 if tvshowtitle in metaItems: raise Exception()
                 metaItems.append(tvshowtitle)
                 label = tvshowtitle
-                systitle = urllib.parse.quote_plus(superInfo['title'])  
-            else: 
+                systitle = urllib.parse.quote_plus(superInfo['title'])
+            else:
                 label = metatitle
                 metaItems.append(metatitle)
 
-          
+
             metaJson = json.dumps(superInfo)
-                 
+
             playLink = '0'
-            sysmeta = urllib.parse.quote_plus(json.dumps(superInfo))                
+            sysmeta = urllib.parse.quote_plus(json.dumps(superInfo))
             year = superInfo['year']
 
 
             cm = []
-          
-            if isTv != True:  
+
+            if isTv != True:
                 cm.append(('File Informations', 'RunPlugin(%s?action=popupDialog&name=%s&meta=%s)' % (sysaddon, name, size)))
                 cm.append(('Delete from Cloud', 'RunPlugin(%s?action=premiumizeDeleteItem&id=%s&type=torrent)' % (sysaddon, id)))
-            if isTv == True:  
-                cm.append(('Delete from Cloud', 'RunPlugin(%s?action=pm_delete_meta_episodes&imdb=%s&tmdb=%s&tvdb=%s)' % (sysaddon, imdb, tmdb, tvdb)))         
+            if isTv == True:
+                cm.append(('Delete from Cloud', 'RunPlugin(%s?action=pm_delete_meta_episodes&imdb=%s&tmdb=%s&tvdb=%s)' % (sysaddon, imdb, tmdb, tvdb)))
                 url = '%s?action=meta_episodes&imdb=%s&tmdb=%s&tvdb=%s' % (sysaddon, imdb, tmdb, tvdb)
-            else: url = '%s?action=directPlay&title=%s&year=%s&imdb=%s&tmdb=%s&meta=%s&id=%s&url=resolve' % (sysaddon, systitle, year, imdb, tmdb, sysmeta, id)  
+            else: url = '%s?action=directPlay&title=%s&year=%s&imdb=%s&tmdb=%s&meta=%s&id=%s&url=resolve' % (sysaddon, systitle, year, imdb, tmdb, sysmeta, id)
             cm.append(('Blacklist for Meta Library', 'RunPlugin(%s?action=pm_metalibrary_blacklist&mode=add&id=%s&name=%s)' % (sysaddon, id, name)))
-            item = control.item(label=label)    
+            item = control.item(label=label)
             art = {}
             art.update({'icon': metaposter, 'thumb': metaposter, 'poster': metaposter})
             # if 'thumb' in metaData and not metaData['thumb'] == '0': art.update({'icon': metaData['thumb'], 'thumb': metaData['thumb']})
@@ -654,7 +654,7 @@ def meta_folder(create_directory=True, content='all'):
             if 'clearlogo' in metaData and not metaData['clearlogo'] == '0': art.update({'clearlogo': metaData['clearlogo']})
             if 'clearart' in metaData and not metaData['clearart'] == '0': art.update({'clearart': metaData['clearart']})
             if 'season.poster' in metaData and not metaData['season.poster'] == '0': art.update({'season.poster': metaposter})
-            
+
             try:
                     if isTv == True: raise Exception()
 
@@ -667,16 +667,16 @@ def meta_folder(create_directory=True, content='all'):
                         cm.append((watchedMenu, 'RunPlugin(%s?action=moviePlaycount&tmdb=%s&query=7)' % (sysaddon, tmdb)))
                         superInfo.update({'playcount': 0, 'overlay': 6})
             except:
-                pass    
+                pass
 
             try:
                     if isTv != True: raise Exception()
 
                     overlay = int(playcount.getTVShowOverlay(indicatorsTv, tmdb=tmdb))
-                    if overlay == 7: 
+                    if overlay == 7:
                         cm.append((unwatchedMenu, 'RunPlugin(%s?action=tvPlaycount&name=%s&imdb=%s&tvdb=%s&season=0&tmdb=%s&query=6)' % (sysaddon, systitle, imdb, tvdb, tmdb)))
                         superInfo.update({'playcount': 1, 'overlay': 7})
-                    else: 
+                    else:
                         cm.append((watchedMenu, 'RunPlugin(%s?action=tvPlaycount&name=%s&imdb=%s&tvdb=%s&season=0&tmdb=%s&query=7)' % (sysaddon, systitle, imdb, tvdb, tmdb)))
                         superInfo.update({'playcount': 0, 'overlay': 6})
             except:
@@ -692,8 +692,8 @@ def meta_folder(create_directory=True, content='all'):
                 del superInfo['duration']
                 superInfo.update({'duration': str(int(showDuration) * 60)})
             except:
-                pass        
-            superInfo = dict((k, v) for k, v in superInfo.items() if not v == '0')              
+                pass
+            superInfo = dict((k, v) for k, v in superInfo.items() if not v == '0')
             item.setProperty('Fanart_Image', metafanart)
             infolabels = {}
             infolabels.update(superInfo)
@@ -701,53 +701,53 @@ def meta_folder(create_directory=True, content='all'):
             item.setArt(art)
             item.addContextMenuItems(cm)
             # if isTv != True: item.setProperty('IsPlayable', 'true')
-            
-            if isTv == True: 
+
+            if isTv == True:
                 del superInfo['plot']
                 infolabels = {'plot': tvplot}
-                infolabels.update(superInfo)            
+                infolabels.update(superInfo)
                 isFolder = True
-                
+
             else: isFolder = False
 
             item.setInfo(type='Video', infoLabels = infolabels)
-            control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)                
+            control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)
         except: pass
-        
+
     try: progressDialog.close()
     except: pass
-    
+
     if len(metaEpisodes) > 0:
         premiumizeCacheID = 'premiumize-tvshows-meta-scrape'
         cache.get_from_string(premiumizeCacheID, 720, metaEpisodes, update=True)
-    
-    if create_directory == True: 
+
+    if create_directory == True:
         contentDir = 'movies'
         if content == 'tv': contentDir = 'tvshows'
-        control.content(syshandle, contentDir)  
-        control.directory(syshandle, cacheToDisc=True)      
+        control.content(syshandle, contentDir)
+        control.directory(syshandle, cacheToDisc=True)
 
 def meta_episodes(imdb=None, tvdb=None, tmdb = None, create_directory=True, delete=False):
 
     traktCredentials = trakt.getTraktCredentialsInfo()
     premiumizeCacheID = 'premiumize-tvshows-meta-scrape'
     episodes = cache.get_from_string(premiumizeCacheID, 720, None)
-    indicators = playcount.getTVShowIndicators(refresh=True)    
+    indicators = playcount.getTVShowIndicators(refresh=True)
     watchedMenu = control.lang(32068).encode('utf-8') if trakt.getTraktIndicatorsInfo() == True else control.lang(32066).encode('utf-8')
 
     unwatchedMenu = control.lang(32069).encode('utf-8') if trakt.getTraktIndicatorsInfo() == True else control.lang(32067).encode('utf-8')
-            
+
     if imdb != None: r = [i for i in episodes if i['tvshowimdb'] == imdb]
     elif tvdb != None: r = [i for i in episodes if i['tvshowtvdb'] == tvdb]
-    elif tmdb != None: r = [i for i in episodes if i['tmdb'] == tmdb]   
+    elif tmdb != None: r = [i for i in episodes if i['tmdb'] == tmdb]
     try: r = sorted(r, key=lambda x: (int(x['season']), int(x['episode'])))
     except: pass
-    
+
     for result in r:
         try:
 
             id = result['premiumizeid']
-            if delete == True: 
+            if delete == True:
                 deleteItem(id, 'file')
                 raise Exception()
 
@@ -760,7 +760,7 @@ def meta_episodes(imdb=None, tvdb=None, tmdb = None, create_directory=True, dele
             metatitle = metaData['title'] if 'title' in metaData else name
             metaposter = metaData['poster'] if 'poster' in metaData else '0'
             metafanart = metaData['fanart'] if 'fanart' in metaData else '0'
-    
+
             if metaposter == '0' or metaposter == None: metaposter = control.icon
             if metafanart == '0' or metafanart == None: metafanart = control.fanart
             year    = meta['year']
@@ -768,26 +768,26 @@ def meta_episodes(imdb=None, tvdb=None, tmdb = None, create_directory=True, dele
             episode = meta['episode']
 
             imdb = metaData['imdb'] if 'imdb' in metaData else None
-            tvdb = metaData['tvdb'] if 'tvdb' in metaData else None         
-            tmdb = metaData['tmdb'] if 'tmdb' in metaData else None 
+            tvdb = metaData['tvdb'] if 'tvdb' in metaData else None
+            tmdb = metaData['tmdb'] if 'tmdb' in metaData else None
             tvshowtitle = metaData['tvshowtitle'] if 'tvshowtitle' in metaData else None
             metaData.update({'season.poster': metaposter, 'tvshow.poster': metaposter})
             superInfo = metaData
-        
-            systitle = urllib.parse.quote_plus(metatitle)           
+
+            systitle = urllib.parse.quote_plus(metatitle)
 
             label = "S%s:E%s - %s" % (season, episode, metatitle)
-            systitle = urllib.parse.quote_plus(superInfo['title'])  
+            systitle = urllib.parse.quote_plus(superInfo['title'])
 
             playLink = '0'
-            sysmeta = urllib.parse.quote_plus(json.dumps(superInfo))                
+            sysmeta = urllib.parse.quote_plus(json.dumps(superInfo))
             year = superInfo['year']
 
             cm = []
             url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&tmdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&meta=%s&id=%s' % (sysaddon, 'resolve', systitle, year, imdb, tmdb, tvdb, season, episode, urllib.parse.quote_plus(tvshowtitle), sysmeta, id)
-            cm.append(('File Informations', 'RunPlugin(%s?action=popupDialog&name=%s)' % (sysaddon, name)))         
+            cm.append(('File Informations', 'RunPlugin(%s?action=popupDialog&name=%s)' % (sysaddon, name)))
             cm.append(('Delete from Cloud', 'RunPlugin(%s?action=premiumizeDeleteItem&id=%s&type=files)' % (sysaddon, id)))
-            item = control.item(label=label)    
+            item = control.item(label=label)
             art = {}
             art.update({'icon': metaposter, 'thumb': metaposter, 'poster': metaposter})
             if 'thumb' in metaData and not metaData['thumb'] == '0': art.update({'icon': metaData['thumb'], 'thumb': metaData['thumb']})
@@ -806,7 +806,7 @@ def meta_episodes(imdb=None, tvdb=None, tmdb = None, create_directory=True, dele
                         cm.append((watchedMenu, 'RunPlugin(%s?action=episodePlaycount&imdb=%s&tvdb=%s&season=%s&episode=%s&query=7)' % (sysaddon, imdb, tvdb, season, episode)))
                         superInfo.update({'playcount': 0, 'overlay': 6})
             except:
-                pass    
+                pass
 
             superInfo.update({'code': imdb, 'imdbnumber': imdb, 'imdb_id': imdb})
             superInfo.update({'tmdb_id': tmdb})
@@ -817,9 +817,9 @@ def meta_episodes(imdb=None, tvdb=None, tmdb = None, create_directory=True, dele
             try:
                 superInfo.update({'duration': str(int(duration) * 60)})
             except:
-                pass        
+                pass
             superInfo = dict((k, v) for k, v in superInfo.items() if not v == '0')
-            
+
             item.setProperty('Fanart_Image', metafanart)
             item.setInfo(type='Video', infoLabels = superInfo)
             item.setArt(art)
@@ -827,10 +827,10 @@ def meta_episodes(imdb=None, tvdb=None, tmdb = None, create_directory=True, dele
             control.addItem(handle=syshandle, url=url, listitem=item, isFolder=False)
         except:pass
 
-    if create_directory == True: 
+    if create_directory == True:
         contentDir = 'episodes'
-        control.content(syshandle, contentDir)  
-        control.directory(syshandle, cacheToDisc=True)      
+        control.content(syshandle, contentDir)
+        control.directory(syshandle, cacheToDisc=True)
 
 def meta_nextplay(imdb=None, tvdb=None, tmdb=None, season=None, episode=None):
     try:
@@ -838,8 +838,8 @@ def meta_nextplay(imdb=None, tvdb=None, tmdb=None, season=None, episode=None):
         episodes = cache.get_from_string(premiumizeCacheID, 720, None)
         if imdb != None and imdb != '0': r = [i for i in episodes if i['tvshowimdb'] == imdb]
         elif tvdb != None and tvdb != '0': r = [i for i in episodes if i['tvshowtvdb'] == tvdb]
-        elif tmdb != None and tmdb != '0': r = [i for i in episodes if i['tmdb'] == tmdb]   
-        
+        elif tmdb != None and tmdb != '0': r = [i for i in episodes if i['tmdb'] == tmdb]
+
         for item in r:
             ss = "%02d" % int(item['season'])
             ee = "%02d" % int(item['episode'])
@@ -856,12 +856,12 @@ def meta_nextplay(imdb=None, tvdb=None, tmdb=None, season=None, episode=None):
         episodeMeta =[]
         try:episodeMeta = [i for i in r if str(i['season']) == str(thisSS) and str(i['episode']) == str(nextEpisode)][0]
         except: episodeMeta = [i for i in r if str(i['season']) == str(nextSeason) and str(i['episode']) == '01'][0]
-        # #print ("NEXT SS AND EE", nextSeason, nextEpisode, len(episodeMeta))       
+        # #print ("NEXT SS AND EE", nextSeason, nextEpisode, len(episodeMeta))
         if len(episodeMeta) > 0: return episodeMeta
 
 
     except:pass
-    
+
 def meta_library():
     from resources.lib.indexers import movies, tvshows, episodes
 
@@ -877,12 +877,12 @@ def meta_library():
             cloudCache(mode='write', data=r)
         else:
             r = cached_results
-            
+
     elif cached_time == '0' or cached_time == None or cached_results == '0' or cached_results == None:
         control.setSetting(id='first.start', value='false')
         r = PremiumizeScraper().sources()
         cloudCache(mode='write', data=r)
-        
+
     r = [i for i in r if i['type'] == 'file']
     r = [i for i in r if i['name'].split('.')[-1] in VALID_EXT]
     r =  sorted(r, key=lambda k: int(k['created_at']), reverse=True)
@@ -890,10 +890,10 @@ def meta_library():
     progressDialog = control.progressDialogBG
     progressDialog.create('Updating Premiumize Library', '')
     progressDialog.update(0,'Updating Premiumize Library...', 'Please Wait')
-    
+
     total = len(r)
     count = 0
-    
+
     metaItems = []
     metaEpisodes = []
     for result in r:
@@ -902,30 +902,30 @@ def meta_library():
         isTv    = False
         name = result['name']
         prog = (count * 100) / int(total)
-        progressDialog.update(int(prog), 'Updating Premiumize Library', name)    
+        progressDialog.update(int(prog), 'Updating Premiumize Library', name)
         season = None
         episode = None
         imdb = None
         tvdb = None
         tmdb = None
-        tvshowtitle = None      
+        tvshowtitle = None
         match = re.search(epRegex, name.lower(), re.I)
-        if match: 
+        if match:
             isTv = True
             match = match.groups()
             tvTitle    = match[0]
-            season     = match[1]   
-            episode    = match[2]               
+            season     = match[1]
+            episode    = match[2]
         if isTv == False:
             match2 = re.search(movieRegex, name.lower(), re.I)
-            if match2: 
+            if match2:
                 match2 = match2.groups()
 
                 isMovie = True
                 movieTitle = match2[0]
                 movieYear  = match2[1]
-                
-        cm = [] 
+
+        cm = []
 
         id = result['id']
         cacheID = "premiumize-%s" % (id)
@@ -941,23 +941,23 @@ def meta_library():
         try:
             meta = []
             metaData = []
-            
+
             if isMovie == True:
                 getCache  = cache.get_from_string(cacheID, 2000, None)
-                if getCache == None: 
+                if getCache == None:
                     getSearch = movies.movies().searchTMDB(title=movieTitle, year=movieYear)
                     getSearch = getSearch[0]
                     if len(getSearch) > 0: cache.get_from_string(cacheID, 2000, getSearch, update=True)
                 else: getSearch = getCache
                 meta = getSearch
-                
-                
-                
-            elif isTv == True: 
+
+
+
+            elif isTv == True:
                 getSearch = tvshows.tvshows().getSearch(title=tvTitle)
                 getSearch = getSearch[0]
-                if not len(getSearch) > 0: raise Exception()    
-                
+                if not len(getSearch) > 0: raise Exception()
+
                 tvdb = getSearch['tvdb']
                 imdb = getSearch['imdb']
                 tvplot = getSearch['plot']
@@ -969,9 +969,9 @@ def meta_library():
                 tvshowtitle = getSearch['title']
                 episode = "%02d" % int(episode)
                 ss      = "%02d" % int(season)
-                
+
                 getCacheEp  = cache.get_from_string(cacheID, 720, None)
-                if getCacheEp == None: 
+                if getCacheEp == None:
                     episodeMeta = episodes.episodes().get(tvshowtitle, year, imdb, tvdb, season = season, create_directory = False)
                     episodeMeta = [i for i in episodeMeta if "%02d" % int(i['episode']) == episode]
                     episodeMeta = episodeMeta[0]
@@ -980,7 +980,7 @@ def meta_library():
                 meta = episodeMeta
                 meta.update({'premiumizeid': id, 'tvshowimdb': imdb, 'tvshowtvdb': tvdb, 'clearlogo': clearlogo, 'banner': banner})
                 metaEpisodes.append(meta)
-                
+
             metaData = meta
             metatitle = metaData['title'] if 'title' in metaData else name
             metaposter = metaData['poster'] if 'poster' in metaData else '0'
@@ -988,8 +988,8 @@ def meta_library():
             if metaposter == '0' or metaposter == None: metaposter = control.icon
             if metafanart == '0' or metafanart == None: metafanart = control.fanart
             imdb = metaData['imdb'] if 'imdb' in metaData else None
-            tvdb = metaData['tvdb'] if 'tvdb' in metaData else None         
-            tmdb      = metaData['tmdb'] if 'tmdb' in metaData else None    
+            tvdb = metaData['tvdb'] if 'tvdb' in metaData else None
+            tmdb      = metaData['tmdb'] if 'tmdb' in metaData else None
             tvshowtitle = metaData['tvshowtitle'] if 'tvshowtitle' in metaData else None
             if isTv == True: metaData.update({'season.poster': metaposter, 'tvshow.poster': metaposter})
             superInfo = metaData
@@ -1001,30 +1001,30 @@ def meta_library():
 
     try: progressDialog.close()
     except: pass
-        
+
     if len(metaEpisodes) > 0:
         premiumizeCacheID = 'premiumize-tvshows-meta-scrape'
         cache.get_from_string(premiumizeCacheID, 720, metaEpisodes, update=True)
 
     control.execute('XBMC.UpdateLibrary(video)')
-        
+
 def createLibFolder(path):
     os.makedirs(path)
-    
+
 def createStrm(name, id, path):
     systitle = urllib.parse.quote_plus(name)
     content = '%s?action=play_library&name=%s&id=%s' % (sys.argv[0], systitle, str(id))
     file = open(path, 'w')
     file.write(content)
-    file.close() 
-    
+    file.close()
+
 def createNfo(content, type, path):
     if type == 'movie': type = 'movie.nfo'
     else: type = 'tvshow.nfo'
     nfo_path = os.path.join(path, type)
     file = open(nfo_path, 'w')
     file.write(content)
-    file.close() 
+    file.close()
 
 def nfo_url(type, id):
     tvdb_url = 'http://thetvdb.com/?tab=series&id=%s'
@@ -1039,14 +1039,14 @@ def nfo_url(type, id):
             return imdb_url % (str(id))
     else:
             return ''
-            
+
 def updateMetaLibrary(force=False):
     timeNow =  str(datetime.datetime.now().strftime('%Y%m%d'))
     lastUpdate = str(control.setting('meta.library.refresh'))
-    if int(timeNow) != int(lastUpdate): 
+    if int(timeNow) != int(lastUpdate):
         meta_library()
         control.setSetting(id='meta.library.refresh', value=timeNow)
-        
+
 def lib_delete_folder(path):
     import shutil
     try: shutil.rmtree(path)
@@ -1058,22 +1058,22 @@ def lib_delete_folder(path):
                 os.remove(os.path.join(root,name))
                 os.rmdir(os.path.join(root,name))
             except: pass
-                            
+
         for name in dirs:
             try: os.rmdir(os.path.join(root,name)); os.rmdir(root)
             except: pass
-    
+
 def library_setup(id=None, type=None, meta=None):
-    movielibraryPath   = xbmc.translatePath(control.setting('meta.library.movies'))
-    tvlibraryPath       = xbmc.translatePath(control.setting('meta.library.tv'))
-    if not os.path.exists(movielibraryPath): os.mkdir(movielibraryPath) 
-    if not os.path.exists(tvlibraryPath): os.mkdir(tvlibraryPath)   
+    movielibraryPath   = xbmcvfs.translatePath(control.setting('meta.library.movies'))
+    tvlibraryPath       = xbmcvfs.translatePath(control.setting('meta.library.tv'))
+    if not os.path.exists(movielibraryPath): os.mkdir(movielibraryPath)
+    if not os.path.exists(tvlibraryPath): os.mkdir(tvlibraryPath)
 
     imdb = meta['imdb'] if 'imdb' in meta else None
-    tvdb = meta['tvdb'] if 'tvdb' in meta else None         
-    tmdb = meta['tmdb'] if 'tmdb' in meta else None     
+    tvdb = meta['tvdb'] if 'tvdb' in meta else None
+    tmdb = meta['tmdb'] if 'tmdb' in meta else None
     #if metaPath == None: metaPath = libPathMeta
-    if type == 'Movie': 
+    if type == 'Movie':
         title = meta['title']
         year = meta['year']
         if year == '0': year = ''
@@ -1089,8 +1089,8 @@ def library_setup(id=None, type=None, meta=None):
         else: nfo_url_content = ''
         createStrm(transtitle, id, filePath)
         if nfo_url_content != '': createNfo(nfo_url_content, 'movie', folder)
-        
-    elif type == 'Tv': 
+
+    elif type == 'Tv':
         title = meta['title']
         tvshowtitle = meta['tvshowtitle']
         year = meta['year']
@@ -1099,7 +1099,7 @@ def library_setup(id=None, type=None, meta=None):
         episode = meta['episode']
         season = "%02d" % int(season)
         episode = "%02d" % int(episode)
-        
+
         transtitle = normalize(tvshowtitle)
         transtitle = re.sub('[\?\!]', '', transtitle)
         # #print title, transtitle, legal_filename(transtitle)
@@ -1114,38 +1114,38 @@ def library_setup(id=None, type=None, meta=None):
         else: nfo_url_content = ''
         createStrm(epTitle, id, filePath)
         if nfo_url_content != '': createNfo(nfo_url_content, 'tv', folder)
-        
+
 
     # except Exception as e:
 
-        # #print ("PREMIUMIZE ERROR:", str(e))       
+        # #print ("PREMIUMIZE ERROR:", str(e))
 
 def new_cloud_cache():
-    control.infoDialog('Scraping your Cloud...')    
+    control.infoDialog('Scraping your Cloud...')
     r = PremiumizeScraper().sources()
     cloudCache(mode='write', data=r)
-    control.infoDialog('New Cache Created...')  
-        
+    control.infoDialog('New Cache Created...')
+
 def getSearch_movie(movieTitle, movieYear):
     from resources.lib.indexers import movies
-    movie = movies.movies().searchTMDB(title=movieTitle, year=movieYear)    
+    movie = movies.movies().searchTMDB(title=movieTitle, year=movieYear)
     return movie
-    
+
 def getSearch_tv(tvTitle):
     from resources.lib.indexers import tvshows
-    tv = tvshows.tvshows().getSearch(title=tvTitle) 
-    return tv   
-    
+    tv = tvshows.tvshows().getSearch(title=tvTitle)
+    return tv
+
 def getSearch_episode(tvshowtitle, year, imdb, tvdb, season):
     from resources.lib.indexers import episodes
     episode = episodes.episodes().get(tvshowtitle, year, imdb, tvdb, season = season, create_directory = False)
     return episode
 
-    
+
 def direct_downlaod(id):
     return
 
-def check_cloud(title): 
+def check_cloud(title):
     inCloud = False
     r = PremiumizeScraper().sources()
     for result in r:
@@ -1153,7 +1153,7 @@ def check_cloud(title):
         if not cleantitle.get(title) in cleantitle.get(name): continue
         ratio = matchRatio(cleantitle.get(title), cleantitle.get(name))
         return ratio
-    
+
 def searchCloud(query):
     try:
         query = cleantitle.query(query)
@@ -1167,7 +1167,7 @@ def searchCloud(query):
         return files
     except:
         return
-            
+
 def scrapecloud(title, match, year=None, season=None, episode=None):
     progress = control.progressDialogBG
     filesOnly = control.setting('scraper.filesonly')
@@ -1175,24 +1175,24 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
         progress.create('Scraping Your Cloud','Please Wait...')
         progress.update(100,'Scraping Your Cloud','Please Wait...')
         r = searchCloud(title)
-            
+
         labels = []
         sources = []
         types = []
         IDs = []
-        
+
         normalSources = []
         exactSources  = []
-        
+
         titleCheck = cleantitle.get(title)
         exactPlay = False
         if season != None:
             epcheck    = "s%02de%02d" % (int(season), int(episode))
             epcheck_2  = "%02dx%02d"  % (int(season), int(episode))
-            
+
             dd_season  = "%02d" % int(season)
             dd_episode = "%02d" % int(episode)
-            
+
             exactCheck_1 = titleCheck + epcheck
             exactCheck_2 = titleCheck + epcheck_2
 
@@ -1200,7 +1200,7 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
             if year == '' or year == None or year == '0': year = ''
             exactCheck_1 = titleCheck + year
             exactCheck_2 = titleCheck + year
-        
+
 
         for x in r:
             try:
@@ -1213,11 +1213,11 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
                 name = x['name']
                 name = normalize(name)
 
-                
+
                 if not titleCheck in cleantitle.get(name): raise Exception()
 
                 normalSources.append(x)
-                
+
                 if exactCheck_1 in cleantitle.get(name) or exactCheck_2 in cleantitle.get(name):
                     exactSources.append(x)
                 else:
@@ -1227,14 +1227,14 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
                     if s == dd_season or s == season:
                         if e == dd_episode or e == episode: exactSources.append(x)
             except:pass
-            
-                
-        if len(exactSources) > 0: 
+
+
+        if len(exactSources) > 0:
             content = exactSources
             exactPlay = True
-                
+
         else: content = normalSources
-        autoPlayFiles = []      
+        autoPlayFiles = []
         for result in content:
             cm = []
             type = result['type']
@@ -1242,7 +1242,7 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
             id = result['id']
             name = result['name']
             name = normalize(name)
-            
+
             playLink = '0'
             isFolder = True
             isPlayable = 'false'
@@ -1259,7 +1259,7 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
                 ext = playLink.split('.')[-1]
                 if not ext.lower() in VALID_EXT: continue
                 fileLabel = type + " " + str(ext)
-                try: 
+                try:
                     size = result['size']
                     size = getSize(size)
                 except: size = ''
@@ -1269,47 +1269,47 @@ def scrapecloud(title, match, year=None, season=None, episode=None):
                 url = playLink
                 autoPlayFiles.append([url, id])
                 #AUTOPLAY
-            
 
-            label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
+
+            label = "[B]" + fileLabel.upper() + " |[/B] " + str(name)
             labels.append(label)
             sources.append(url)
             types.append(type)
             IDs.append(id)
 
-        
-        if exactPlay == True and control.setting('scraper.autoplay') == 'true' and len(autoPlayFiles) == 1: 
+
+        if exactPlay == True and control.setting('scraper.autoplay') == 'true' and len(autoPlayFiles) == 1:
             url = autoPlayFiles[0][0]
             id  = autoPlayFiles[0][1]
             return url, id
-                            
+
         try: progress.close()
         except:pass
         try: progress.close()
         except:pass
-        
+
         if len(sources) < 1: return '0'
         select = control.selectDialog(labels)
         if select == -1: return '0'
-        
+
         selected_type = types[select]
-        
+
         selected_url = sources[select]
 
         selected_id = IDs[select]
-        
-        if selected_type != 'file': 
+
+        if selected_type != 'file':
             selected_url = dialogselect_folder(selected_id)
         return selected_url , selected_id
     except:
         try: progress.close()
         except:pass
         try: progress.close()
-        except:pass     
+        except:pass
 
 def dialogselect_folder(id):
     folder = premiumizeFolder + id
-    url = urlparse.urljoin(premiumize_Api, folder) 
+    url = urlparse.urljoin(premiumize_Api, folder)
     r = reqJson(url)
     r = r['content']
     labels = []
@@ -1325,20 +1325,20 @@ def dialogselect_folder(id):
         playLink = '0'
         isFolder = True
         isPlayable = 'false'
-        url = '0' 
+        url = '0'
         if type == 'file':
             playLink = result['link']
             ext = playLink.split('.')
             fileLabel = type + " " + str(ext[-1])
-            try: 
+            try:
                 size = result['size']
                 size = getSize(size)
             except: size = ''
-            if size != '': fileLabel = fileLabel + " | " + str(size)            
+            if size != '': fileLabel = fileLabel + " | " + str(size)
             isFolder = False
             isPlayable = 'true'
             url = playLink
-        label = "[B]" + fileLabel.upper() + " |[/B] " + str(name) 
+        label = "[B]" + fileLabel.upper() + " |[/B] " + str(name)
         IDs.append(id)
         labels.append(label)
         sources.append(url)
@@ -1349,19 +1349,19 @@ def dialogselect_folder(id):
     selected_type = types[select]
     selected_url = sources[select]
     selected_id = IDs[select]
-    if selected_type != 'file': 
+    if selected_type != 'file':
         selected_url = dialogselect_folder(selected_id)
     return selected_url
-    
-        
+
+
 def transferList():
     clearfinished = '%s?action=%s' % (sysaddon, 'premiumizeClearFinished')
     item = control.item(label='Clear Finished Transfers')
     control.addItem(handle=syshandle, url=clearfinished, listitem=item, isFolder=False)
-    url = urlparse.urljoin(premiumize_Api, premiumizeTransfer) 
+    url = urlparse.urljoin(premiumize_Api, premiumizeTransfer)
     r = reqJson(url)
     r = r['transfers']
-    
+
     for result in r:
         cm = []
         status = result['status']
@@ -1375,8 +1375,8 @@ def transferList():
         name = result['name']
         name = normalize(name)
         superInfo = {'title': name, 'year':'0', 'imdb':'0'}
-            
-        if not status == 'finished': 
+
+        if not status == 'finished':
             if not progress == '0':
                 try:
                     progress = re.findall('\.(\d+)', str(progress))[0]
@@ -1384,52 +1384,52 @@ def transferList():
                 except: progress = ''
                 try:
                     message = result['message']
-                    
-                except: message = ''                                
+
+                except: message = ''
             label = "[B]" + status.upper() + "[/B] [" + str(progress) + " %] " + message  + " | " + name
         else: label = "[B]" + status.upper() + "[/B] | " + name
 
-        
+
         url = '%s?action=%s&id=%s' % (sysaddon, 'premiumizeOpenFolder', folder_id)
-        
-        sysmeta = urllib.parse.quote_plus(json.dumps(superInfo))    
-        systitle = urllib.parse.quote_plus(superInfo['title'])      
+
+        sysmeta = urllib.parse.quote_plus(json.dumps(superInfo))
+        systitle = urllib.parse.quote_plus(superInfo['title'])
         if isFolder == False:
             playLink = getIDLink(file_id)
             isPlayable = 'true'
             try: playLink = urllib.parse.quote_plus(playLink)
-            except: pass    
-            url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, playLink, systitle , superInfo['year'], superInfo['imdb'], sysmeta, file_id)        
+            except: pass
+            url = '%s?action=directPlay&url=%s&title=%s&year=%s&imdb=%s&meta=%s&id=%s' % (sysaddon, playLink, systitle , superInfo['year'], superInfo['imdb'], sysmeta, file_id)
             if control.setting('downloads') == 'true': cm.append(('Download from Cloud', 'RunPlugin(%s?action=download&name=%s&url=%s&id=%s)' % (sysaddon, name, url, id)))
-            cm.append(('Queue Item', 'RunPlugin(%s?action=queueItem)' % sysaddon))              
-            
+            cm.append(('Queue Item', 'RunPlugin(%s?action=queueItem)' % sysaddon))
+
 
         cm.append(('Delete from Cloud', 'RunPlugin(%s?action=premiumizeDeleteItem&id=%s&type=torrent)' % (sysaddon, id)))
         item.setArt({'icon': control.icon, 'thumb': control.icon})
         item.setProperty('Fanart_Image', control.addonFanart())
-        
+
         item = control.item(label=label)
         item.addContextMenuItems(cm)
         control.addItem(handle=syshandle, url=url, listitem=item, isFolder=isFolder)
-                
+
     control.directory(syshandle, cacheToDisc=True)
 
 def clearfinished():
-    url = urlparse.urljoin(premiumize_Api, premiumizeClearFinished) 
+    url = urlparse.urljoin(premiumize_Api, premiumizeClearFinished)
     r = reqJson(url)
     control.refresh()
-    
+
 def DeleteAllTypes(id, mode='normal', autodelete='false'):
     try:
         if id == '' or id == '0' or id == None or id == 'false': raise Exception()
         data = {'id': id }
-        
-        u = urlparse.urljoin(premiumize_Api, premiumizeItemDetails) 
+
+        u = urlparse.urljoin(premiumize_Api, premiumizeItemDetails)
         details = reqJson(u, data=data)
-        filename = details['name']  
-        folderId = details['folder_id'] 
-        
-        url = urlparse.urljoin(premiumize_Api, premiumizeDeleteItem) 
+        filename = details['name']
+        folderId = details['folder_id']
+
+        url = urlparse.urljoin(premiumize_Api, premiumizeDeleteItem)
         r = reqJson(url, data=data)
             ##print ("PREMIUMIZE DELETE ITEM", url, r)
         try:
@@ -1437,7 +1437,7 @@ def DeleteAllTypes(id, mode='normal', autodelete='false'):
 
             ext = filename.split('.')
             ext = '.%s' % ext[-1]
-            
+
             if folderId == '0' or folderId == None or folderId == '': raise Exception()
             x = premiumizeFolder + str(folderId)
             folder = urlparse.urljoin(premiumize_Api, x)
@@ -1448,9 +1448,9 @@ def DeleteAllTypes(id, mode='normal', autodelete='false'):
             folderClear = re.sub('\n|([[].+?[]])|([(].+?[)])|\s', '', folderName)
             filenameClean = re.sub('\n|([[].+?[]])|([(].+?[)])|\s', '', filename)
             if autodelete == 'true':
-                if folderClear.lower() == filenameClean.lower(): 
+                if folderClear.lower() == filenameClean.lower():
                     deleteItem(folderId, 'folder')
-                    raise Exception()           
+                    raise Exception()
             else:
                 query = control.yesnoDialog('Found Parent Folder: ', folderNameOrig , 'Do you want to delete it?', nolabel='No', yeslabel='Yes')
                 if query == 1: deleteItem(folderId, 'folder')
@@ -1461,10 +1461,10 @@ def DeleteDialog(id):
     query = control.yesnoDialog('Do you want to delete the file from your cloud?', '' ,'', nolabel='No', yeslabel='Yes')
     if query == 1: # YES
         DeleteAllTypes(id, mode='full')
-        
+
 def AutoDelete(id):
     DeleteAllTypes(id, mode='full', autodelete='true')
-    
+
 def add_file():
     dialog = xbmcgui.Dialog()
     path = dialog.browse(type=1, heading='Select File to Add - Torrent/Magnet', shares='files',useThumbs=False, treatAsFolder=False, enableMultiple=False)
@@ -1474,9 +1474,9 @@ def add_file():
         f.close()
         if download.endswith('\n'):
             download = download[:-1]
-        add_download(download, path)    
-            
-            
+        add_download(download, path)
+
+
 def add_download(download, path):
     if download:
         try:
@@ -1484,19 +1484,19 @@ def add_download(download, path):
             download_type = 'nzb' if path.lower().endswith('nzb') else 'torrent'
             CloudDownload(download, download_type)
         except:pass
-            
-            
+
+
 def CloudDownload(download, download_type, folder_id=None, file_name=None):
-        url = urlparse.urljoin(premiumize_Api, premiumizeAdd) 
+        url = urlparse.urljoin(premiumize_Api, premiumizeAdd)
         data = {'type': download_type}
         if folder_id is not None:
             data['folder_id'] = folder_id
-        
+
         if download.startswith('http') or download.startswith('magnet'):
             data = {'src': download}
             r = reqJson(url, data=data)
             status = r['status']
-            if status == 'error': 
+            if status == 'error':
                 mess = r['message']
                 control.infoDialog(mess, time=5000)
             else: control.infoDialog(status, time=5000)
@@ -1508,25 +1508,25 @@ def CloudDownload(download, download_type, folder_id=None, file_name=None):
             multipart_data += 'Content-Type: %s\n\n' % (mime_type)
             multipart_data += download
             multipart_data += '\n--%s--\n' % (BOUNDARY)
-            
+
             data = {'type': 'torrent'}
 
             uri = '/api/transfer/create?'
-            url = premiumize_Api + uri + urllib.parse.urlencode(data) 
+            url = premiumize_Api + uri + urllib.parse.urlencode(data)
 
             r = reqJson(url, multipart_data=multipart_data)
             status = r['status']
-            if status == 'error': 
+            if status == 'error':
                 mess = r['message']
                 control.infoDialog(mess, time=5000)
-            else: control.infoDialog(status, time=5000) 
-            
-            
-            
+            else: control.infoDialog(status, time=5000)
+
+
+
 def cloudCache(mode='write', data=None):
     control.makeFile(control.dataPath)
     DBFile = control.cloudFile
-                
+
     if mode == 'write':
         try:
             timeNow =  datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -1534,10 +1534,10 @@ def cloudCache(mode='write', data=None):
             payload['items'] = data
             with open(DBFile, 'w') as file: json.dump(payload, file, indent=2)
         except:pass
-        
+
     elif mode == 'get':
         try:
-            with open(DBFile, 'r') as file: 
+            with open(DBFile, 'r') as file:
                 data = json.load(file)
                 ##print ("PREMIUMIZE CACHE", file)
                 items = data['items']
@@ -1546,7 +1546,7 @@ def cloudCache(mode='write', data=None):
                 return time, items
         except:
             return '0', '0'
-    
+
     elif mode == 'new':
         try:
             data = PremiumizeScraper().sources()
@@ -1557,12 +1557,12 @@ def cloudCache(mode='write', data=None):
             with open(DBFile, 'w') as file: json.dump(payload, file, indent=2)
         except:
             pass
-        
-            
-    
-    
-        
-            
+
+
+
+
+
+
 
 def matchRatio(txt, txt2, amount=None):
     try:
@@ -1571,11 +1571,11 @@ def matchRatio(txt, txt2, amount=None):
         perc = "{:.0%}".format(float(numb))
         return str(perc)
     except: return '0'
-    
+
 def normalize(txt):
     txt = re.sub(r'[^\x00-\x7f]',r'', txt)
     return txt
-    
+
 def legal_filename(filename):
         try:
             filename = filename.strip()
@@ -1586,7 +1586,7 @@ def legal_filename(filename):
             return filename
         except:
             return filename
-            
+
 def create_folder(folder):
         try:
             folder = xbmc.makeLegalFilename(folder)
@@ -1627,7 +1627,7 @@ def make_path(base_path, title, year='', season=''):
         if season:
             path = os.path.join(path, 'Season %s' % season)
         return path
-            
+
 def getSize(B):
    'Return the given bytes as a human friendly KB, MB, GB, or TB string'
    B = float(B)
@@ -1653,7 +1653,7 @@ def cleantitle_get(title):
     title = title.replace('&quot;', '\"').replace('&amp;', '&')
     title = re.sub(r'\<[^>]*\>','', title)
     title = re.sub('\n|([[].+?[]])|(:|;|-|"|,|\'|\_|\.|\?)|\(|\)|\[|\]|\{|\}|\s', ' ', title).lower()
-    return title          
+    return title
 
 def get_platform():
     platforms = {
@@ -1666,9 +1666,9 @@ def get_platform():
         return sys.platform
 
     return platforms[sys.platform]
-    
 
-import libThread    
+
+import libThread
 
 class library_play:
     def __init__(self):
@@ -1680,7 +1680,7 @@ class library_play:
         self.OriginalTitle = name
         self.ValidMeta = False
         threads = []
-        tv_threads = []     
+        tv_threads = []
         try:
             rpc = {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "id": "1"}
             rpc = json.dumps(rpc)
@@ -1690,10 +1690,10 @@ class library_play:
             for item in result: threads.append(libThread.Thread(self.movies_meta, item))
             [i.start() for i in threads]
             [i.join()  for i in threads]
-                        
+
 
         except: pass
-        
+
         try:
             if self.ValidMeta == True: raise Exception()
             rpc = {"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "id": "1"}
@@ -1703,29 +1703,29 @@ class library_play:
             result = result['result']['episodes']
             for item in result: tv_threads.append(libThread.Thread(self.tv_meta, item))
             [i.start() for i in tv_threads]
-            [i.join()  for i in tv_threads]         
+            [i.join()  for i in tv_threads]
 
         except: pass
         if self.ValidMeta == False: libPlayer(self.OriginalTitle, self.url, '', 'none')
-        
-        
+
+
     def tv_meta(self, item):
         try:
             if self.ValidMeta == True: raise Exception()
             xbmc_id = item['episodeid']                         # , "fanart", "title", "originaltitle", "season", "episode", "plot", "thumbnail", "title", "art", "file"
             rpc_file = {"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodeDetails", "params": {"properties": ["tvshowid", "title", "originaltitle", "season", "episode", "plot", "thumbnail", "art", "file"], "episodeid": int(xbmc_id)}, "id": "1"}
             rpc_file = json.dumps(rpc_file)
-            result_file = xbmc.executeJSONRPC(rpc_file) 
-            result_file = json.loads(result_file)   
+            result_file = xbmc.executeJSONRPC(rpc_file)
+            result_file = json.loads(result_file)
 
             result_file = result_file['result']['episodedetails']
             title = result_file['title']
             file  = result_file['file']
-            if self.OriginalTitle in file: 
+            if self.OriginalTitle in file:
                 self.ValidMeta = True
                 libPlayer(title, self.url, xbmc_id, 'episode')
         except:pass
-        
+
 
     def movies_meta(self, item):
         try:
@@ -1733,19 +1733,19 @@ class library_play:
             xbmc_id = item['movieid']
             rpc_file = {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovieDetails", "params": {"properties": ["imdbnumber", "title", "art", "file"], "movieid": int(xbmc_id)}, "id": "1"}
             rpc_file = json.dumps(rpc_file)
-            result_file = xbmc.executeJSONRPC(rpc_file) 
-            result_file = json.loads(result_file)       
-                    
+            result_file = xbmc.executeJSONRPC(rpc_file)
+            result_file = json.loads(result_file)
+
             result_file = result_file['result']['moviedetails']
             title = result_file['title']
             file  = result_file['file']
-            if self.OriginalTitle in file: 
+            if self.OriginalTitle in file:
                 self.ValidMeta = True
                 libPlayer(title, self.url, xbmc_id, 'movie')
         except:pass
-        
-        
-    
+
+
+
 class PremiumizeScraper:
     def __init__(self):
         self.list = []
@@ -1754,7 +1754,7 @@ class PremiumizeScraper:
     def sources(self):
         try:
             threads = []
-    
+
             url = urlparse.urljoin(premiumize_Api, premiumizeAllfiles)
             r = reqJson(url, mode="get")
             r = r['files']
@@ -1776,12 +1776,12 @@ class PremiumizeScraper:
             r = r['content']
             for item in r:
                 self.list.append(item)
-                if item['type'] == 'folder': 
+                if item['type'] == 'folder':
                     s_threads.append(libThread.Thread(self.scrapeFolder, item['id']))
-            [i.start() for i in s_threads]  
-            [i.join() for i in s_threads]                   
+            [i.start() for i in s_threads]
+            [i.join() for i in s_threads]
         except:
             return
-        
-        
+
+
 

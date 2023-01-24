@@ -23,12 +23,12 @@ try:
 except:
     from pysqlite2 import dbapi2 as database
 
-import json,os,xbmc,xbmcaddon
+import json,os,xbmc,xbmcaddon,xbmcvfs
 
 from resources.lib.modules import control
 
 addonInfo = xbmcaddon.Addon().getAddonInfo
-dataPath = xbmc.translatePath(addonInfo('profile'))
+dataPath = xbmcvfs.translatePath(addonInfo('profile'))
 favouritesFile = os.path.join(dataPath, 'favourites.db')
 progressFile = os.path.join(dataPath, 'progress.db')
 def getFavourites(content):
@@ -42,8 +42,8 @@ def getFavourites(content):
         items = []
 
     return items
-    
-    
+
+
 def getProgress(content):
     try:
         dbcon = database.connect(progressFile)
@@ -64,7 +64,7 @@ def addFavourite(meta, content):
         # #print "META DUMP FAVOURITES %s" % meta
         try: id = meta['imdb']
         except: id = meta['tvdb']
-        
+
         if 'title' in meta: title = item['title'] = meta['title']
         if 'tvshowtitle' in meta: title = item['title'] = meta['tvshowtitle']
         if 'year' in meta: item['year'] = meta['year']
@@ -95,7 +95,7 @@ def addEpisodes(meta, content):
         content = "episode"
         try: id = meta['imdb']
         except: id = meta['tvdb']
-        
+
         if 'title' in meta: title = item['title'] = meta['title']
         if 'tvshowtitle' in meta: title = item['tvshowtitle'] = meta['tvshowtitle']
         if 'year' in meta: item['year'] = meta['year']
@@ -122,8 +122,8 @@ def addEpisodes(meta, content):
         control.infoDialog('Added to Watchlist', heading=title, icon=item['poster'])
     except:
         return
-        
-        
+
+
 def deleteFavourite(meta, content):
     try:
         meta = json.loads(meta)

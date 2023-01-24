@@ -92,13 +92,13 @@ deleteDir = xbmcvfs.rmdir
 
 listDir = xbmcvfs.listdir
 
-transPath = xbmc.translatePath
+transPath = xbmcvfs.translatePath
 
-skinPath = xbmc.translatePath('special://skin/')
+skinPath = xbmcvfs.translatePath('special://skin/')
 
-addonPath = xbmc.translatePath(addonInfo('path'))
+addonPath = xbmcvfs.translatePath(addonInfo('path'))
 
-dataPath = xbmc.translatePath(addonInfo('profile'))
+dataPath = xbmcvfs.translatePath(addonInfo('profile'))
 
 settingsFile = os.path.join(dataPath, 'settings.xml')
 
@@ -142,26 +142,26 @@ if not local_background == '':
 elif not remote_background == '':
     fanart = remote_background
 else:
-    fanart = xbmc.translatePath(os.path.join('special://home/addons/' + addon_id , 'fanart.jpg'))
-icon = xbmc.translatePath(os.path.join('special://home/addons/' + addon_id, 'icon.png'))
+    fanart = xbmcvfs.translatePath(os.path.join('special://home/addons/' + addon_id , 'fanart.jpg'))
+icon = xbmcvfs.translatePath(os.path.join('special://home/addons/' + addon_id, 'icon.png'))
 
-artFolder = xbmc.translatePath(os.path.join('special://home/addons/' + addon_id + '/art/', ''))
+artFolder = xbmcvfs.translatePath(os.path.join('special://home/addons/' + addon_id + '/art/', ''))
 
 
 def getIcon(icon):
     return artFolder + str(icon)
 
 def addonIcon():
-    return xbmc.translatePath(os.path.join('special://home/addons/' + addon_id, 'icon.png'))
+    return xbmcvfs.translatePath(os.path.join('special://home/addons/' + addon_id, 'icon.png'))
 
 
 def addonThumb():
-    return xbmc.translatePath(os.path.join('special://home/addons/' + addon_id, 'icon.png'))
+    return xbmcvfs.translatePath(os.path.join('special://home/addons/' + addon_id, 'icon.png'))
 
 
 
 def addonPoster():
-    return xbmc.translatePath(os.path.join('special://home/addons/' + addon_id, 'icon.png'))
+    return xbmcvfs.translatePath(os.path.join('special://home/addons/' + addon_id, 'icon.png'))
 
 
 
@@ -172,11 +172,11 @@ def addonBanner():
 
 
 def addonFanart():
-    return xbmc.translatePath(os.path.join('special://home/addons/' + addon_id , 'fanart.jpg'))
+    return xbmcvfs.translatePath(os.path.join('special://home/addons/' + addon_id , 'fanart.jpg'))
 
 
 def addonNext():
-    return xbmc.translatePath(os.path.join('special://home/addons/' + addon_id, 'icon.png'))
+    return xbmcvfs.translatePath(os.path.join('special://home/addons/' + addon_id, 'icon.png'))
 
 
 

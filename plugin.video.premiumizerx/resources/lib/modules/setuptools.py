@@ -10,7 +10,7 @@ import xbmcvfs
 import datetime
 from resources.lib.api import premiumize
 from resources.lib.modules import control
-xml_file = xbmc.translatePath(os.path.join('special://home/userdata','sources.xml'))
+xml_file = xbmcvfs.translatePath(os.path.join('special://home/userdata','sources.xml'))
 timeNow = datetime.datetime.now().strftime('%Y%m%d')
 
 def checkinfo():
@@ -20,34 +20,34 @@ def checkinfo():
     firstSetup = control.setting('first.setup')
     popup      = control.setting('popup.date')
 
-    
+
     if not validAccount:
         from resources.lib.modules import deviceAuthDialog
         authDialog = deviceAuthDialog.DonationDialog('firstrun.xml', xbmcaddon.Addon().getAddonInfo('path'), code='', url='')
         authDialog.doModal()
-        del authDialog	
+        del authDialog
         control.openSettings('0.0')
-        
+
     elif (popup == '0' or ((int(timeNow) - int(popup)) > 30)):
         from resources.lib.modules import deviceAuthDialog
         authDialog = deviceAuthDialog.DonationDialog('donations.xml', xbmcaddon.Addon().getAddonInfo('path'), code='', url='')
         authDialog.doModal()
-        del authDialog	
-        control.setSetting(id='popup.date', value=timeNow)    
+        del authDialog
+        control.setSetting(id='popup.date', value=timeNow)
 
-    
+
 #control.setSetting(id='first.start', value='true') # FORCE NEW CACHE
 #firstSetup = control.setting('first.setup')
 
-#if firstSetup != 'true': 
+#if firstSetup != 'true':
 #	from resources.lib.modules import setuptools
 #	newvalue = '1'
 
-#	setuptools.FirstStart()	
+#	setuptools.FirstStart()
 #	control.setSetting(id='first.setup', value='true') # SETUP LIBRARY PATH IN BROWSER
 
 
-def FirstStart():   
+def FirstStart():
     library_movies = control.setting('meta.library.movies')
     library_tv = control.setting('meta.library.tv')
     check_xml()
@@ -56,8 +56,8 @@ def FirstStart():
     if not xbmcvfs.exists(library_tv): control.makeFile(library_tv)
     try:
             LANG = 'en'
-            source_thumbnail = xbmc.translatePath(os.path.join('special://home/addons/plugin.video.premiumizerx','icon.png'))
-            source_name = "PREMIUMIZER TV SHOWS" 
+            source_thumbnail = xbmcvfs.translatePath(os.path.join('special://home/addons/plugin.video.premiumizerx','icon.png'))
+            source_name = "PREMIUMIZER TV SHOWS"
             source_content = "('%s','tvshows','metadata.tvdb.com','',0,0,'<settings version=\"2\"><setting id=\"absolutenumber\" default=\"true\">false</setting><setting id=\"alsoimdb\">true</setting><setting id=\"dvdorder\" default=\"true\">false</setting><setting id=\"fallback\">true</setting><setting id=\"fallbacklanguage\">es</setting><setting id=\"fanart\">true</setting><setting id=\"language\" default=\"true\">en</setting><setting id=\"RatingS\" default=\"true\">TheTVDB</setting><setting id=\"usefallbacklanguage1\">true</setting></settings>',0,0,NULL,NULL)" % library_tv
 
             _add_source_xml(xml_file, source_name, library_tv, source_thumbnail)
@@ -67,14 +67,14 @@ def FirstStart():
             LANG = 'en'
             source_content = "('%s','movies','metadata.themoviedb.org','',2147483647,1,'<settings version=\"2\"><setting id=\"certprefix\" default=\"true\">Rated </setting><setting id=\"fanart\">true</setting><setting id=\"imdbanyway\">true</setting><setting id=\"keeporiginaltitle\" default=\"true\">false</setting><setting id=\"language\" default=\"true\">en</setting><setting id=\"RatingS\" default=\"true\">TMDb</setting><setting id=\"tmdbcertcountry\" default=\"true\">us</setting><setting id=\"trailer\">true</setting></settings>',0,0,NULL,NULL)" % library_movies
 
-            source_thumbnail = xbmc.translatePath(os.path.join('special://home/addons/plugin.video.premiumizerx','icon.png'))
-            source_name = "PREMIUMIZER MOVIES" 
+            source_thumbnail = xbmcvfs.translatePath(os.path.join('special://home/addons/plugin.video.premiumizerx','icon.png'))
+            source_name = "PREMIUMIZER MOVIES"
             _add_source_xml(xml_file, source_name, library_movies, source_thumbnail)
             _set_source_content(source_content)
     except: pass
-    
+
     control.infoDialog('Library Paths Added')
-        
+
 def scan_library(type="video"):
     while not xbmc.abortRequested and \
      (xbmc.getCondVisibility('Library.IsScanning') or \
@@ -83,7 +83,7 @@ def scan_library(type="video"):
     xbmc.executebuiltin('UpdateLibrary(video)')
     xbmc.executebuiltin('UpdateLibrary(music)')
 
-def check_xml():    
+def check_xml():
     if not os.path.exists(xml_file):
         with open(xml_file, "w") as f:
             f.write("""<sources>
@@ -194,7 +194,7 @@ def _db_execute(db_name, command):
 
 def _get_database(db_name):
     path_db = "special://profile/Database/" + db_name
-    filelist = glob.glob(xbmc.translatePath(path_db))
+    filelist = glob.glob(xbmcvfs.translatePath(path_db))
     if filelist:
         return filelist[-1]
     return None
@@ -203,7 +203,7 @@ def _remove_source_content(path):
     q = "DELETE FROM path WHERE strPath LIKE '%{0}%'".format(path)
     return _db_execute("MyVideos*.db", q)
 
-def _set_source_content(content):    
+def _set_source_content(content):
     q = "INSERT OR REPLACE INTO path (strPath,strContent,strScraper,strHash,scanRecursive,useFolderNames,strSettings,noUpdate,exclude,dateAdded,idParentPath) VALUES "
     q += content
     return _db_execute("MyVideos*.db", q)
