@@ -1,23 +1,23 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.realizerx" version="2021.04.24" name="Realizer (py3)" provider-name="aenema">
+<addon id="plugin.video.realizerx" version="2023.01.24" name="Realizer (py3)" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.beautifulsoup4" />
-		<import addon="script.module.requests" />	
-		
-		
+		<import addon="script.module.requests" />
+
+
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="main.py">
 		<provides>video</provides>
 	</extension>
 	<extension point="xbmc.service" library="service.py" start="startup" />
-	
+
 
 	<extension point="xbmc.addon.metadata">
         <description>Cloud Addon with a twist!
-		This addon is inteded for use with content that you currently own! The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the content provider.	
+		This addon is inteded for use with content that you currently own! The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the content provider.
 		</description>
-	
+
 		<summary lang="en">Realizer Cloud Addon</summary>
 		<platform>all</platform>
 		<forum>-</forum>
@@ -27,6 +27,20 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-		<news>-</news>
+		<news>
+2023.01.24 - Merged pushes from Peno64 - thanks fro the fixes 			
+2022.01.16 - Changed call translatePath from xbmc to xbmcvfs. Still works on kodi matrix but now also on nexus
+2021.04.24 - Forked Realizer to Realizer py3 - new version will work on python 3 and kodi matrix
+2019.05.01 - Improved RSS Manager - added Rss Reader Mode - Added a Timer for auto RSS update
+2019.02.09 - Added sort options for Trakt Lists
+2019.02.06.2 - Hotfix Torrent Packs are now sorted alphabetically
+2019.02.06 - Improved Multipage Scraping for Torrent Packs and Single Items
+2019.01.31 - Hotfixes on paginations and api calls
+2019.01.30 - Added Rss Manager, Improved modules and lists
+2019.01.27.5 - Improved multi pages torrent lists and scraping, (OPTION) Cached cloud list option, (OPTION) sort torrent list alphabetically
+2019.01.22 - Improved matching titles and torrent checks
+2019.01.20 - Fixed Scraping Bugs and fallback for Torrent Packs
+2019.x.x - Initial Release
+                </news>
 	</extension>
 </addon>

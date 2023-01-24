@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.premiumizerx" version="2023.01.16" name="Premiumizer (py3)" provider-name="aenema">
+<addon id="plugin.video.premiumizerx" version="2023.01.24" name="Premiumizer (py3)" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.beautifulsoup4" />
@@ -47,6 +47,7 @@
 			<fanart>fanart.jpg</fanart>
 		</assets>
 		<news>
+2023.01.24 - Merged pushes from Peno64 - thanks fro the fixes 	
 2022.01.16 - Changed call translatePath from xbmc to xbmcvfs. Still works on kodi matrix but now also on nexus
 2021.04.23 - Updated Addon to Python 3, compatible to Kodi 19
 2019.02.17 - Switched to Oauth Authorization

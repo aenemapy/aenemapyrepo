@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.realizerx" version="2023.01.16" name="Realizer (py3)" provider-name="aenema">
+<addon id="plugin.video.realizerx" version="2023.01.24" name="Realizer (py3)" provider-name="aenema">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0" />
 		<import addon="script.module.beautifulsoup4" />
@@ -28,6 +28,7 @@
 			<fanart>fanart.jpg</fanart>
 		</assets>
 		<news>
+2023.01.24 - Merged pushes from Peno64 - thanks fro the fixes 			
 2022.01.16 - Changed call translatePath from xbmc to xbmcvfs. Still works on kodi matrix but now also on nexus
 2021.04.24 - Forked Realizer to Realizer py3 - new version will work on python 3 and kodi matrix
 2019.05.01 - Improved RSS Manager - added Rss Reader Mode - Added a Timer for auto RSS update

@@ -1,3 +1,4 @@
+[B]2022.01.16[/B] - Changed call translatePath from xbmc to xbmcvfs. Still works on kodi matrix but now also on nexus
 [B]2021.04.23[/B] - Updated Addon to Python 3, compatible to Kodi 19
 [B]2019.02.17[/B] - Switched to Oauth Authorization
 [B]2019.02.09[/B] - Added sort options for Trakt Lists

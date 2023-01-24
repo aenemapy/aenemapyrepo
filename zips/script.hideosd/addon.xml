@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.hideosd" version="2021.12.03" name="Hide Video OSD" provider-name="zDuts all credit to aenema">
+<addon id="script.hideosd" version="2023.01.24" name="Hide Video OSD" provider-name="zDuts all credit to aenema">
 	<requires>
 		<import addon="xbmc.python" version="3.00.0" />
 	</requires>
@@ -15,6 +15,6 @@
 		<forum>-</forum>
 		<website>-</website>
 		<source>-</source>
-		<news>-</news>
+		<news>Merged pull from szapeboy - thanks for the help</news>
 	</extension>
 </addon>
